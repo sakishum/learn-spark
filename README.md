@@ -6,7 +6,8 @@ Scala资源
 ## 网络资源
 
 *  A Tour of Scala : <http://docs.scala-lang.org/tutorials>    
->>英文资源,比较详细  
+>> 英文资源,比较详细    
+
 * Scala学习指南: <http://zh.scala-tour.com/>
 * Twitter Effective Scala: <http://twitter.github.io/effectivescala/index-cn.html>
 * Twitter Scala School: <https://github.com/twitter/scala_school>
