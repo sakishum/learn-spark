@@ -79,7 +79,41 @@ UNIONTYPE  |  |
 ## HiveQL
 语法基本和SQL一致
 
+### mapjoin
+>>可以通过 /*+ MAPJOIN(alias)*/ 或
+set hive.auto.convert.join=true 
 
+1. Local work:
+- read records via standard table scan (including filters and projections) from source on local machine
+- build hashtable in memory  
+- write hashtable to local disk  
+- upload hashtable to dfs  
+- add hashtable to distributed cache
+
+2. Map task
+- read hashtable from local disk (distributed cache) into memory
+- match records' keys against hashtable
+- combine matches and write to output
+3. No reduce task
+
+
+
+<https://cwiki.apache.org/confluence/display/Hive/LanguageManual+JoinOptimization#LanguageManualJoinOptimization-PriorSupportforMAPJOIN>
+
+### 多表插入
+Multi Table/File Inserts
+The output of the aggregations or simple selects can be further sent into multiple tables or even to hadoop dfs files (which can then be manipulated using hdfs utilities). For example, if along with the gender breakdown, one needed to find the breakdown of unique page views by age, one could accomplish that with the following query:
+FROM pv_users
+INSERT OVERWRITE TABLE pv_gender_sum
+    SELECT pv_users.gender, count_distinct(pv_users.userid)
+    GROUP BY pv_users.gender
+ 
+INSERT OVERWRITE DIRECTORY '/user/data/tmp/pv_age_sum'
+    SELECT pv_users.age, count_distinct(pv_users.userid)
+    GROUP BY pv_users.age;
+The first insert clause sends the results of the first group by to a Hive table while the second one sends the results to a hadoop dfs files.
+Dynamic-Partition Insert
+In the previous examples, the user has to know which partition to insert into and only one partition can be inserted in one insert statement. If you want to load into multiple partitions, you have to use multi-insert statement as illustrated below.
 
 ### 数据导入
 
@@ -115,27 +149,37 @@ UNIONTYPE  |  |
 - [ ]   order by   
 - [ ]   sotred by   
 
+### left semi join
+
 ## 表
 ### 外部分表
 
 ### 分区表
 
 ### 桶表
+https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL+BucketedTables
 
+1. 高效查询：mapside joins
+2. 方便高效的取样操作
 ### 存储格式
 
 ### 数据存存储单元
 Databases,Table,Partitions,Buckets
 <https://cwiki.apache.org/confluence/display/Hive/Tutorial#Tutorial-DataUnits>
 
-## 常用语句
+## 常用命令
 
 1. show tables;
+2. show create table tab_name;  //查看建表语句
 2. show tables 'name*';
 3. show functions
 4. desc function unix_timestamp; #查看函数说明
 5. ! <command> #Executes a shell command from the Hive shell.
 6. dfs <dfs command> #Executes a dfs command from the Hive shell.
+
+## export/import
+https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ImportExport
+
 
 ## 其它
 
@@ -163,12 +207,14 @@ CLI or beeplin
 
 ------------------------------------
 
-## 进阶
 ###正则表达式选择列  (REGEX Column Specification)
 set hive.support.quoted.identifiers=none
 默认值为column
 select `d[0-9]+` from tab1;  --选择列名以d开头，后带数字的列
 
+### 日志
+
+/tmp/hive/$USER/
 
 ## 自定义函数
 ## 自定义格式
@@ -201,13 +247,13 @@ map端聚合:默认已经为true  `hive.map.aggr=true`
 如果小表join大表，但key很集中，可以使用mapjoin
 如果大表join大表，存在大量null值，可以将null值过渡后union到非空值的结果中，也可以给null重新分配一个随机值后做关联
 
-select * from dw_flow a left join dw_info b on a.acc_nbr  = b.acc_nbr;
+select * from dw_gprs_flow a left join dw_user_info b on a.acc_nbr  = b.acc_nbr;
 
-select * from dw_flow a left join dw_info b on case when a.acc_nbr is null then rand() else a.acc_nbr end = b.acc_nbr;
+select * from dw_gprs_flow a left join dw_user_info b on case when a.acc_nbr is null then rand() else a.acc_nbr end = b.acc_nbr;
 
-select * from dw_flow a left join dw_info b on  a.acc_nbr is not null and a.acc_nbr  = b.acc_nbr
+select * from dw_gprs_flow a left join dw_user_info b on  a.acc_nbr is not null and a.acc_nbr  = b.acc_nbr
 union all
-select * from dw_flow a left join dw_info b a.acc_nbr  = b.acc_nbr;
+select * from dw_gprs_flow a left join dw_user_info b a.acc_nbr  = b.acc_nbr;
 
 
 2.distinct
@@ -224,7 +270,11 @@ hive.groupby.skewindata=true
 任务能尽量均的分配到各结点上执行：数据倾斜处理
 
 ## 对比 RDMS
+
+
 ## 源码构建
+
+
 ## 与HBase集成
 
 
