@@ -1,0 +1,9 @@
+.md_configs.data
+.me_configs.data
+sync_changes.log
+sync_hook.script
+.sync/*
+.z_sync_configs.data
+**/.Archive
+**/.idea
+*.iml
