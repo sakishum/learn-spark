@@ -15,8 +15,11 @@ hadoop dfsadmin -report
 4. hdfs dfsadmin -refreshNodes
 
 ## 在线删除datanode 
-
-## namenode恢复  
+不能直接停止，需要先转移数据再停止datanode
+1. 修改配置dfs.hosts和dfs.hosts.exclude执行`hadoop dfsadmin -refreshNodes`
+2. 停止结点，再将节点地址去掉再执行`hadoop dfsadmin -refreshNodes`
+ 
+## 利用SecondaryNameNode恢复NameNode
 
 
 
