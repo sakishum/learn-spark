@@ -7,3 +7,4 @@ sync_hook.script
 **/.Archive
 **/.idea
 *.iml
+target/

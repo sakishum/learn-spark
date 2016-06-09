@@ -137,7 +137,8 @@ bin/hadoop fs -mkdir   -p    /user/hive/warehouse
 bin/hadoop fs -chmod g+w   /tmp
 bin/hadoop fs -chmod g+w   /user/hive/warehouse
 
-
+修改hive-env.sh
+HADOOP_HOME=**/opt/hadoop-2.6.4**
 安装mariadb-server 
 vm-centos-00上
 yum install mariadb-server
