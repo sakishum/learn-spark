@@ -25,7 +25,6 @@
 hadoop dfsadmin -report  
 
 ## 在线增加datanode 
-
 1. 准备工作：ssh互信、hosts文件修改
 2. 修改namenode结点slaves文件，添加新增结点(否则下次集群重启时不能自动拉起此结点)
 3. 在新增结点起动datanode:`sbin/hadoop-daemon.sh start datanode`
