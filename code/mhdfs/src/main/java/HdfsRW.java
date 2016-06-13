@@ -1,7 +1,7 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,8 @@ public class HdfsRW {
 
         Path p1 = new Path("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/");
         Path f1 = new Path("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/data1.dat");
-        FileSystem fs = p1.getFileSystem(conf);
+        //FileSystem fs = p1.getFileSystem(conf);
+        DistributedFileSystem fs = (DistributedFileSystem)p1.getFileSystem(conf);   //方便代码跟踪
         System.out.println(fs.getClass().getCanonicalName());
         if (!fs.exists(p1)) {
             fs.mkdirs(p1);
@@ -31,13 +32,13 @@ public class HdfsRW {
         }
 
 
-        fs.deleteOnExit(f1);
-        System.out.println("存在则先删除");
+        System.out.println( "默认备份数:"+ fs.getDefaultReplication(f1));
         FSDataOutputStream fsout =  fs.create(f1);
+
 
         FileInputStream fin = new FileInputStream("./mhdfs/src/main/resources/kv1.txt");
 
-        //FIXME 为毛大小设为512时只能生成个空文件
+        //TODO 为毛大小设为512时只能生成个空文件! 是需要和io.file.buffer.size参数值一致吗？
         byte[] bs = new byte[4096];  //copyBytes(in, out, conf.getInt("io.file.buffer.size", 4096),  close);
         int n = 0;
 
