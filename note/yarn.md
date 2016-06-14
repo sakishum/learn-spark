@@ -5,3 +5,7 @@
 
 ## 在线卸载nodemanger
 直接停止即可
+
+
+
+http://shiyanjun.cn/archives/1119.html

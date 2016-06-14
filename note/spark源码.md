@@ -1,32 +1,32 @@
 ## 入口 
 以下面最简单的代码为参考对象逐步分析Spark
 
-	val conf = new SparkConf()
+    val conf = new SparkConf()
                             .setAppName("Simple Application")  
                             .setMaster("spark://192.168.242.130:7077")  
-	val sc = new SparkContext(conf)  
+    val sc = new SparkContext(conf)  
     val rdd = sc.parallelize(1 to 10000)
     //val rdd = sc.textFile()
-	rdd.count()    
+    rdd.count()    
 
 ## SparkContext 创建 
 
 ### SparkConf
 
-		val sc = new SparkContext(conf) 
+        val sc = new SparkContext(conf) 
 
 SparkConf提供配置信息， SparkContext还有如下构造器  
 
-	def this() = this(new SparkConf())
+    def this() = this(new SparkConf())
 
 >>无参的SparkConf会在系统属性中读取配置信息 *Spark启动时候会在Shell设置属性*
 
-	if (loadDefaults) {
-	    // Load any spark.* system properties
-	    for ((k, v) <- System.getProperties.asScala if k.startsWith("spark.")) {
-	      settings(k) = v
-	    }
-	 }
+    if (loadDefaults) {
+        // Load any spark.* system properties
+        for ((k, v) <- System.getProperties.asScala if k.startsWith("spark.")) {
+          settings(k) = v
+        }
+     }
 
 
 ### 其它构造函数
@@ -40,21 +40,27 @@ N个构造函数 ......
 
 
 ### LiveListenerBus
-  	// An asynchronous listener bus for Spark events
-  	private[spark] val listenerBus = new LiveListenerBus   //TODO LiveListenerBus
+    // An asynchronous listener bus for Spark events
+    private[spark] val listenerBus = new LiveListenerBus   //TODO LiveListenerBus
+>> 发送SparkListenerEvents给已注册的SparkListener
+
+   _jobProgressListener = new JobProgressListener(_conf)
+    listenerBus.addListener(jobProgressListener)
+
 
 
 ### SparkEnv
-接着创建SparkEnv
- 
- 	最终ThreadLocal.set(SparkEnv) 	  //TODO　SparkEnv
+创建SparkEnv
+    // Create the Spark execution environment (cache, map output tracker, etc)
+    _env = createSparkEnv(_conf, isLocal, listenerBus)
+    SparkEnv.set(_env)
 
 
 ###  SparkUI
 SparkUI启动
-	
-	// Initialize the Spark UI, registering all associated listeners
- 	private[spark] val ui: Option[SparkUI] =
+    
+    // Initialize the Spark UI, registering all associated listeners
+    private[spark] val ui: Option[SparkUI] =
     if (conf.getBoolean("spark.ui.enabled", true)) {
       Some(new SparkUI(this))
     } else {
@@ -62,28 +68,28 @@ SparkUI启动
       None
     }
 
-  	// Bind the UI before starting the task scheduler to communicate
-  	// the bound port to the cluster manager properly
-  	ui.foreach(_.bind())
+    // Bind the UI before starting the task scheduler to communicate
+    // the bound port to the cluster manager properly
+    ui.foreach(_.bind())
 
 
 ### Scheduler创建
 
-	// Create and start the scheduler
-  	private[spark] var taskScheduler = SparkContext.createTaskScheduler(this, master)
-  	private val heartbeatReceiver = env.actorSystem.actorOf(
+    // Create and start the scheduler
+    private[spark] var taskScheduler = SparkContext.createTaskScheduler(this, master)
+    private val heartbeatReceiver = env.actorSystem.actorOf(
     Props(new HeartbeatReceiver(taskScheduler)), "HeartbeatReceiver")
-  	@volatile private[spark] var dagScheduler: DAGScheduler = _
-  	try {
-    	dagScheduler = new DAGScheduler(this)
-  	} catch {
-    	case e: Exception => throw
-      	new SparkException("DAGScheduler cannot be initialized due to %s".format(e.getMessage))
-  	}
+    @volatile private[spark] var dagScheduler: DAGScheduler = _
+    try {
+        dagScheduler = new DAGScheduler(this)
+    } catch {
+        case e: Exception => throw
+        new SparkException("DAGScheduler cannot be initialized due to %s".format(e.getMessage))
+    }
 
-  	// start TaskScheduler after taskScheduler sets DAGScheduler reference in DAGScheduler's
-  	// constructor
-	taskScheduler.start()
+    // start TaskScheduler after taskScheduler sets DAGScheduler reference in DAGScheduler's
+    // constructor
+    taskScheduler.start()
 
 createTaskScheduler中根据不同的部署（Master URL）方式生成不同的SchedulerBackend和TaskScheduler的组合
 
@@ -146,13 +152,13 @@ RDD:
 
 
 SpackContext
-	runjon(.)
-	runjon(..)
-	runjon(...)
-	.....
+    runjon(.)
+    runjon(..)
+    runjon(...)
+    .....
 
 dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, allowLocal,
-      resultHandler, localProperties.get)	
+      resultHandler, localProperties.get)   
 
 
 DAGScheduler
@@ -307,3 +313,6 @@ RemoteAKKA
 
 
 http://my.oschina.net/jingxing05/blog/287462
+
+
+

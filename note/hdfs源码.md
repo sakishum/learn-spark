@@ -57,3 +57,15 @@ public class DistributedFileSystem extends FileSystem {
 public class HdfsDataOutputStream extends FSDataOutputStream {
 
 
+
+
+ class DataStreamer extends Daemon {
+DataStreamer：负责发送数据
+
+
+// Processes responses from the datanodes.  A packet is removed
+// from the ackQueue when its response arrives.
+ //  private class ResponseProcessor extends Daemon { 
+ResponseProcessor：接收来自datanode的反馈，如果接收成功将packet从dataQueue删除    
+
+

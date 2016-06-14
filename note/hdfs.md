@@ -1,3 +1,10 @@
+---
+date:  2016-6-14 9:08:30
+
+---
+
+
+
 ##
 ![image](http://hadoop.apache.org/docs/r2.6.4/hadoop-project-dist/hadoop-hdfs/images/hdfsarchitecture.png)
 1. NameNode
@@ -40,6 +47,14 @@ hadoop dfsadmin -report
 
 
 ## api
+
+
+
+
+## TODO
+- [] 分析读写文件部分源代码
+
+
 
 
 
