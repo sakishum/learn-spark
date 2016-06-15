@@ -264,6 +264,8 @@ select * from dw_gprs_flow a left join dw_user_info b a.acc_nbr  = b.acc_nbr;
 hive.groupby.skewindata=true
 有数据倾斜的时候进行负载均衡，当选项设定为 true，生成的查询计划会有两个 MR Job。第一个 MR Job 中，Map 的输出结果集合会随机分布到 Reduce 中，每个 Reduce 做部分聚合操作，并输出结果，这样处理的结果是相同的 Group By Key 有可能被分发到不同的 Reduce 中，从而达到负载均衡的目的；第二个 MR Job 再根据预处理的数据结果按照 Group By Key 分布到 Reduce 中（这个过程可以保证相同的 Group By Key 被分布到同一个 Reduce 中），最后完成最终的聚合操作。
 
+
+
 ### 总结
 减少数据量：列裁减、分区
 减少job:SQL优化
@@ -277,15 +279,25 @@ hive.groupby.skewindata=true
 
 ## 与HBase集成
 
-
+## 关于执行引擎
+参数：hive.execution.engine
+默认为mr，可以设置成tez或spark
 
 ### spark
+1. hive on spark
+set hive.execution.engine=spark;
+set spark.home=/opt/spark;
+set spark.master=yarn;
+[Intel李锐：Hive on Spark解析](http://www.csdn.net/article/2015-04-24/2824545)
+[Hive on Spark: Getting Started](https://cwiki.apache.org/confluence/display/Hive/Hive+on+Spark%3A+Getting+Started#HiveonSpark:GettingStarted-ConfiguringSpark)
+
+2. spark sql on hive 
 
 
 # 参考资料
-
 1. [Hive Documentation](https://cwiki.apache.org/confluence/display/Hive/Home)
 2. http://www.tuicool.com/articles/qyUzQj
+
 
 
 
