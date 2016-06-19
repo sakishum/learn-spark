@@ -21,6 +21,7 @@
         <module>mhdfs</module>
         <module>myarn</module>
         <module>mspark</module>
+        <module>jbase</module>
     </modules>
 
     <build>
