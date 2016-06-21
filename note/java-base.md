@@ -12,6 +12,9 @@ System.getProperty\System.getPropertys #获取系统属性
   volatile类型：当某线程修改value的值时，其他线程看到的value值都是最新的value值
 
 
+- [ ] HashMap WeakHashMap
+
+
 
 
 

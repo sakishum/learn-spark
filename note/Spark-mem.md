@@ -1,10 +1,29 @@
-             
-spark.testing.memory(UnifiedMemoryManager.scala)
-spark.testing.reservedMemory(UnifiedMemoryManager.scala)
+SparkEnv中有如下代码来控制使用的MemoryManager
+```
+//SparkEnv.scala
+    val useLegacyMemoryManager = conf.getBoolean("spark.memory.useLegacyMode", false)
+    val memoryManager: MemoryManager =
+      if (useLegacyMemoryManager) {
+        new StaticMemoryManager(conf, numUsableCores)
+      } else {
+        UnifiedMemoryManager(conf, numUsableCores)
+      }
+```
+
+execution 和 storage共享大小为(heap size - reservedMemory)*spark.memory.fraction（默认0.75）的内存，其中默认用于storage的值由参数spark.memory.storageFraction(默认0.5)控制
+//UnifiedMemoryManager.scala
+systemMemory = conf.getLong("spark.testing.memory", Runtime.getRuntime.maxMemory)
+RESERVED_SYSTEM_MEMORY_BYTES = 300 * 1024 * 1024
+reservedMemory = conf.getLong("spark.testing.reservedMemory", if (conf.contains("spark.testing")) 0 else RESERVED_SYSTEM_MEMORY_BYTES)
+maxHeapMemory  =  (systemMemory - reservedMemory)*conf.getDouble("spark.memory.fraction", 0.75)
+onHeapStorageRegionSize =  (maxMemory * conf.getDouble("spark.memory.storageFraction", 0.5))
+onHeapExecutionMemory = maxHeapMemory - onHeapStorageRegionSize
+executormemory和systemMemory都不能小于1.5倍的reservedMemory
+
+
+- [ ]     driver.memory和 executor.memory 的关系
 
 driver.memory:也可以通过命令行参数*---driver-memory 2g* 指定,任务启动时被指定为jvm堆最大值*-Xmx*
-
-
 spark.executor.memory:executor的内存大小,默认是512M,也可以通过命令行参数*--executor-memory  1g*指定
 spark.storage.memoryFraction:默认是0.6。即默认每个executor的内存是512M，其中 512M*0.6=307.2M用于RDD缓存，  512M*0.4=204.8用于Task任务计算
 >>如果executor报OOM内存不足，需要考虑增大spark.executor.memory。
