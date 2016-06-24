@@ -1,4 +1,5 @@
 SparkEnv中有如下代码来控制使用的MemoryManager
+
 ```
 //SparkEnv.scala
     val useLegacyMemoryManager = conf.getBoolean("spark.memory.useLegacyMode", false)
@@ -24,7 +25,16 @@ executormemory和systemMemory都不能小于1.5倍的reservedMemory
 - [ ]     driver.memory和 executor.memory 的关系
 
 driver.memory:也可以通过命令行参数*---driver-memory 2g* 指定,任务启动时被指定为jvm堆最大值*-Xmx*
-spark.executor.memory:executor的内存大小,默认是512M,也可以通过命令行参数*--executor-memory  1g*指定
+spark.executor.memory:executor的内存大小,默认是1024M,也可以通过命令行参数*--executor-memory  2g*指定
+   _executorMemory = _conf.getOption("spark.executor.memory")
+      .orElse(Option(System.getenv("SPARK_EXECUTOR_MEMORY")))
+      .orElse(Option(System.getenv("SPARK_MEM"))
+      .map(warnSparkMem))
+      .map(Utils.memoryStringToMb)
+      .getOrElse(1024)
+
+
+
 spark.storage.memoryFraction:默认是0.6。即默认每个executor的内存是512M，其中 512M*0.6=307.2M用于RDD缓存，  512M*0.4=204.8用于Task任务计算
 >>如果executor报OOM内存不足，需要考虑增大spark.executor.memory。
 如果频繁Full GC，可能是executor中用于Task任务计算的内存不足，就需要考虑降低spark.storage.memoryFraction的比例，即减小用于缓存的内存大小，增大用于Task任务计算的内存大小。

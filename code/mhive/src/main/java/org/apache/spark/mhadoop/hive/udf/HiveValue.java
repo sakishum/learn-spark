@@ -2,7 +2,7 @@
  * Created by migle on 2016/6/3.
  */
 
-package me.migle.mhadoop.hive.udf;
+package org.apache.spark.mhadoop.hive.udf;
 
 
 import org.apache.hadoop.hive.ql.exec.Description;

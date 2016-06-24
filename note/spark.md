@@ -4,11 +4,6 @@
 3. ./sbin/start-all.sh  启动master及worker
 4. 启动成功后可以在http://vm-centos-00:8080/查看集群信息
 
-
-
-
-
-
 - [x]  spark-sql on hive
 复制hive-site.xml到spark的conf目录下
 spark-env.sh中添加`export SPARK_CLASSPATH=$HIVE_HOME/lib/mysql-connector-java-5.1.38-bin.jar:$SPARK_CLASSPATH`
@@ -76,6 +71,20 @@ select acc_nbr ,sum(g4_flow) from dw_gprs_flow group by acc_nbr limit 10;
 
 
 
+ bin/spark-submit \
+ --class "SparkPi" \
+ --master spark://vm-centos-00:7077 \
+testjar/mspark-1.0-SNAPSHOT.jar
+
+
+
+
+
+
+
+
+
+
 
 
 ./bin/spark-shell --master yarn  --deploy-mode client --executor-memory 100m  --driver-memory 200m --executor-cores 1
@@ -117,3 +126,12 @@ select acc_nbr ,sum(g4_flow) from dw_gprs_flow group by acc_nbr limit 10;
 spark-examples-1.5.1-hadoop2.6.0.jar
 
 http://www.iteblog.com/archives/1223
+
+
+
+
+
+IDEA中调度程序时需要加入
+sc.addJar("xxx.jar")
+可以在IDEA中设置一下，运行前package一下
+maven中scala是不会被compile和package的，**需要加插件**

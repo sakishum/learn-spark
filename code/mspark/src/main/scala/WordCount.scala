@@ -10,16 +10,31 @@ object WordCount {
 //  }
 
   def main(args: Array[String]) {
+    System.setProperty("hadoop.home.dir", "E:\\spark\\hadoop-2.6.4\\hadoop-2.6")
     val conf = new SparkConf()
       .setAppName("Spark Wordcount")
+      .set("hadoop.home.dir", "E:\\spark\\hadoop-2.6.4\\hadoop-2.6")
       .setMaster("spark://vm-centos-00:7077")
-    .set("spark.executor.memory","300m")
-    .set("spark.testing","10")
+      .set("spark.executor.memory","100m")
+      .set("spark.testing","10")
       //.setMaster("local[4]")
 
+
+
     val sc = new SparkContext(conf)
-    val rdd = sc.textFile("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/data1.dat")
-    rdd.flatMap(line=> line.split(" ")).map(word=>(word,1)).reduceByKey((a,b)=>a+b).foreach(t=>println(t._1 + ":" + t._2))
+
+
+    //TODO:Mac上虚拟机是桥接模式，为什么可以直接连接调试程序？不用sc.jar
+    sc.addJar("E:\\workspace\\learn-spark\\code\\mspark\\target\\mspark-1.0-SNAPSHOT.jar")
+     println("==========================sparkcontext ==========================")
+
+    //TODO：文件是本地文件时应该在什么位置？driver?还是所有worker上?文件是如何分发的
+    //val rdd = sc.textFile("/opt/spark/CHANGES.txt")
+
+    val rdd = sc.textFile("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/CHANGES.txt")
+
+    //Note: collect()  Return all the elements of the dataset as an array at the driver program. This is usually useful after a filter or other operation that returns a sufficiently small subset of the data.
+    rdd.flatMap(line=> line.split(" ")).map(word=>(word,1)).reduceByKey((a,b)=>a+b).collect().foreach(t=>println(t._1 + ":" + t._2))
     //.saveAsTextFile("wordcount")
     sc.stop()
   }

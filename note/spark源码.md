@@ -1,5 +1,5 @@
-## å…¥å£ 
-ä»¥ä¸‹é¢æœ€ç®€å•çš„ä»£ç ä¸ºå‚è€ƒå¯¹è±¡é€æ­¥åˆ†æSpark
+## Èë¿Ú 
+ÒÔÏÂÃæ×î¼òµ¥µÄ´úÂëÎª²Î¿¼¶ÔÏóÖğ²½·ÖÎöSpark
 
     val conf = new SparkConf()
                             .setAppName("Simple Application")  
@@ -9,17 +9,17 @@
     //val rdd = sc.textFile()
     rdd.count()    
 
-## SparkContext åˆ›å»º 
+## SparkContext ´´½¨ 
 
 ### SparkConf
 
         val sc = new SparkContext(conf) 
 
-SparkConfæä¾›é…ç½®ä¿¡æ¯ï¼Œ SparkContextè¿˜æœ‰å¦‚ä¸‹æ„é€ å™¨  
+SparkConfÌá¹©ÅäÖÃĞÅÏ¢£¬ SparkContext»¹ÓĞÈçÏÂ¹¹ÔìÆ÷  
 
     def this() = this(new SparkConf())
 
->>æ— å‚çš„SparkConfä¼šåœ¨ç³»ç»Ÿå±æ€§ä¸­è¯»å–é…ç½®ä¿¡æ¯ *Sparkå¯åŠ¨æ—¶å€™ä¼šåœ¨Shellè®¾ç½®å±æ€§*
+>>ÎŞ²ÎµÄSparkConf»áÔÚÏµÍ³ÊôĞÔÖĞ¶ÁÈ¡ÅäÖÃĞÅÏ¢ *SparkÆô¶¯Ê±ºò»áÔÚShellÉèÖÃÊôĞÔ*
 
     if (loadDefaults) {
         // Load any spark.* system properties
@@ -29,20 +29,20 @@ SparkConfæä¾›é…ç½®ä¿¡æ¯ï¼Œ SparkContextè¿˜æœ‰å¦‚ä¸‹æ„é€ å™¨
      }
 
 
-### å…¶å®ƒæ„é€ å‡½æ•°
-Nä¸ªæ„é€ å‡½æ•° ......
+### ÆäËü¹¹Ôìº¯Êı
+N¸ö¹¹Ôìº¯Êı ......
 
 
-### é…ç½®åˆ¤æ–­
+### ÅäÖÃÅĞ¶Ï
 
-æ¥ç€ä¸€å †é…ç½®é…ç½®åˆ¤æ–­ä¹‹ç±»çš„
+½Ó×ÅÒ»¶ÑÅäÖÃÅäÖÃÅĞ¶ÏÖ®ÀàµÄ
 
 
 
 ### LiveListenerBus
     // An asynchronous listener bus for Spark events
     private[spark] val listenerBus = new LiveListenerBus   //TODO LiveListenerBus
->> å‘é€SparkListenerEventsç»™å·²æ³¨å†Œçš„SparkListener
+>> ·¢ËÍSparkListenerEvents¸øÒÑ×¢²áµÄSparkListener
 
    _jobProgressListener = new JobProgressListener(_conf)
     listenerBus.addListener(jobProgressListener)
@@ -50,14 +50,14 @@ Nä¸ªæ„é€ å‡½æ•° ......
 
 
 ### SparkEnv
-åˆ›å»ºSparkEnv
+´´½¨SparkEnv
     // Create the Spark execution environment (cache, map output tracker, etc)
     _env = createSparkEnv(_conf, isLocal, listenerBus)
     SparkEnv.set(_env)
 
 
 ###  SparkUI
-SparkUIå¯åŠ¨
+SparkUIÆô¶¯
     
     // Initialize the Spark UI, registering all associated listeners
     private[spark] val ui: Option[SparkUI] =
@@ -73,33 +73,33 @@ SparkUIå¯åŠ¨
     ui.foreach(_.bind())
 
 
-### Scheduleråˆ›å»º
+### Scheduler´´½¨
+- [ ] DAGScheduler,TaskScheduler,SchedulerBackendÈıÕßÖ®Ç°µÄ¹ØÏµ£¿
+>>DAGSchedulerÃæÏòstageµÄµ÷¶È£¬TaskSchedulerÃæÏòtaskµÄµ÷¶È£¬SchedulerBackendÊÇTaskSchedulerµÄºó¶Ë£¬²»Í¬²¿Êğ·½Ê½ÓĞ²»Í¬ÊµÏÖ¡£
+Óöµ½actionËã×Ó£¬¾Í»á´´½¨Ò»¸öJOB£¬JOBÍ¬½ø¾Í»á±»Ìá½»µ½DAGSchedulerÀï£¬DAGScheduler»á°ÑJOB»®·ÖÎª¶à¸östag£¬È»ºóÃ¿¸östag´´½¨Ò»¸ötaskSet(ÀïÃæÊÇÃ¿¸ötask),»á°ÑtaskSetÌá½»¸øTaskSchedulerÀï£¬TaskScheduler»á°ÑtaskSetÀïµÄÃ¿¸ötaskrÌá½»µ½executorÉÏÖ´ĞĞ(task·ÖÅäËã·¨)
 
-    // Create and start the scheduler
-    private[spark] var taskScheduler = SparkContext.createTaskScheduler(this, master)
-    private val heartbeatReceiver = env.actorSystem.actorOf(
-    Props(new HeartbeatReceiver(taskScheduler)), "HeartbeatReceiver")
-    @volatile private[spark] var dagScheduler: DAGScheduler = _
-    try {
-        dagScheduler = new DAGScheduler(this)
-    } catch {
-        case e: Exception => throw
-        new SparkException("DAGScheduler cannot be initialized due to %s".format(e.getMessage))
-    }
+ val (sched, ts) = SparkContext.createTaskScheduler(this, master)
+    _schedulerBackend = sched
+    _taskScheduler = ts
+    _dagScheduler = new DAGScheduler(this)
+    _heartbeatReceiver.ask[Boolean](TaskSchedulerIsSet)
 
     // start TaskScheduler after taskScheduler sets DAGScheduler reference in DAGScheduler's
     // constructor
-    taskScheduler.start()
+    _taskScheduler.start()
 
-createTaskSchedulerä¸­æ ¹æ®ä¸åŒçš„éƒ¨ç½²ï¼ˆMaster URLï¼‰æ–¹å¼ç”Ÿæˆä¸åŒçš„SchedulerBackendå’ŒTaskSchedulerçš„ç»„åˆ
+createTaskSchedulerÖĞ¸ù¾İ²»Í¬µÄ²¿Êğ£¨Master URL£©·½Ê½Éú³É²»Í¬µÄSchedulerBackendºÍTaskSchedulerµÄ×éºÏ
+
+- [ ] Job»®·Östage
+- [ ] Task·ÖÅäËã·¨
 
 #### TaskSchedulerImpl
 
 taskScheduler.start()
 
-æ­¤æ–¹æ³•å®é™…æ˜¯è°ƒç”¨äº†SchedulerBackend.start()æ¥å®Œæˆä»»åŠ¡
-è€ŒSchedulerBackend.start()ä¸åŒçš„éƒ¨ç½²æ–¹å¼å¤„ç†æ–¹å¼ä¸åŒï¼ŒLocalæ–¹å¼åªæ˜¯åˆ›å»ºäº†Actor
-è€Œé›†ç¾¤æ–¹å¼è¿˜ä¼šæœ‰AppClient.start(),å‘Masteræ³¨å†Œ **Master.RegisterApplication**
+´Ë·½·¨Êµ¼ÊÊÇµ÷ÓÃÁËSchedulerBackend.start()À´Íê³ÉÈÎÎñ
+¶øSchedulerBackend.start()²»Í¬µÄ²¿Êğ·½Ê½´¦Àí·½Ê½²»Í¬£¬Local·½Ê½Ö»ÊÇ´´½¨ÁËActor
+¶ø¼¯Èº·½Ê½»¹»áÓĞAppClient.start(),ÏòMaster×¢²á **Master.RegisterApplication**
 
 APPClient
 
@@ -112,9 +112,9 @@ APPClient
     }
 
 
-**AKKAçš„Actorçš„preStart()**
+**AKKAµÄActorµÄpreStart()**
 
-*å¤§é‡çš„AKKAçš„ä½¿ç”¨ï¼ŒSOï¼ŒAKKAå…ˆæç†Ÿç»ƒ* 
+*´óÁ¿µÄAKKAµÄÊ¹ÓÃ£¬SO£¬AKKAÏÈ¸ãÊìÁ·* 
 
 
 
@@ -127,12 +127,12 @@ APPClient
   metricsSystem.start()
 
 
-## RDDåˆ›å»º
+## RDD´´½¨
 
 >>A Resilient Distributed Dataset (RDD), the basic abstraction in Spark. Represents an immutable, partitioned collection of elements that can be operated on in parallel. This class contains the basic operations available on all RDDs, such as `map`, `filter`, and `persist`
 
 RDD  && Partition
-åˆ›å»ºRDD   SparkContext.textFile,parallelize ç­‰.......
+´´½¨RDD   SparkContext.textFile,parallelize µÈ.......
 
 
   override def getPartitions: Array[Partition] = {
@@ -140,11 +140,11 @@ RDD  && Partition
     slices.indices.map(i => new ParallelCollectionPartition(id, i, slices(i))).toArray
   }
 
-è®¡ç®—Partition
+¼ÆËãPartition
 
-[Job é€»è¾‘æ‰§è¡Œå›¾](https://github.com/JerryLead/SparkInternals/blob/master/markdown/2-JobLogicalPlan.md)
+[Job Âß¼­Ö´ĞĞÍ¼](https://github.com/JerryLead/SparkInternals/blob/master/markdown/2-JobLogicalPlan.md)
 
-## Actionæ‰§è¡Œ
+## ActionÖ´ĞĞ
 
 
 RDD:
@@ -190,11 +190,11 @@ DAGScheduler
 
 
 
-æ•´ä½“ç»“æ„
+ÕûÌå½á¹¹
 
-ä»»åŠ¡å¦‚ä½•åˆ†è§£
-ä»»åŠ¡å¦‚ä½•åˆå¹¶
-ä»»åŠ¡å¦‚ä½•è°ƒåº¦
+ÈÎÎñÈçºÎ·Ö½â
+ÈÎÎñÈçºÎºÏ²¢
+ÈÎÎñÈçºÎµ÷¶È
 
 TaskScheduler
 SchedulerBackend
@@ -202,10 +202,10 @@ ExecutorBackend
 Executor
 
 
-æ¯ä¸ª Worker ä¸Šå­˜åœ¨ä¸€ä¸ªæˆ–è€…å¤šä¸ª ExecutorBackend è¿›ç¨‹ã€‚æ¯ä¸ªè¿›ç¨‹åŒ…å«ä¸€ä¸ª Executorå¯¹è±¡ï¼Œè¯¥å¯¹è±¡æŒæœ‰ä¸€ä¸ªçº¿ç¨‹æ± ï¼Œæ¯ä¸ªçº¿ç¨‹å¯ä»¥æ‰§è¡Œä¸€ä¸ª task
+Ã¿¸ö Worker ÉÏ´æÔÚÒ»¸ö»òÕß¶à¸ö ExecutorBackend ½ø³Ì¡£Ã¿¸ö½ø³Ì°üº¬Ò»¸ö Executor¶ÔÏó£¬¸Ã¶ÔÏó³ÖÓĞÒ»¸öÏß³Ì³Ø£¬Ã¿¸öÏß³Ì¿ÉÒÔÖ´ĞĞÒ»¸ö task
 
 
-## Actionæ‰§è¡Œ
+## ActionÖ´ĞĞ
 
 
 
@@ -233,7 +233,7 @@ SparkContext.runJob
 
 
 
-### åŸºç¡€ 
+### »ù´¡ 
 #### Scala
 
 #### AKKA
@@ -259,16 +259,16 @@ object LocalAKKA {
 
     override def receive: Receive = {
       case HiMsg(msg) => log.warning(" msg:" + msg + " FROM " + sender.path + " TO  " + self.path)
-        //åˆ›å»ºä¸€ä¸ªæ–°çš„Actor,æ³¨æ„ä¸¤ç§æ–¹å¼åˆ›å»ºçš„Actorçš„è·¯å¾„
+        //´´½¨Ò»¸öĞÂµÄActor,×¢ÒâÁ½ÖÖ·½Ê½´´½¨µÄActorµÄÂ·¾¶
         //val actor2 = system.actorOf(Props[MsgActor], name = "actor2")
         val actor2  = context.actorOf(Props[MsgActor], name = "actor2")
 
         actor2 ! new GoodMsg("good news")
 
       case GoodMsg(msg) => log.warning(" msg:" + msg + " FROM " + sender.path + " TO  " + self.path)
-        //ç»™å‘é€è€…è¿”å›ä¸€ä¸ªæ¶ˆæ¯ï¼Œå‘é€å®Œæ¯•åå…³é—­ç³»ç»Ÿ
+        //¸ø·¢ËÍÕß·µ»ØÒ»¸öÏûÏ¢£¬·¢ËÍÍê±Ïºó¹Ø±ÕÏµÍ³
         sender ! "$$$$$$$!"
-        // æ¶ˆæ¯æ¥æ”¶å®Œæ¯•åæ‰ä¼šå…³é—­ç³»ç»Ÿ
+        // ÏûÏ¢½ÓÊÕÍê±Ïºó²Å»á¹Ø±ÕÏµÍ³
         system.shutdown()
 
       case _ => log.warning("unknow msg:" + " FROM " + sender.path + " TO  " + self.path)
@@ -283,7 +283,7 @@ object LocalAKKA {
   def main(args: Array[String]) {
     //val system = ActorSystem("testakka")
 
-    //åŒä¸€çº§åˆ«çš„actorçš„åå­—ä¸èƒ½é‡å¤ï¼Œä¸”ä¸èƒ½ç”¨$å¼€å¤´ 
+    //Í¬Ò»¼¶±ğµÄactorµÄÃû×Ö²»ÄÜÖØ¸´£¬ÇÒ²»ÄÜÓÃ$¿ªÍ· 
     //Actors are automatically started asynchronously when created
     val actor1 = system.actorOf(Props[MsgActor], name = "actor1")
     //val actor2 = system.actorOf(Props[MsgActor],name="actor2")
@@ -306,13 +306,17 @@ RemoteAKKA
 
 
 
-å¦‚æœä¸€ä¸ªActoræœ‰å¤šä¸ªå±æ€§ï¼Œå¯ä»¥é€šè¿‡å¦‚ä¸‹æ–¹å¼è®¾ç½®å…¶å€¼ï¼š
-å‘é€é€‚å½“çš„æ¶ˆæ¯
-æ”¾åˆ°æ„é€ å‡½æ•°ä¸­
-é‡å†™preStartæ–¹æ³•
+Èç¹ûÒ»¸öActorÓĞ¶à¸öÊôĞÔ£¬¿ÉÒÔÍ¨¹ıÈçÏÂ·½Ê½ÉèÖÃÆäÖµ£º
+·¢ËÍÊÊµ±µÄÏûÏ¢
+·Åµ½¹¹Ôìº¯ÊıÖĞ
+ÖØĞ´preStart·½·¨
 
 
 http://my.oschina.net/jingxing05/blog/287462
+
+
+http://www.jianshu.com/p/bc1e9755143e
+
 
 
 
