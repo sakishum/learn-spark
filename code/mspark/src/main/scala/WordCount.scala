@@ -23,14 +23,13 @@ object WordCount {
 
     val sc = new SparkContext(conf)
 
-
-    //TODO:Mac上虚拟机是桥接模式，为什么可以直接连接调试程序？不用sc.jar
+    //FIXME：修改成相对路径
     sc.addJar("E:\\workspace\\learn-spark\\code\\mspark\\target\\mspark-1.0-SNAPSHOT.jar")
      println("==========================sparkcontext ==========================")
 
     //TODO：文件是本地文件时应该在什么位置？driver?还是所有worker上?文件是如何分发的
     //val rdd = sc.textFile("/opt/spark/CHANGES.txt")
-
+    println("这一步应该还没有连接到master吧？====================")
     val rdd = sc.textFile("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/CHANGES.txt")
 
     //Note: collect()  Return all the elements of the dataset as an array at the driver program. This is usually useful after a filter or other operation that returns a sufficiently small subset of the data.

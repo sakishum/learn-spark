@@ -130,8 +130,9 @@ http://www.iteblog.com/archives/1223
 
 
 
-
+## 其它
+1. IDEA中调试Driver程序
 IDEA中调度程序时需要加入
 sc.addJar("xxx.jar")
 可以在IDEA中设置一下，运行前package一下
-maven中scala是不会被compile和package的，**需要加插件**
+另外：maven中scala代码是不会被compile和package的，**需要加插件**

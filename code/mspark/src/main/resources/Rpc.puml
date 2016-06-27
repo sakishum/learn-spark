@@ -1,0 +1,10 @@
+@startuml
+
+abstract class RpcEnv
+class AkkaRpcEnv
+
+RpcEnv <|-- AkkaRpcEnv
+
+
+
+@enduml

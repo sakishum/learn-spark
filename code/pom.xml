@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.migle.hadoop</groupId>
-    <artifactId>mspark-main</artifactId>
+    <groupId>me.migle.code</groupId>
+    <artifactId>mcode</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <properties>
@@ -15,16 +15,47 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>
-
+<!--
+<profiles>
+    <profile>
+        <id>scala-2.11</id>
+        <activation>
+            <property><name>scala-2.11</name></property>
+        </activation>
+        <properties>
+            <scala.version>2.11.7</scala.version>
+            <scala.binary.version>2.11</scala.binary.version>
+        </properties>
+    </profile>
+</profiles>
+-->
     <modules>
         <module>mhive</module>
         <module>mhdfs</module>
         <module>myarn</module>
         <module>mspark</module>
+        <module>makka</module>
         <module>jbase</module>
+
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                </plugin>
+
+                <plugin>
+                    <!--[scala-maven-plugin](http://davidb.github.io/scala-maven-plugin/plugin-info.html)-->
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -40,6 +71,28 @@
                         <arg>-Xlint:all,-serial,-path</arg>
                     </compilerArgs>-->
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <!--[maven lifecycle](http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html)-->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <!--<execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>-->
+                </executions>
             </plugin>
         </plugins>
     </build>
