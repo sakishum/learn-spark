@@ -90,10 +90,11 @@ SparkUI启动
          _taskScheduler.start()
 
 createTaskScheduler中根据不同的部署（Master URL）方式生成不同的SchedulerBackend和TaskScheduler的组合
+- [ ] 调用backend的的start方法，SparkCluster时，先通过AppClient进行ClientPoint,ClientPoint的preStart方法又调用AppClient的onstart方法，onstart中调用注册Master,注册后向Master发送RegisterApplication
+Master通过rpc给Driver发送RegisteredApplication，作业开状态成RUNNING
 
 - [ ] Job划分stage
 - [ ] Task分配算法
-
 #### TaskSchedulerImpl
 
 taskScheduler.start()

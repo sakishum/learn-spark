@@ -33,9 +33,12 @@ object LocalAKKA {
       case _ => log.warning("unknow msg:" + " FROM " + sender.path + " TO  " + self.path)
     }
 
+
+
     override def postStop(): Unit = {
       println("post stop:" + self.path)
     }
+
 
   }
 
