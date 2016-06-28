@@ -1,20 +1,30 @@
-#standlone
-1. 创建slaves文件，添加worker节点
-2. 复制spark到其它节点
-3. ./sbin/start-all.sh  启动master及worker
-4. 启动成功后可以在http://vm-centos-00:8080/查看集群信息
+##TODO list
+- [x] standlone环境搭建
+- [x] 完成wordcount程序
+- [ ] IDEA中调试Driver程序,跟踪分析Driver程序执行过程
+- [x] RPC
+- [ ] 序列化
+- [ ] master分析
+- [ ] worker分析
+- [ ] Spark内存管理
+- [ ] on yarn分析 
+- [ ] RDD创建 
+- [ ] Job划分stage
+- [ ] Task分配算法
 
-- [x]  spark-sql on hive
-复制hive-site.xml到spark的conf目录下
-spark-env.sh中添加`export SPARK_CLASSPATH=$HIVE_HOME/lib/mysql-connector-java-5.1.38-bin.jar:$SPARK_CLASSPATH`
-./spark-shell运行
+>>第一步大致流程，关键类
+>>第二步较粗的实现细节
+>>第三步骤具体实现细节
 
-show tables;
-select acc_nbr ,sum(g4_flow) from dw_gprs_flow group by acc_nbr limit 10;
-.......
->>日志特别多，可以修改log4j.properites文件中的日志级别
-- [ ] spark-sql on hive 运行在 yarn模式下
-- [ ] spark-shell 运行在yarn模式下
+数据文件需要在每个节点上都有？
+launcherBackend 和 launcherServer?s
+broadcast
+
+
+## 其它
+### AKKA
+- [ ] RemoteAKKA
+
 
 <property>
 <name>yarn.scheduler.minimum-allocation-mb</name>
@@ -130,9 +140,3 @@ http://www.iteblog.com/archives/1223
 
 
 
-## 其它
-1. IDEA中调试Driver程序
-IDEA中调度程序时需要加入
-sc.addJar("xxx.jar")
-可以在IDEA中设置一下，运行前package一下
-另外：maven中scala代码是不会被compile和package的，**需要加插件**

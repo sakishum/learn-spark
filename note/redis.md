@@ -11,8 +11,24 @@ make
 2. 客户端：`src/redis-cli`  
 
 ## 数据类型
-- [ ] TODO
+- [ ] strings
+- [ ] hashes 
+- [ ] lists 
+- [ ] sets
+- [ ] orted sets  
+- [ ] bitmaps 
+- [ ] hyperloglogs 
+- [ ] geospatial indexes 
+ 
 ## API
+
 - [ ] TODO
+
+
 ## 分布式
 - [ ] TODO
+
+## 集群:hash环
+
+
+## 配置

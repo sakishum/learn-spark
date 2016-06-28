@@ -55,6 +55,7 @@ N个构造函数 ......
     _env = createSparkEnv(_conf, isLocal, listenerBus)
     SparkEnv.set(_env)
 
+rpcenv!!
 
 ###  SparkUI
 SparkUI启动
@@ -89,34 +90,24 @@ SparkUI启动
          // constructor
          _taskScheduler.start()
 
+taskScheduler.start()实际是调用了SchedulerBackend.start()来完成任务
+而SchedulerBackend.start()会根据不同的部署方式处理方式不同，Local方式只是创建了Actor
+而集群方式还会有AppClient.start(),向Master注册 **Master.RegisterApplication**
 createTaskScheduler中根据不同的部署（Master URL）方式生成不同的SchedulerBackend和TaskScheduler的组合
-- [ ] 调用backend的的start方法，SparkCluster时，先通过AppClient进行ClientPoint,ClientPoint的preStart方法又调用AppClient的onstart方法，onstart中调用注册Master,注册后向Master发送RegisterApplication
+
+在Spark standlone环境中SchedulerBackend的start方法时，先通过AppClient进行ClientEndPoint,ClientEndPoint的preStart方法又调用AppClient的onstart方法，onstart中调用注册Master,注册后向Master发送RegisterApplication
 Master通过rpc给Driver发送RegisteredApplication，作业开状态成RUNNING
+
+
 
 - [ ] Job划分stage
 - [ ] Task分配算法
 #### TaskSchedulerImpl
 
-taskScheduler.start()
-
-此方法实际是调用了SchedulerBackend.start()来完成任务
-而SchedulerBackend.start()不同的部署方式处理方式不同，Local方式只是创建了Actor
-而集群方式还会有AppClient.start(),向Master注册 **Master.RegisterApplication**
-
-APPClient
-
-  def tryRegisterAllMasters() {
-      for (masterUrl <- masterUrls) {
-        logInfo("Connecting to master " + masterUrl + "...")
-        val actor = context.actorSelection(Master.toAkkaUrl(masterUrl))
-        actor ! RegisterApplication(appDescription)
-      }
-    }
 
 
-**AKKA的Actor的preStart()**
 
-*大量的AKKA的使用，SO，AKKA先搞熟练* 
+
 
 
 
@@ -214,12 +205,6 @@ SparkEnv.RpcEnv
 
 
 
-
-
-
-
-
-
 ## DAGScheduler
 
 
@@ -230,38 +215,15 @@ SparkContext.runJob
 
 
 
-## RPC
-SparkEnv创建RpcEnv,
-RpcEnv相当于容器，RpcEndpoint注册其中，通过RpcEndpointRef对其进行消息发送
-RpcEndpointRef\RpcEndpoint\RpcEnv
-
-  private def getRpcEnvFactory(conf: SparkConf): RpcEnvFactory = {
-    val rpcEnvNames = Map(
-      "akka" -> "org.apache.spark.rpc.akka.AkkaRpcEnvFactory",
-      "netty" -> "org.apache.spark.rpc.netty.NettyRpcEnvFactory")
-    val rpcEnvName = conf.get("spark.rpc", "netty")
-    val rpcEnvFactoryClassName = rpcEnvNames.getOrElse(rpcEnvName.toLowerCase, rpcEnvName)
-    Utils.classForName(rpcEnvFactoryClassName).newInstance().asInstanceOf[RpcEnvFactory]
-  }
 
 
 
-## TODO  
-### broadcast
-
-
-
-### 基础 
-#### Scala
-
-#### AKKA
-
-- [ ] RemoteAKKA
-
-
-
-
-
+## 其它
+1. IDEA中调试Driver程序
+IDEA中调度程序时需要加入
+sc.addJar("xxx.jar")
+可以在IDEA中设置一下，运行前package一下
+另外：pom.xml中需要添加scala插件
 
 
 如果一个Actor有多个属性，可以通过如下方式设置其值：

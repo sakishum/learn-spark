@@ -15,5 +15,6 @@ object app{
     val st = new ScalaTest
     println(st._jars.get)
     println("===========================")
+    println(st.jars.get)
   }
 }
