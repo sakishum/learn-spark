@@ -1,7 +1,9 @@
 
 vim config/server.properties
 
-修改：zookeeper.connect=vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181
+修改：
+broker.id=1
+zookeeper.connect=vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181
 
 启动：
 bin/kafka-server-start.sh config/server.properties
@@ -19,6 +21,18 @@ bin/kafka-console-producer.sh --broker-list vm-centos-00:9092   --topic kafkates
 
 启动consumer
 bin/kafka-console-consumer.sh --zookeeper   vm-centos-01:2181 --from-beginning --topic kafkatest
+
+## 集群
+scp -r /opt/kafka_2.11-0.9.0.1 vm-centos-01:/opt/
+vim config/server.properties
+修改：
+broker.id=2
+
+启动
+
+
+##JAVA
+**注意server与Consumer、Producer版本的兼容！！！**
 
 
 http://www.infoq.com/cn/articles/apache-kafka/
