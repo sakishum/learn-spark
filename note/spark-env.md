@@ -10,3 +10,8 @@
 3. ./sbin/start-all.sh  启动master及worker
 4. 启动成功后可以在http://vm-centos-00:8080/查看集群信息
 
+
+##Hadoop Native警告
+>>WARN NativeCodeLoader: Unable to load native-hadoop library for your platfor
+
+`export LD_LIBRARY_PATH=/opt/hadoop-2.6.4/lib/native/:$LD_LIBRARY_PATH`

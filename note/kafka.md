@@ -6,6 +6,7 @@ broker.id=1
 zookeeper.connect=vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181
 
 启动：
+>>先启动zk集群
 bin/kafka-server-start.sh config/server.properties
 
 创建一个topic
