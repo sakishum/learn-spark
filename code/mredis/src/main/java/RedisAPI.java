@@ -1,5 +1,7 @@
 import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.ScanResult;
 
 import java.util.*;
 
@@ -120,6 +122,18 @@ public class RedisAPI {
         //hincrByFloat key f1 increment
         jedis.hincrBy("redis", "maxclients", 100L);
         jedis.hincrByFloat("redis", "version", 0.1);
+
+
+//key cursor [MATCH pattern] [COUNT count]
+        ScanResult<Map.Entry<String, String>> scan ;
+        String cursor="0";
+        do {
+
+            scan = jedis.hscan("redis", cursor);
+            scan.getResult().forEach(k -> System.out.println(k.getKey()+":"+k.getValue()));
+            cursor = scan.getStringCursor();
+        }while(!cursor.equals("0"));
+
     }
 
     /**
@@ -129,7 +143,7 @@ public class RedisAPI {
         //lpush key e1  //列表头增加，key不存在时新增key
         //lpushx key e1  //key存在时列表头增加，不存在时不做操作
         jedis.lpush("users", "u1");
-        jedis.lpushx("users","u1");
+        jedis.lpushx("users", "u1");
 
         //rpush key e2  //列表尾增加，key不存在时新增key
         //rpushx key e1  //key存在时列表尾增加，不存在时不做操作
@@ -138,7 +152,7 @@ public class RedisAPI {
 
 
         //lset key index value //通过索引设置列表元素的值
-        jedis.lset("users",2,"ux");
+        jedis.lset("users", 2, "ux");
 
         //rpop key  //移除并且返回key对应list的最后一个元素
         //lpop key  //移除并且返回key对应list的第一个元素
@@ -148,9 +162,9 @@ public class RedisAPI {
         jedis.lpop("users");
 
         //rpoplpush source destination //从列表中弹出一个值，将弹出的元素插入到另外一个列表头中并返回它
-        jedis.rpoplpush("users","users2");
+        jedis.rpoplpush("users", "users2");
         //brpoplpush source destination timeout  //同rpoplpush，但如果源列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。
-        jedis.brpoplpush("users","users2",5);
+        jedis.brpoplpush("users", "users2", 5);
 
 
         //llen users
@@ -160,27 +174,189 @@ public class RedisAPI {
         jedis.lindex("users", 0);
 
         //index key start stop   //获取指定范围的元素
-        jedis.lrange("users",2,10);
+        jedis.lrange("users", 2, 10);
 
         //linsert key BEFORE|AFTER pivot value   //在第一次找到pivot的前或后插入指定元素，如果没找到pivot不做操作
         // linsert users BEFORE u3 u10
-        jedis.linsert("users", BinaryClient.LIST_POSITION.BEFORE,"u3","u10");
+        jedis.linsert("users", BinaryClient.LIST_POSITION.BEFORE, "u3", "u10");
 
         //ltrim key start stop  //删除范围外的元素，仅保留[start,stop]范围内的元素。范围是闭区间！
-        jedis.ltrim("users",3,6);
+        jedis.ltrim("users", 3, 6);
 
         //lrem key count value   //删除最多count个值为value的元素; count大于0从表头搜索，小于0从表尾搜索，等于0全部删除
-        jedis.lrem("users",-1,"u3");
+        jedis.lrem("users", -1, "u3");
 
     }
 
-    private static void aboutSet(Jedis jedis){
+    /**
+     * set的基本操作
+     */
+    private static void aboutSet(Jedis jedis) {
+        //sadd key member [member ...]  //添加一个或者多个元素到集合(set)里
+        jedis.sadd("set1", "e1", "e2","e3","e4","e5");
+        jedis.sadd("set2", "s1", "s2","s3","s4","s5");
+        //scard key //获取集合里面的元素数量
+        jedis.scard("set1");
+
+        //smembers key //获取集合里面的所有元素
+        jedis.smembers("set1").forEach(e -> System.out.println(e));
+
+        //sismember key member //给定的元素是否该集合中的成员
+        System.out.println(jedis.sismember("set1", "e1"));
+
+        //spop key [count]     //删除并获取一个集合里面的元素
+        jedis.spop("set1");
+
+        //srem key member [member ...]  //从集合里删除一个或多个元素
+        jedis.srem("set1", "e1", "s0");
+
+        //sdiff key [key ...] //返回给定集合的差集
+        jedis.sdiff("set1", "set2");
+
+        //sdiffstore destination key [key ...] //回给定集合的差集,存在一个新的集合中，新集合如果存在会被覆盖
+        jedis.sdiffstore("set3", "set1", "set2");
+
+        //sinter key [key ...] //返回给定集合的交集
+        jedis.sinter("set1", "set2");
+
+        //sinterstore destination key [key ...] //获得两个集合的交集，并存储在一个关键的结果集
+        jedis.sinterstore("set4", "set1", "set2");
+
+
+        //sunion key [key ...] //返回给定集合的并集
+        jedis.sunion("set1", "set2");
+        //sunionstore destination key [key ...] //合并set元素，并将结果存入新的set里面
+        jedis.sunionstore("set1", "set3");
+
+        //smove source destination member //移动集合里面的一个key到另一个集合
+        jedis.smove("set1","set2","e5");
+
+        //srandmember key [count] //从集合里面随机获取一个key
+        jedis.srandmember("set1",5);
+
+        //sscan key cursor [MATCH pattern] [COUNT count] //迭代set里面的元素
+        ScanResult<String> scan ;
+        String cursor="0";
+        do {
+
+            scan = jedis.sscan("set2",cursor);
+            scan.getResult().forEach(key -> System.out.println(key));
+            cursor = scan.getStringCursor();
+        }while(!cursor.equals("0"));
+    }
+
+    /**
+     * sorted set的基本操作
+     */
+    public static void aboutZset(Jedis jedis) {
+        //ZADD key [NX|XX] [CH] [INCR] score member [score member ...] 向有序集合添加一个或多个成员，或者更新已存在成员的分数
+         jedis.zadd("zset1", 0.1, "ze1");
+        Map<String, Double> membs = new HashMap<>();
+        membs.put("ze2",0.2);
+        membs.put("ze3",0.2);
+        membs.put("ze4",0.3);
+        jedis.zadd("zset1",membs);
+
+        //zcard key 获取有序集合的成员数
+        jedis.zcard("zset1");
+
+        //zcount key min max 计算在有序集合中指定分数区间的成员数
+        jedis.zcount("zset1",0.1,0.2);
+
+        //zlexcount key min max //计算在有序集合指定字典区间内成员数量
+        //字典顺序在[ze0,ze5)之前的元素个数
+        jedis.zlexcount("zet1","[ze0","(ze5");
+
+        //zincrby key increment member  返回有序集拿中成员的分数值
+        jedis.zscore("zset1","ze2");
+
+        //zincrby zset1 2.0 ze1   //有序集合中对指定成员的分数加上增量 increment
+        jedis.zincrby("zset1",1.5,"ze1");
+
+        //zrank key member // 返回有序集合中指定成员的索引，有序集成员按分数值递减(从小到大)排序
+        jedis.zrank("zset1","ze5");
+
+        //zrevrank key member // 返回有序集合中指定成员的排名，有序集成员按分数值递减(从大到小)排序
+        jedis.zrevrank("zset1","ze2");
+
+
+        //zrange  key start stop  [withscores]//根据索引区间返回指定区间内的成员,可选参数WITHSCORES会返回元素和其分数，而不只是元素
+        //start 和 stop 都以 0 为底，也就是说，以 0 表示有序集第一个成员，以 1 表示有序集第二个成员，以此类推。
+        //负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。
+
+        jedis.zrange("zset1",0,5);
+        //zrangebylex key min max     //根据字典区间返回有序集合的成员，"(","["
+        jedis.zrangeByLex("zset1","[z","[zz");
+
+        //zrangebyscore key min max //根据分数返回有序集合指定区间内的成员   //低到高
+        jedis.zrangeByScore("zset1",0,5);
+        //zrevrangebyscore key min max //根据分数返回有序集合指定区间内的成员  //高到低
+        jedis.zrevrangeByScore("zset1",5,0);
+
+        //zrem key member [member ...] 移除有序集合中的一个或多个成员
+        jedis.zrem("zset1","ze5");
+
+        //zremrangebylex key min max 移除有序集合中给定的字典区间的所有成员
+        jedis.zremrangeByLex("zset1","[z","[zz");
+
+        //zremrangebyrank key start stop 移除有序集合中给定的排名区间的所有成员
+        jedis.zremrangeByRank("zset1",0,5);
+
+        //zremrangebyscore key min max 移除有序集合中给定的分数区间的所有成员
+          jedis.zremrangeByScore("zset1",0.2,1.5) ;
+
+        //zinterstore destination numkeys key [key ...]
+        //zinterstore zset3 2 zset1 zset2   //计算交集并存到一个新的有序集合中，新集合中元素的分数为此元素在各个原集合中分数之和
+        jedis.zinterstore("zset3","zset1","zset2");    //todo
+
+        //ZUNIONSTORE destination numkeys key [key ...] [WEIGHTS weight] [AGGREGATE SUM|MIN|MAX]  //todo
+        //zunionstore zset9 2 zset1 zset8  //zset1、zset8的并集存入zset9,分数相加
+        jedis.zunionstore("zset9","zset1","zset8");
+        //zscan zset1 0
+        //jedis.zscan()
+
+    }
+
+    /***
+     * HyperLogLog
+     */
+    /***
+     * pubsub
+     *
+     *
+     *
+     * // PUBSUB CHANNELS
+     * //PSUBSCRIBE pattern [pattern ...] Psubscribe 命令订阅一个或多个符合给定模式的频道
+     */
+    public static void aboutSub(Jedis jedis){
+        //subscribe channel
+        jedis.subscribe(new JedisPubSub() {
+            @Override
+            public void onMessage(String channel, String message) {
+                System.out.println(message);
+            }
+        },"chan1");
+    }
+
+    public static void aboutPub(Jedis jedis){
+        for (int i = 0 ; i<10; i++){
+            //publish channel message
+            jedis.publish("chan1","hello jedis" + i);
+            try {
+                Thread.sleep(10000);
+                System.out.println(i);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
     public static void main(String[] args) {
         Jedis jedis = new Jedis(REDIS_HOSTS.get(0));
-
+        jedis.auth("redispass");
+        //jedis.pipelined();
         //ping
-        System.out.println(jedis.ping());
+       // System.out.println(jedis.ping());
 
         //client setname clientname 命令设置的服务名称, **有什么用呢？**
         //jedis.clientSetname("java client");
@@ -208,7 +384,21 @@ public class RedisAPI {
 //        //key pattern
 //        //查找所有符合给定模式( pattern)的key
 //        jedis.keys("n*");
-//
+
+        //scan 命令及其相关的 sscan, hscan 和 zscan 命令都用于增量迭代一个集合元素
+        //http://www.redis.cn/commands/scan.html
+       //这四个命令都支持增量式迭代，它们每次执行都只会返回少量元素，所以这些命令可以用于生产环境，而不会出现像 KEYS 或者 SMEMBERS 命令带来的可能会阻塞服务器的问题
+        // cursor 设为0时表示开始新一次的迭代，返回0时代表迭代结束
+        //返回值都是一个两个元素的数据，第一个元素是为0时代表迭代结束，第二个元素是结果数据组
+//        ScanResult<String> scan ;
+//        String cursor="0";
+//        do {
+
+//            scan = jedis.scan(cursor);
+//            scan.getResult().forEach(key -> System.out.println(key));
+//            cursor = scan.getStringCursor();
+//        }while(!cursor.equals("0"));
+
 //        //persist key
 //        // 移除在key上的过期时间限制
 //        jedis.persist("tt");
@@ -237,11 +427,17 @@ public class RedisAPI {
         //move key 1 //将当前数据库的key移动到指定的数据库当中
         //select 用来选择数据库，redis默认为0
         // jedis.move("key",1);
-
+        //info   //redis服务器的统计信息
+        System.out.println(jedis.info());
 
         //aboutString(jedis);
         //aboutHash(jedis);
-        aboutList(jedis);
+        //aboutList(jedis);
+        //aboutSet(jedis);
+        //aboutZset(jedis);
+        //aboutSub(jedis);
+        //aboutPub(jedis);
+        //jedis.close();
 
     }
 }
