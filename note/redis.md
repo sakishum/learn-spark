@@ -76,14 +76,26 @@ Set是string类型的无序集合。集合成员是唯一的，不能有重复�
 
 ## 集群&&分布式
 - [ ] TODO
-
-##分区
-
-:hash环
+[Redis 集群方案介绍了](http://www.open-open.com/lib/view/open1465520425935.html)
 
 
-## 配置
 
+##主从复制
+修改slave配置文件redis.con添加如下内容：
+```
+# slaveof <masterip><masterport>
+slaveof  192.168.99.130  6379
+#如果master需要需要密码认证时
+#masterauth <password>
+masterauth   redispass
+```
+启动slave后进行难，在master中写，slave中读取
+<http://redis.cn/topics/replication.html>
+
+###客户端分片
+一致性HASH
+http://blog.jobbole.com/102630/
+http://blog.jobbole.com/80334/
 
 ## 参考资料
 1. [redis 教程](http://www.redis.net.cn/tutorial/3501.html)
