@@ -14,6 +14,7 @@ public class SocketClient {
             int len = ins.read(buf);
             System.out.println(new String(buf,0,len));
         }
+        
 
     }
 }

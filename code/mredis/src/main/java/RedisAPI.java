@@ -1,15 +1,13 @@
-import redis.clients.jedis.BinaryClient;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
  * Created by migle on 2016/6/28.
  */
 public class RedisAPI {
-    private final static List<String> REDIS_HOSTS = Arrays.asList("vm-centos-00");
+
 
     /**
      * string的基本操作
@@ -30,6 +28,10 @@ public class RedisAPI {
         //getset title m899
         //设置成新值并返回旧值，没旧值时(key不存在时)返回nil
         jedis.getSet("title", "m899");
+
+        //jedis.set("name-cn".getBytes(),"亚信".getBytes("utf-8"));
+
+        //System.out.println(jedis.get("name-cn"));
 
         //mget name title
         jedis.mget("name", "title");
@@ -338,6 +340,43 @@ public class RedisAPI {
         },"chan1");
     }
 
+
+    public static void aboutPipeline(Jedis jedis){
+        //MNOTE：批量提交，减少网络交互次数
+        Pipeline pl = jedis.pipelined();
+        pl.set("tname","ai");
+        pl.append("tname", ".com.cn");
+        pl.set("tcount","1");
+        pl.incrBy("tcount", 10);
+
+        Response<String> tname = pl.get("tname");
+        Response<String> tcount = pl.get("tcount");
+
+        //System.out.println(tcount.get().get());
+        //System.out.println(pl.get("tname").get());
+        //pipeline中也可以调事务
+        // pl.multi()
+
+        System.out.println("-----0------");
+        pl.sync();
+        System.out.println("-----1------");
+        System.out.println(tname.get());
+        System.out.println(tcount.get());
+       // pl.syncAndReturnAll().forEach(x-> System.out.println(x));
+
+    }
+
+    public static void aboutTrans(Jedis jedis){
+
+            Transaction tx = jedis.multi();  //事务开始
+            for (int i = 0; i < 100000; i++) {
+                tx.set("t" + i, "t" + i);
+                 //在客户端中查看
+            }
+            List<Object> res = tx.exec();   //提交执行
+
+    }
+
     public static void aboutPub(Jedis jedis){
         for (int i = 0 ; i<10; i++){
             //publish channel message
@@ -351,9 +390,27 @@ public class RedisAPI {
         }
 
     }
-    public static void main(String[] args) {
-        Jedis jedis = new Jedis(REDIS_HOSTS.get(0));
+    public static void main(String[] args) throws UnsupportedEncodingException {
+
+//    一致性hash实现的分布式
+//        JedisShardInfo host1 =  new JedisShardInfo("192.168.99.130",6379);
+//        JedisShardInfo host2 =  new JedisShardInfo("192.168.99.131",6379);
+//        host1.setPassword("redispass");
+//        host2.setPassword("redispass");
+//        List<JedisShardInfo> shards = Arrays.asList(host1,host2);
+//
+//       ShardedJedis jedis = new ShardedJedis(shards);
+//
+//        long start = System.currentTimeMillis();
+//        for(int i = 0 ; i<=100000; i++){
+//            jedis.set("sn"+i,"value-" +i);
+//        }
+//        System.out.println(System.currentTimeMillis() - start);
+
+
+        Jedis jedis = new Jedis("192.168.99.130");
         jedis.auth("redispass");
+
         //jedis.pipelined();
         //ping
        // System.out.println(jedis.ping());
@@ -428,7 +485,8 @@ public class RedisAPI {
         //select 用来选择数据库，redis默认为0
         // jedis.move("key",1);
         //info   //redis服务器的统计信息
-        System.out.println(jedis.info());
+        //System.out.println(jedis.info());
+
 
         //aboutString(jedis);
         //aboutHash(jedis);
@@ -437,7 +495,21 @@ public class RedisAPI {
         //aboutZset(jedis);
         //aboutSub(jedis);
         //aboutPub(jedis);
-        //jedis.close();
+        // aboutPipeline(jedis);
+
+
+        //aboutTrans(jedis);
+
+
+//        Pipeline pl = jedis.pipelined();
+//        long start = System.currentTimeMillis();
+//        for(int i = 0 ; i<1000000; i++){
+//            pl.set("sn"+i,"value-" +i);
+//        }
+//        pl.sync();
+//        System.out.println(System.currentTimeMillis() - start);
+
+        jedis.disconnect();
 
     }
 }
