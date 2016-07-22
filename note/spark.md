@@ -81,21 +81,20 @@ broadcast
 
 
 
- bin/spark-submit \
- --class "SparkPi" \
- --master spark://vm-centos-00:7077 \
-testjar/mspark-1.0-SNAPSHOT.jar
+bin/spark-submit --class "StreamWordCount"  --master spark://vm-centos-00:7077  ./testjar/mspark-1.0-SNAPSHOT.jar
+
+bin/spark-submit --class "StreamWordCount"  --master spark://vm-centos-00:7077  --executor-cores 1  --driver-memory 300m --executor-memory 200m  --num-executors 1  --conf spark.testing=100  ./testjar/mspark-1.0-SNAPSHOT.jar vm-centos-02 22222
+     \
+     \
+    \
+    \
 
 
 
+bin/spark-submit --class "StreamWordCount"  --master local[4]  ./testjar/mspark-1.0-SNAPSHOT.jar localhost 9999
 
-
-
-
-
-
-
-
+bin/spark-submit --class org.apache.spark.examples.streaming.NetworkWordCount --master spark://vm-centos-00:7077 spark-examples*.jar  localhost 9999 
+ 
 
 ./bin/spark-shell --master yarn  --deploy-mode client --executor-memory 100m  --driver-memory 200m --executor-cores 1
 ./spark-shell --master yarn  --deploy-mode cluster --executor-memory 1g --driver-memory 1g  --executor-cores 1

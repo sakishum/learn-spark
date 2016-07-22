@@ -94,6 +94,7 @@ Set是string类型的无序集合。集合成员是唯一的，不能有重复�
 ```
 2. 代码示例： 
 >>Jedis的方法名和redis的命令名及参数几乎一样。
+>>完整示例请查看<./code/mredis/src/main/java/RedisAPIDemo.java>
 ```
         Jedis jedis = new Jedis("192.168.99.130",6379);
         //List<JedisShardInfo> shards = Arrays.asList(
@@ -186,10 +187,10 @@ masterauth   redispass
         jedis.disconnect();
 ```
 
-http://blog.jobbole.com/102630/
-http://blog.jobbole.com/80334/
+
 
 ## 参考资料
 1. [redis 教程](http://www.redis.net.cn/tutorial/3501.html)
 2. [redis数据类型介绍](http://www.redis.cn/topics/data-types-intro.html)
 3. [Redis 大量数据插入](http://www.redis.cn/topics/mass-insert.html)
+4. [五分钟理解一致性哈希算法](http://blog.jobbole.com/102630/)

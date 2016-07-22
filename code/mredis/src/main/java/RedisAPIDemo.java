@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * Created by migle on 2016/6/28.
  */
-public class RedisAPI {
+public class RedisAPIDemo {
 
 
     /**
@@ -407,7 +407,7 @@ public class RedisAPI {
 //        }
 //        System.out.println(System.currentTimeMillis() - start);
 
-
+        //普通客户端
         Jedis jedis = new Jedis("192.168.99.130");
         jedis.auth("redispass");
 
@@ -486,8 +486,6 @@ public class RedisAPI {
         // jedis.move("key",1);
         //info   //redis服务器的统计信息
         //System.out.println(jedis.info());
-
-
         //aboutString(jedis);
         //aboutHash(jedis);
         //aboutList(jedis);
@@ -496,11 +494,7 @@ public class RedisAPI {
         //aboutSub(jedis);
         //aboutPub(jedis);
         // aboutPipeline(jedis);
-
-
         //aboutTrans(jedis);
-
-
 //        Pipeline pl = jedis.pipelined();
 //        long start = System.currentTimeMillis();
 //        for(int i = 0 ; i<1000000; i++){

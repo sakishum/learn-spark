@@ -8,3 +8,8 @@ sync_hook.script
 **/.idea
 *.iml
 target/
+
+
+code/lang-base/src/main/java/com/asisinfo/ds/*
+code/o.dat
+code/test.txt

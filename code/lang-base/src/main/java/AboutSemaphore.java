@@ -1,8 +1,6 @@
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by migle on 2016/6/27.
@@ -11,7 +9,7 @@ public class AboutSemaphore {
     private  static int cnt = 0;
 
     public static void main(String[] args) {
-        ReentrantLock
+
         Semaphore semaphore = new Semaphore(1);
 
         ExecutorService exec = Executors.newCachedThreadPool();
