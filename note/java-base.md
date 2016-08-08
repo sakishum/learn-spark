@@ -42,7 +42,9 @@ Integer的拆箱、装箱
 
 
 
-
+##多线程
+//TODO
+Semaphore和Lock的不同
 
 
 http://www.hollischuang.com/archives/489?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io
@@ -58,9 +60,55 @@ http://www.codeceo.com/article/133-java-interview-5-years.html
         
 
 
+##SecurityManager
+http://www.importnew.com/9751.html
+
+##jdk自带工具
+###jar
+创建可执行jar包  
+`jar cvfm x.jar MANIFEST.MF .`
+*MANIFEST.MF*为清单文件内容类似以下：
+
+```
+Manifest-Version: 1.0
+Main-Class: ClassPath
+
+```
+
+执行 `java -jar x.jar`  
+
+
+
 java题纲
 http://www.codeceo.com/article/201-java-interview-qa.html
 
 
 重点：
 http://www.importnew.com/14630.html
+
+
+
+
+
+import sun.net.ftp.FtpClient;
+import sun.net.ftp.FtpProtocolException;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class FTPUploader {
+   //static String host="10.95.66.80";
+   //static String username="ocdc";
+  // static String pwd="llixsx15@)";
+    static String host="192.168.99.130";
+    static String username="migle";
+    static char[] pwd="iammigle".toCharArray();
+
+    public static void main(String[] args) throws IOException, FtpProtocolException {
+        FtpClient ftp = FtpClient.create(host);
+        ftp.login(username,pwd);
+        ftp.setBinaryType();
+        ftp.putFile("/home/migle/test/xxxxx.txt",new FileInputStream("e:/bb.txt"));
+        ftp.close();
+    }
+}

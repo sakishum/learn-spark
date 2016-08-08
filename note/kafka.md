@@ -1,4 +1,11 @@
+##kafka
+Kafka同时支持点到点分发模型（Point-to-point delivery model），多个消费者共同消费队列中某个消息的单个副本，
+以及发布-订阅模型（Publish-subscribe model），即多个消费者接收自己的消息副本
 
+http://www.infoq.com/cn/articles/apache-kafka/
+http://blog.jobbole.com/75328/
+
+##安装配置
 vim config/server.properties
 
 修改：
@@ -31,6 +38,13 @@ broker.id=2
 
 启动
 
+
+
+##体系结构
+kafka的消息分几个层次：
+1. Topic：一类消息，例如page view日志，click日志等都可以以topic的形式存在，kafka集群能够同时负责多个topic的分发
+2. Partition： Topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列。partition中的每条消息都会被分配一个有序的id（offset）。
+3. Message：消息，最小订阅单元
 
 ##JAVA
 **注意server与Consumer、Producer版本的兼容！！！**

@@ -92,9 +92,10 @@ Set是string类型的无序集合。集合成员是唯一的，不能有重复�
             <version>2.8.1</version>
  </dependency>
 ```
-2. 代码示例： 
->>Jedis的方法名和redis的命令名及参数几乎一样。
->>完整示例请查看<./code/mredis/src/main/java/RedisAPIDemo.java>
+2. 代码示例：   
+>>Jedis的方法名和redis的命令名及参数几乎一样。  
+>>完整示例请查看<../code/mredis/src/main/java/RedisAPIDemo.java>
+
 ```
         Jedis jedis = new Jedis("192.168.99.130",6379);
         //List<JedisShardInfo> shards = Arrays.asList(
