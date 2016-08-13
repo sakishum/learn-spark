@@ -6,7 +6,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 /**
  * Created by migle on 2016/8/10.
  */
-object KafkaStreamDist {
+object  KafkaStreamDist {
 def main(args:Array[String]): Unit ={
   val sparkConf = new SparkConf().setAppName("KafkaStreamDist").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
   val ssc = new StreamingContext(sparkConf, Seconds(2))

@@ -7,7 +7,7 @@ import scala.util.Random
 /**
  * Created by migle on 2016/8/10.
  */
-object KafkaProducer {
+object KafkaProducerTest {
 
   def main(args: Array[String]) {
 //    if (args.length < 4) {
