@@ -16,7 +16,7 @@ object OutputToKafka {
     val Array(brokers, messagesPerSec, wordsPerMessage) = param
 
     val sparkConf = new SparkConf().setAppName("KafkaStreamDist").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
-    val ssc = new StreamingContext(sparkConf, Seconds(2))
+    val ssc = new StreamingContext(sparkConf, Seconds(5))
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> Conf.kafka,"group.id"->"test")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
@@ -24,11 +24,9 @@ object OutputToKafka {
 
     //TODO 应该根据topic为选择格式
     messages.map(x => x._2).map(x => {
-     // x.split("\\|").flatMap().toMap
-
-    }).foreachRDD(rdd => {
-      //rdd.foreach()
-    })
+     val a = x.split("\\|")
+      (a(0),a(1),a(2))
+    }).print()
 
 
     //      .foreachRDD(rdd=>{

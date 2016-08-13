@@ -14,7 +14,7 @@ object KafkaTest{
     val x = "hello|spark|streaming"
     val m  = Map()
     for(s<-x.split("\\|")){
-     m + (s->s)
+     //m + (s->s)
     }
 
 
