@@ -16,6 +16,7 @@ public class Output implements Serializable {
         this.topic = topic;
         this.msg = msg;
     }
+    //todo:由传入的函数处理
     public void output(KafkaProducer<String,String> producer){
         System.out.println("send:" + this.msg);
         //ProducerRecord<String, String> record = new ProducerRecord<String, String>(this.topic, null, this.msg);

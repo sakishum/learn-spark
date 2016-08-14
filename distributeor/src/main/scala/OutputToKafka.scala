@@ -1,11 +1,12 @@
 import java.util
 
 import kafka.serializer.StringDecoder
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig}
+
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import redis.clients.jedis.Jedis
+
 import collection.JavaConverters._
 
 /**
@@ -44,8 +45,8 @@ object OutputToKafka {
     //源数据格式解析完毕,判断规则发送数据
     toData.foreachRDD(rdd => {
       rdd.foreachPartition(p => {
-
         p.foreach(line => {
+          import redis.clients.jedis.Jedis
           //初始化redis连接  TODO:连接池
           val jedis = new Jedis("192.168.99.130");
           jedis.auth("redispass");
