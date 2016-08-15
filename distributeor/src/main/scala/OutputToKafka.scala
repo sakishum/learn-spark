@@ -8,7 +8,8 @@ import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 import collection.JavaConverters._
-
+import com.asiainfo.Conf;
+import com.asiainfo.rule.Rule;
 /**
   * Created by migle on 2016/8/12.
   */
@@ -51,10 +52,10 @@ object OutputToKafka {
           val jedis = new Jedis("192.168.99.130");
           jedis.auth("redispass");
           //拉取生效规则,规则在redis中缓存
-          val rules = Set(new Rule("payment_fee eq 10"), new Rule("payment_fee ge 30", "guser1"))
+          val rules = Set(new Rule("payment_fee eq 10"), new Rule("payment_fee ge 30"))
 
           //规则判断,生成最终结果
-          val data = rules.map(rule => rule.rule(line.toMap.asJava, jedis)).filter(e => e != null)
+          val data = rules.map(rule => rule.rule(line.toMap.asJava, jedis)).filter(e=>e.hasData)
 
           //将最终结果写入kafka
           data.foreach(d => {

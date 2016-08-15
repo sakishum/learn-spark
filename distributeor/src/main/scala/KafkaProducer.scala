@@ -3,7 +3,7 @@ import java.util.HashMap
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
 
 import scala.util.Random
-
+import com.asiainfo.Conf;
 /**
  * Created by migle on 2016/8/10.
  */

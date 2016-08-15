@@ -2,11 +2,11 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-
+import com.asiainfo.Conf;
 /**
  * Created by migle on 2016/8/12.
  */
-object OutputToKafka {
+object OutputToKafkaTest {
   def main(args: Array[String]) {
 
     val consumerFrom = Set("topic-1")

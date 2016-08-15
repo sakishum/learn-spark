@@ -1,8 +1,12 @@
 
-import java.util.{HashMap}
-import collection.JavaConverters._
+import java.util.HashMap
+
+import com.asiainfo.Conf
+import com.asiainfo.rule.Rule
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig}
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Jedis
+
+import scala.collection.JavaConverters._;
 object KafkaTest{
   def main(args:Array[String]): Unit ={
 //    (1 to 10).foreach { messageNum =>
@@ -31,7 +35,8 @@ object KafkaTest{
 
 
 
-    val rules =List(new Rule("payment_fee ge 30"),new Rule("payment_fee le 10", "guser1"),new Rule("payment_fee gt 5", "guser1"),new Rule("payment_fee eq 10", "guser1"))
+    //val rules =List(new Rule("payment_fee ge 30"),new Rule("payment_fee le 10", "guser1"),new Rule("payment_fee gt 5", "guser1"),new Rule("payment_fee eq 10", "guser1"))
+    val rules =List(new Rule("payment_fee ge 30"),new Rule("payment_fee le 10"),new Rule("payment_fee gt 5"),new Rule("payment_fee eq 10"))
     val r = rules.map(r=>r.rule(data.toMap.asJava,jedis)) .filter(e=>e != null)
 
     //Producer<String, String> producer = new KafkaProducer<>(props);
