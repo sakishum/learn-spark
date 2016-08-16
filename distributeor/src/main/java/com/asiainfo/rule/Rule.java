@@ -40,6 +40,17 @@ public class Rule implements Serializable {
     private Rule(){
     }
 
+    public boolean validate(){
+        if(isEmpty(ruleid) || isEmpty(eventid) || starttime == null || endtime == null){
+            return false;
+        }
+
+        //TODO 表达式及groupkey的判断
+        return true;
+    }
+    public boolean isEmpty(String s){
+        return s==null || s.isEmpty();
+    }
     private void parse(String rule) {
         if (rule == null || rule.isEmpty()) {
             System.out.println("check your rule !!!!");
@@ -59,6 +70,7 @@ public class Rule implements Serializable {
         this.endtime = r.getEndtime();
 
         //TODO 规则验证!
+        validate();
         //var >=|<=|>|=|< value
         //var in v1,v2,v3
         //var range 50,100
@@ -151,10 +163,6 @@ public class Rule implements Serializable {
 
     public static void main(String[] args) {
     //    Rule r = new Rule("payment_fee eq 10");
-
-//
-
-//
 //        //System.out.println(r.rule(data));
 //        System.out.println(r.exists("13358628685", jedis));
 
@@ -165,25 +173,8 @@ public class Rule implements Serializable {
                 "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";
 
         System.out.println(rule1);
-//        JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-//        Rule r = JSON.parseObject(rule1,Rule.class);
-//        System.out.println(r.getRuleid());
-//        System.out.println(r.getEventid());
-//        System.out.println(r.getFields());
-//        System.out.println(r.getGroupkey());
-//        System.out.println(r.getStarttime());
-//        System.out.println(r.getEndtime());
-
-
-
-        Map<String, String> data = new HashMap<>();
-        data.put("phone_no", "18797384480");
-        data.put("payment_fee", "30");
-        data.put("login_no", "m001");
-        data.put("date", "2016-08-01");
-
-
-        Rule r = new Rule(rule1);
+        JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        Rule r = JSON.parseObject(rule1,Rule.class);
         System.out.println(r.getRuleid());
         System.out.println(r.getEventid());
         System.out.println(r.getFields());
@@ -191,14 +182,23 @@ public class Rule implements Serializable {
         System.out.println(r.getStarttime());
         System.out.println(r.getEndtime());
 
-
-        Jedis jedis = new Jedis("192.168.99.130");
-        jedis.auth("redispass");
-
-        System.out.println(r.rule(data, jedis));
-
-
-
-
+//        Map<String, String> data = new HashMap<>();
+//        data.put("phone_no", "18797384480");
+//        data.put("payment_fee", "30");
+//        data.put("login_no", "m001");
+//        data.put("date", "2016-08-01");
+//
+//        Rule r = new Rule(rule1);
+//        System.out.println(r.getRuleid());
+//        System.out.println(r.getEventid());
+//        System.out.println(r.getFields());
+//        System.out.println(r.getGroupkey());
+//        System.out.println(r.getStarttime());
+//        System.out.println(r.getEndtime());
+//
+//        Jedis jedis = new Jedis("192.168.99.130");
+//        jedis.auth("redispass");
+//
+//        System.out.println(r.rule(data, jedis));
     }
 }

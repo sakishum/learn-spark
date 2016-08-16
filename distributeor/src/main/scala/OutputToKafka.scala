@@ -23,6 +23,7 @@ object OutputToKafka {
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> Conf.kafka, "group.id" -> Conf.groupid)
 
+
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, consumerFrom)
 
@@ -52,6 +53,9 @@ object OutputToKafka {
           val jedis = new Jedis("192.168.99.130");
           jedis.auth("redispass");
           //拉取生效规则,规则在redis中缓存
+          //val rstr = jedis.smembers("Conf.redis_rule_key");
+          //rstr.forEach(e => new Rule(e));
+          
           val rules = Set(new Rule("payment_fee eq 10"), new Rule("payment_fee ge 30"))
 
           //规则判断,生成最终结果

@@ -49,7 +49,7 @@ public class Exp {
                 System.out.println("ge:" + (Integer.valueOf(data.get(this.field)) >= Integer.valueOf(value)));
                 return Integer.valueOf(data.get(this.field)) >= Integer.valueOf(value);
 
-            case "range":  //TODO:现有需求中有[]
+            case "range":  //TODO:现有需求只有[]
                 String s[] = value.split(",");
                 return Integer.valueOf(data.get(this.field)) >= Integer.valueOf(s[0]) &&
                         Integer.valueOf(data.get(this.field)) <= Integer.valueOf(s[1]);

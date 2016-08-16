@@ -7,6 +7,9 @@ public class Conf {
     public static final String zkhosts="vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181";
     public static final String groupid="ai-event";
 
+
+    public static final String redis_rule_key="redis_rule_key";
+
     public static final String consumeFrom="topic-hw-1";
     public static final String produceTo="topic-p-1";
 
