@@ -1,5 +1,7 @@
 package com.asiainfo.util;
 
+import com.asiainfo.Conf;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +18,7 @@ public class DbUtil {
 
     static {
         try {
-            Class.forName("org.mariadb.jdbc.Driver");
+            Class.forName(Conf.db_driver);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

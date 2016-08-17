@@ -5,9 +5,7 @@ import com.asiainfo.Conf;
 import redis.clients.jedis.Jedis;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by migle on 2016/8/12.
@@ -28,7 +26,7 @@ public class Rule implements Serializable {
     private Exp exp;           //表达式
     private String consumeTopic;   //源kafka topic，系统判断
     private String produceTopic = Conf.produceTo;  //输出topic,暂时不开放
-
+    private final static Set<String> OP = new HashSet<>(Arrays.asList(new String[]{"=",">",">=","<","<=","range","in"}));
 
     //{ruleid,eventid,exp,groupkey,starttime,endtime}
     //intopic、outtopic：源topic系统指定，输出topic暂时不开放
@@ -44,8 +42,25 @@ public class Rule implements Serializable {
         if(isEmpty(ruleid) || isEmpty(eventid) || starttime == null || endtime == null){
             return false;
         }
+        //表达式判断
+        if(!isEmpty(fields)){
+           String[] e =  fields.split(" ");
+            if (e.length != 3) {
+                return false;
+            }
+            if(!OP.contains(e[1])){
+                return false;
+            }
+            //range只能用于数字  number range min,max
+            if(e[1].equals("range") && !e[2].matches("^\\d+,\\d+$")){
+               return false ;
+            }
 
-        //TODO 表达式及groupkey的判断
+            //in 列表取值有不验证了
+        }
+
+        //groupkey判断
+
         return true;
     }
     public boolean isEmpty(String s){
@@ -70,12 +85,19 @@ public class Rule implements Serializable {
         this.endtime = r.getEndtime();
 
         //TODO 规则验证!
-        validate();
-        //var >=|<=|>|=|< value
-        //var in v1,v2,v3
-        //var range 50,100
-        String[] e = this.fields.split(" ");
-        this.exp = new Exp(e[0],e[1],e[2]);
+        if(validate())
+        {
+            //var >=|<=|>|=|< value
+            //var in v1,v2,v3
+            //var range 50,100
+            String[] e = this.fields.split(" ");
+            this.exp = new Exp(e[0],e[1],e[2]);
+        }else{
+            //FIXME
+            System.out.println("规则错误");
+        }
+
+
     }
 
     public Output rule(Map<String, String> data, Jedis jedis) {
@@ -106,7 +128,7 @@ public class Rule implements Serializable {
 //        //todo:字段选择也是规则的一部分
 //        return this.exp.compute(data) ? data : null;
 //    }
-
+//后需要把这一部分合并成Exp的一部分
     private boolean exists(String str, Jedis jedis) {
         return jedis.sismember(groupkey, str);
     }
@@ -169,18 +191,18 @@ public class Rule implements Serializable {
 //        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee >= 10\"," +
 //                "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";
 
-        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 10,50\"," +
+        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 10,100\"," +
                 "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";
 
-        System.out.println(rule1);
-        JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-        Rule r = JSON.parseObject(rule1,Rule.class);
-        System.out.println(r.getRuleid());
-        System.out.println(r.getEventid());
-        System.out.println(r.getFields());
-        System.out.println(r.getGroupkey());
-        System.out.println(r.getStarttime());
-        System.out.println(r.getEndtime());
+//        System.out.println(rule1);
+//        JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+//        Rule r = JSON.parseObject(rule1,Rule.class);
+//        System.out.println(r.getRuleid());
+//        System.out.println(r.getEventid());
+//        System.out.println(r.getFields());
+//        System.out.println(r.getGroupkey());
+//        System.out.println(r.getStarttime());
+//        System.out.println(r.getEndtime());
 
 //        Map<String, String> data = new HashMap<>();
 //        data.put("phone_no", "18797384480");
@@ -200,5 +222,19 @@ public class Rule implements Serializable {
 //        jedis.auth("redispass");
 //
 //        System.out.println(r.rule(data, jedis));
+
+
+       // String val = "50,100";
+        //System.out.println(val.matches("^\\d+,\\d+$"));;
+        Rule r = new Rule(rule1);
+        System.out.println(r.validate());
+
+    }
+
+    @Override
+    public String toString() {
+        return "Rule{" +
+                "ruleid='" + ruleid + '\'' +
+                '}';
     }
 }

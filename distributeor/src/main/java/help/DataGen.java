@@ -31,7 +31,7 @@ public class DataGen {
             String msg = String.format("%s|%s|%s|%s",getPhoneNo(),new Random().nextInt(100),"m"+new Random().nextInt(1000), "20160810");
             System.out.println(msg);
             Thread.sleep(2000);
-            producer.send(new ProducerRecord<String, String>(topics[new Random().nextInt(2)], msg));
+            producer.send(new ProducerRecord<String, String>(topics[new Random().nextInt(2)],"K:"+msg, msg));
         }
 
         //producer.send(new ProducerRecord<String, String>("kafkatest", Integer.toString(i), Integer.toString(i)));

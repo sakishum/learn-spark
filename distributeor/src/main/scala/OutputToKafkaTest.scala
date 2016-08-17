@@ -1,8 +1,9 @@
+import com.asiainfo.Conf
+import kafka.message.MessageAndMetadata
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Seconds, StreamingContext}
-import com.asiainfo.Conf;
+import org.apache.spark.streaming.{Seconds, StreamingContext};
 /**
  * Created by migle on 2016/8/12.
  */
@@ -19,15 +20,22 @@ object OutputToKafkaTest {
     val ssc = new StreamingContext(sparkConf, Seconds(5))
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> Conf.kafka,"group.id"->"test")
+
+    val messageHandler = (mmd: MessageAndMetadata[String, String]) => (mmd.topic, mmd.key, mmd.message)
+
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, consumerFrom)
 
     //TODO 应该根据topic为选择格式
-    messages.map(x => x._2).map(x => {
-     val a = x.split("\\|")
-      (a(0),a(1),a(2))
-    }).print()
-
+//    messages.map(x => x._2).map(x => {
+//     val a = x.split("\\|")
+//      (a(0),a(1),a(2))
+//    }).print()
+//    messages.foreachRDD(rdd => {
+//      val metadata = rdd.asInstanceOf[HasOffsetRanges]
+//
+//    })
+ //     messages.map(x=>{println(x._1)});
 
     //      .foreachRDD(rdd=>{
     //      rdd.foreachPartition(p=>{
@@ -57,7 +65,7 @@ object OutputToKafkaTest {
     //        })
     //      })
     //    })
-
+   messages.print();
     ssc.start();
     ssc.awaitTermination();
   }

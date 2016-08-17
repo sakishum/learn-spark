@@ -32,6 +32,7 @@ public class Exp {
         }
 
         switch (this.op) {
+            //TODO： 将出取为的值做验证是不是相应类型？
             case "=":
                 ///System.out.println("eq:" + (Integer.valueOf(data.get(this.field)) == Integer.valueOf(value)));
                 ///return Integer.valueOf(data.get(this.field)) == Integer.valueOf(value);
@@ -49,12 +50,12 @@ public class Exp {
                 System.out.println("ge:" + (Integer.valueOf(data.get(this.field)) >= Integer.valueOf(value)));
                 return Integer.valueOf(data.get(this.field)) >= Integer.valueOf(value);
 
-            case "range":  //TODO:现有需求只有[]
+            case "range":  //[s,e],(s,e],[s,e),(s,e)   //TODO:现有需求中有[]
                 String s[] = value.split(",");
                 return Integer.valueOf(data.get(this.field)) >= Integer.valueOf(s[0]) &&
                         Integer.valueOf(data.get(this.field)) <= Integer.valueOf(s[1]);
 
-            case "in": //[s,e],(s,e],[s,e),(s,e)   //TODO:现有需求中有[]
+            case "in": //
                 Set<String> vs = new HashSet<>(Arrays.asList(value.split(",")));
                 return vs.contains(data.get(this.field));
 
