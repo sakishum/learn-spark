@@ -9,13 +9,14 @@ make
 
 ##运行
 1. 服务端：`src/redis-server redis.conf`  
-2. 客户端：`src/redis-cli`  
+2. 客户端：`src/redis-cli`
+  
 >>远程连接时需要关闭protected-mode或设置密码：
 >> 1. 修改服务器的redis.conf文件，添加*bind 192.168.99.130*  192.168.99.130对应实际的ip地址。连接命令:` ./src/redis-cli -h 192.168.99.130`  
 >>2. 临时关闭protected-mode,在服务器本来地客户端连接后执行 `CONFIG SET protected-mode no` 
 >>3. 带参数*--protected-mode no*重启服务器
 >>4. 在服务器本来地客户端连接后执行`CONFIG set requirepass "redispass"`设置密码，`CONFIG rewrite`保存到配置文件中，下次重启继续生效
- >>连接命令：`./src/redis-cli -h 192.168.99.130 -a redispass`
+>>连接命令：`./src/redis-cli -h 192.168.99.130 -a redispass`
 
 ## 常用操作
 <http://www.redis.cn/commands.html>有所有命令列表及示例
