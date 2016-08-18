@@ -37,45 +37,32 @@ public class RuleSender {
         String curDate = sf.format(new Date());
         String sql = String.format("select * from  %s  where state='1'  and start_time<= '%s'  and end_time > '%s' ", ruleTableName, curDate, curDate);
         System.out.println(sql);
-        List<String> query = db.query(sql, new ResultMapper<String>() {
-            @Override
-            public String map(ResultSet rs) throws SQLException {
-                StringBuilder ss = new StringBuilder("{");
-                ss.append(String.format("\"ruleid\":\"%s\",", rs.getString("rule_id")));
-                ss.append(String.format("\"eventid\":\"%s\",", rs.getString("event_id")));
-                if (rs.getString("fields") != null) {
-                    ss.append(String.format("\"fields\":\"%s\",", rs.getString("fields")));
-                }
-                if (rs.getString("group_key") != null) {
-                    ss.append(String.format("\"groupkey\":\"%s\",", rs.getString("group_key")));
-                }
-                ss.append(String.format("\"starttime\":\"%s\",", sf.format(rs.getTimestamp("start_time"))));
-                ss.append(String.format("\"end_time\":\"%s\"", sf.format(rs.getTimestamp("end_time"))));
-
-//                Map<String,String> m = new HashMap<String,String>();
-//                m.put("ruleid",rs.getString("rule_id"));
-//                m.put("eventid",rs.getString("event_id"));
-//                m.put("fields",rs.getString("fields"));
-//                m.put("groupkey",rs.getString("group_key"));
-//                m.put("starttime",rs.getString("start_time"));
-//                m.put("endtime",rs.getString("end_time"));
-//                return m;
-                ss.append("}");
-                return ss.toString();
-            }
-        });
-
-
+        List<String> rules = db.query(sql, new RuleResultMapper());
         Jedis jedis = new Jedis(redis_host);
         jedis.auth(redis_pwd);
-        //写入redis，前期规则应该不多，一条一条写入也没关系
-        query.stream().forEach(str -> {
+        //写入redis，规则应该不多，一条一条写入也没关系
+        //当前生效的规则全部重新写入一次
+        rules.stream().forEach(str -> {
             Rule r = new Rule(str);
             if (r.validate()) {
-                jedis.sadd(redis_rule_key, str);
+                //jedis.sadd(redis_rule_key, str);
+                jedis.hset(redis_rule_key, r.getRuleid(), str);
             }
         });
 
+        //清理下线规则
+        if(rules.size() != jedis.hlen(redis_rule_key)){
+            String offlinesql = String.format("select * from  %s  where state != '1'",ruleTableName);
+            System.out.println(offlinesql);
+            List<String> offline = db.query(offlinesql, new RuleResultMapper());
+            offline.forEach(str->{
+                Rule r = new Rule(str);
+               // System.out.println(r);
+                //System.out.println(jedis.sismember(redis_rule_key,r));
+               // jedis.srem(redis_rule_key,r);
+                jedis.hdel(redis_rule_key,r.getRuleid());
+            });
+        }
         jedis.close();
         db.close();
     }
@@ -87,27 +74,11 @@ public class RuleSender {
         String curDate = sf.format(new Date());
         String sql = String.format("select * from  %s  where state='0'  and start_time<= '%s'  and end_time > '%s' ", ruleTableName, curDate, curDate);  //FIXME:时间段控制
         System.out.println(sql);
-        List<String> query = db.query(sql, new ResultMapper<String>() {
-            @Override
-            public String map(ResultSet rs) throws SQLException {
-                StringBuilder ss = new StringBuilder("{");
-                ss.append(String.format("\"ruleid\":\"%s\",", rs.getString("rule_id")));
-                ss.append(String.format("\"eventid\":\"%s\",", rs.getString("event_id")));
-                if (rs.getString("fields") != null && !rs.getString("fields").isEmpty()) {
-                    ss.append(String.format("\"fields\":\"%s\",", rs.getString("fields")));
-                }
-                if (rs.getString("group_key") != null && !rs.getString("group_key").isEmpty()) {
-                    ss.append(String.format("\"groupkey\":\"%s\",", rs.getString("group_key")));
-                }
-                ss.append(String.format("\"starttime\":\"%s\",", sf.format(rs.getTimestamp("start_time"))));
-                ss.append(String.format("\"end_time\":\"%s\",", sf.format(rs.getTimestamp("end_time"))));
-                ss.append("}");
-                return ss.toString();
-            }
-        });
+        List<String> query = db.query(sql,new RuleResultMapper());
 
         query.stream().forEach(str -> {
             Rule r = new Rule(str);
+
             //FIXME:不在时间段内的是不是单独标注一个状态？
             if (r.validate()) {
                 try {
@@ -130,24 +101,69 @@ public class RuleSender {
     }
 
 
-    //定期从redis里面清理过期的规则
-    public void cleanRedis() {
+    //定期从redis里面清理过期及下线的规则
+    public void cleanRedis() throws SQLException {
         Jedis jedis = new Jedis(redis_host);
         jedis.auth(redis_pwd);
+        //清理过期规则
         jedis.smembers(redis_rule_key).forEach(e -> {
             Rule r = new Rule(e);
             if (r.getEndtime().getTime() <= System.currentTimeMillis()) {
-                jedis.srem(redis_rule_key, e);
+                //jedis.srem(redis_rule_key, e);
+                jedis.hdel(redis_rule_key,r.getRuleid());
             }
         });
         jedis.close();
     }
 
+    class RuleResultMapper implements ResultMapper<String>{
+        @Override
+        public String map(ResultSet rs) throws SQLException {
+            StringBuilder ss = new StringBuilder("{");
+            ss.append(String.format("\"ruleid\":\"%s\",", rs.getString("rule_id")));
+            ss.append(String.format("\"eventid\":\"%s\",", rs.getString("event_id")));
+            if (rs.getString("fields") != null && !rs.getString("fields").isEmpty()) {
+                ss.append(String.format("\"fields\":\"%s\",", rs.getString("fields")));
+            }
+            if (rs.getString("group_key") != null && !rs.getString("group_key").isEmpty()) {
+                ss.append(String.format("\"groupkey\":\"%s\",", rs.getString("group_key")));
+            }
+            ss.append(String.format("\"starttime\":\"%s\",", sf.format(rs.getTimestamp("start_time"))));
+            ss.append(String.format("\"end_time\":\"%s\"", sf.format(rs.getTimestamp("end_time"))));
+
+//                Map<String,String> m = new HashMap<String,String>();
+//                m.put("ruleid",rs.getString("rule_id"));
+//                m.put("eventid",rs.getString("event_id"));
+//                m.put("fields",rs.getString("fields"));
+//                m.put("groupkey",rs.getString("group_key"));
+//                m.put("starttime",rs.getString("start_time"));
+//                m.put("endtime",rs.getString("end_time"));
+//                return m;
+            ss.append("}");
+            return ss.toString();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        RuleSender r = new RuleSender();
-        //r.receiveRuel();   //检查规则，更改状态
-        r.cacheRuler();     //发送至
-        // r.cleanRedis();
+//        RuleSender r = new RuleSender();
+//        //启动三个任务，接收、送缓存，删除过期
+//        //r.receiveRuel();   //检查规则，更改状态
+//        r.cacheRuler();     //送缓存
+//        // r.cleanRedis();
+
+
+        long start = System.currentTimeMillis();
+        Jedis jedis = new Jedis(Conf.redis_host);
+        jedis.auth(Conf.redis_pwd);
+
+        for (int i = 0; i < 100; i++) {
+           jedis.hgetAll(Conf.redis_rule_key).forEach((k,v)->{
+               Rule r = new Rule(v);
+               //System.out.println(r.getRuleid());
+           });
+        }
+
+        System.out.println(System.currentTimeMillis() - start);
 
     }
 }

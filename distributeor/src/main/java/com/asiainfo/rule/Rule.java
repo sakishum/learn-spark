@@ -25,8 +25,8 @@ public class Rule implements Serializable {
 
     private Exp exp;           //表达式
     private String consumeTopic;   //源kafka topic，系统判断
-    private String produceTopic = Conf.produceTo;  //输出topic,暂时不开放
-    private final static Set<String> OP = new HashSet<>(Arrays.asList(new String[]{"=",">",">=","<","<=","range","in"}));
+
+    private final static Set<String> OP = new HashSet<>(Arrays.asList(new String[]{"=", ">", ">=", "<", "<=", "range", "in"}));
 
     //{ruleid,eventid,exp,groupkey,starttime,endtime}
     //intopic、outtopic：源topic系统指定，输出topic暂时不开放
@@ -35,25 +35,25 @@ public class Rule implements Serializable {
         parse(rule);
     }
 
-    private Rule(){
+    private Rule() {
     }
 
-    public boolean validate(){
-        if(isEmpty(ruleid) || isEmpty(eventid) || starttime == null || endtime == null){
+    public boolean validate() {
+        if (isEmpty(ruleid) || isEmpty(eventid) || starttime == null || endtime == null) {
             return false;
         }
         //表达式判断
-        if(!isEmpty(fields)){
-           String[] e =  fields.split(" ");
+        if (!isEmpty(fields)) {
+            String[] e = fields.split(" ");
             if (e.length != 3) {
                 return false;
             }
-            if(!OP.contains(e[1])){
+            if (!OP.contains(e[1])) {
                 return false;
             }
             //range只能用于数字  number range min,max
-            if(e[1].equals("range") && !e[2].matches("^\\d+,\\d+$")){
-               return false ;
+            if (e[1].equals("range") && !e[2].matches("^\\d+,\\d+$")) {
+                return false;
             }
 
             //in 列表取值有不验证了
@@ -63,19 +63,21 @@ public class Rule implements Serializable {
 
         return true;
     }
-    public boolean isEmpty(String s){
-        return s==null || s.isEmpty();
+
+    public boolean isEmpty(String s) {
+        return s == null || s.isEmpty();
     }
+
     private void parse(String rule) {
         if (rule == null || rule.isEmpty()) {
             System.out.println("check your rule !!!!");
         }
 
         this.consumeTopic = "topic-1";     //根据系统配置判断
-        this.produceTopic = "topic-p-1";  //TODO 用同一个还是不同事件写到不同topic中
+        //OutPut!
 
         JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-        Rule r = JSON.parseObject(rule,Rule.class);
+        Rule r = JSON.parseObject(rule, Rule.class);
 
         this.ruleid = r.getRuleid();
         this.eventid = r.getEventid();
@@ -85,14 +87,13 @@ public class Rule implements Serializable {
         this.endtime = r.getEndtime();
 
         //TODO 规则验证!
-        if(validate())
-        {
+        if (validate()) {
             //var >=|<=|>|=|< value
             //var in v1,v2,v3
             //var range 50,100
             String[] e = this.fields.split(" ");
-            this.exp = new Exp(e[0],e[1],e[2]);
-        }else{
+            this.exp = new Exp(e[0], e[1], e[2]);
+        } else {
             //FIXME
             System.out.println("规则错误");
         }
@@ -103,7 +104,7 @@ public class Rule implements Serializable {
     public Output rule(Map<String, String> data, Jedis jedis) {
         //todo:字段选择也是规则的一部分
         //是否在要求的时间段内：
-        if(System.currentTimeMillis() < this.starttime.getTime() || System.currentTimeMillis()>this.endtime.getTime()){
+        if (System.currentTimeMillis() < this.starttime.getTime() || System.currentTimeMillis() > this.endtime.getTime()) {
             //时间未到或已结束
             return new Output();
         }
@@ -112,10 +113,10 @@ public class Rule implements Serializable {
                 //FIXME:暂时群组判断就取"phone_no"字段
                 this.exp.compute(data) && exists(data.get("phone_no"), jedis)) {
             Map<String, String> m = new HashMap<>(data);
-            m.put("ruleid" , this.ruleid);
+            m.put("ruleid", this.ruleid);
             m.put("eventid", this.eventid);
             //TODO:后续根据规则中的配置输出
-            Output out = new Output(this.produceTopic, m);
+            Output out = new Output(Conf.eventToTopic.get(m.get("eventid")), m);
             return out;
 
         } else {
@@ -124,7 +125,7 @@ public class Rule implements Serializable {
 
     }
 
-//    public Map<String, String> rule(Map<String, String> data) {
+    //    public Map<String, String> rule(Map<String, String> data) {
 //        //todo:字段选择也是规则的一部分
 //        return this.exp.compute(data) ? data : null;
 //    }
@@ -132,7 +133,6 @@ public class Rule implements Serializable {
     private boolean exists(String str, Jedis jedis) {
         return jedis.sismember(groupkey, str);
     }
-
 
 
     public String getRuleid() {
@@ -167,32 +167,32 @@ public class Rule implements Serializable {
         this.groupkey = groupkey;
     }
 
-    public Date  getStarttime() {
+    public Date getStarttime() {
         return starttime;
     }
 
-    public void setStarttime(Date  starttime) {
+    public void setStarttime(Date starttime) {
         this.starttime = starttime;
     }
 
-    public Date  getEndtime() {
+    public Date getEndtime() {
         return endtime;
     }
 
-    public void setEndtime(Date  endtime) {
+    public void setEndtime(Date endtime) {
         this.endtime = endtime;
     }
 
     public static void main(String[] args) {
-    //    Rule r = new Rule("payment_fee eq 10");
+        //    Rule r = new Rule("payment_fee eq 10");
 //        //System.out.println(r.rule(data));
 //        System.out.println(r.exists("13358628685", jedis));
 
 //        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee >= 10\"," +
 //                "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";
 
-        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 10,100\"," +
-                "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";
+//        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 10,100\"," +
+//                "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";
 
 //        System.out.println(rule1);
 //        JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -224,17 +224,44 @@ public class Rule implements Serializable {
 //        System.out.println(r.rule(data, jedis));
 
 
-       // String val = "50,100";
+        // String val = "50,100";
         //System.out.println(val.matches("^\\d+,\\d+$"));;
-        Rule r = new Rule(rule1);
-        System.out.println(r.validate());
+//        Rule r = new Rule(rule1);
+//        System.out.println(r.validate());
 
+
+        String[] rules = new String[]{
+                "{\"ruleid\":\"qcd_456\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 100,200\",\"starttime\":\"2016-08-16 18:16:55\",\"end_time\":\"2016-09-15 14:49:27\"}",
+                "{\"ruleid\":\"qcd_200\",\"eventid\":\"event_busi_order\",\"fields\":\"prod_prcid in m001,m002\",\"groupkey\":\"guser1\",\"starttime\":\"2016-08-17 18:00:21\",\"end_time\":\"2016-09-15 15:00:00\"}",
+                "{\"ruleid\":\"qcd_456\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 100,200\",\"starttime\":\"2016-08-16 18:16:55\",\"end_time\":\"2016-09-15 14:49:27\"}",
+                "{\"ruleid\":\"qcd_200\",\"eventid\":\"event_busi_order\",\"fields\":\"prod_prcid in m001,m002\",\"groupkey\":\"guser1\",\"starttime\":\"2016-08-17 18:00:21\",\"end_time\":\"2016-09-15 15:00:00\"}",
+                "{\"ruleid\":\"qcd_456\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 100,200\",\"starttime\":\"2016-08-16 18:16:55\",\"end_time\":\"2016-09-15 14:49:27\"}",
+                "{\"ruleid\":\"qcd_200\",\"eventid\":\"event_busi_order\",\"fields\":\"prod_prcid in m001,m002\",\"groupkey\":\"guser1\",\"starttime\":\"2016-08-17 18:00:21\",\"end_time\":\"2016-09-15 15:00:00\"}",
+                "{\"ruleid\":\"qcd_456\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 100,200\",\"starttime\":\"2016-08-16 18:16:55\",\"end_time\":\"2016-09-15 14:49:27\"}",
+                "{\"ruleid\":\"qcd_200\",\"eventid\":\"event_busi_order\",\"fields\":\"prod_prcid in m001,m002\",\"groupkey\":\"guser1\",\"starttime\":\"2016-08-17 18:00:21\",\"end_time\":\"2016-09-15 15:00:00\"}",
+                "{\"ruleid\":\"qcd_456\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee range 100,200\",\"starttime\":\"2016-08-16 18:16:55\",\"end_time\":\"2016-09-15 14:49:27\"}",
+                "{\"ruleid\":\"qcd_200\",\"eventid\":\"event_busi_order\",\"fields\":\"prod_prcid in m001,m002\",\"groupkey\":\"guser1\",\"starttime\":\"2016-08-17 18:00:21\",\"end_time\":\"2016-09-15 15:00:00\"}"
+        };
+
+        String str = "{\"ruleid\":\"qcd_200\",\"eventid\":\"event_busi_order\",\"fields\":\"prod_prcid in m001,m002\",\"groupkey\":\"guser1\",\"starttime\":\"2016-08-17 18:00:21\",\"end_time\":\"2016-09-15 15:00:00\"}";
+
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 100000; i++) {
+            Rule r = new Rule(str);
+        }
+
+        System.out.println(System.currentTimeMillis() - start);
     }
 
     @Override
     public String toString() {
         return "Rule{" +
                 "ruleid='" + ruleid + '\'' +
+                ", eventid='" + eventid + '\'' +
+                ", fields='" + fields + '\'' +
+                ", groupkey='" + groupkey + '\'' +
+                ", starttime=" + starttime +
+                ", endtime=" + endtime +
                 '}';
     }
 }

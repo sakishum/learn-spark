@@ -138,6 +138,8 @@ Tuple：可以包含不同类元素，不可变实现；
 List：Scala的列表是不可变实现的同类对象序列，因应函数式编程特性的需要。
 Seq:
 
+http://docs.scala-lang.org/zh-cn/overviews/collections/overview
+
 上面的这些都是trait，在可变(mutable)包和不可变(immutable)包里都有对应的实现，同时也有其他特殊用途的实现
 http://www.importnew.com/4543.html
 
@@ -189,7 +191,8 @@ Java.asScala
 
 ####Option
 
-Option:是一个包含或者不包含某些事物的容器
+Option:是一个表示有可能包含值的容器
+Option本身是泛型的，并且有两个子类： Some[T] 或 None
 
 
 ###容器操作
@@ -283,7 +286,7 @@ For every case class the Scala compiler generates an equals method which impleme
 
 
 <http://docs.scala-lang.org/tutorials/tour/case-classes.html>
-
+http://nerd-is.in/2013-09/scala-learning-pattern-matching-and-case-classes/
 
 
 
@@ -401,3 +404,5 @@ http://zh.scala-tour.com/
 
 effective scala
 http://twitter.github.io/effectivescala/index-cn.html
+
+http://docs.scala-lang.org/zh-cn/overviews/collections/conversions-between-java-and-scala-collections

@@ -27,8 +27,8 @@ public class DataGen {
 
         Producer<String, String> producer = new KafkaProducer<>(props);
         //producer.send(new ProducerRecord<String, String>("kafkatest", "hello kafka "));
-        for(int i = 0; i < 1000; i++){
-            String msg = String.format("%s|%s|%s|%s",getPhoneNo(),new Random().nextInt(100),"m"+new Random().nextInt(1000), "20160810");
+        for(int i = 0; i < 10; i++){
+            String msg = String.format("%s|%s|%s|%s",getPhoneNo(),new Random().nextInt(200),"m"+new Random().nextInt(1000), "20160810");
             System.out.println(msg);
             Thread.sleep(2000);
             producer.send(new ProducerRecord<String, String>(topics[new Random().nextInt(2)],"K:"+msg, msg));

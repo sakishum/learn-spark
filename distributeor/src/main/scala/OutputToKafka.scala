@@ -17,8 +17,8 @@ object OutputToKafka {
     //一个topic启一个app
     val consumerFrom = Set(Conf.consume_topic_netpay)
     val brokers  = Conf.kafka
-    val sparkConf = new SparkConf().setAppName("KafkaStreamDist").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
-    val ssc = new StreamingContext(sparkConf, Seconds(5))
+    val sparkConf = new SparkConf().setAppName("KafkaStreamDist") //.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
+    val ssc = new StreamingContext(sparkConf, Seconds(10))
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "group.id" -> Conf.groupid)
 
     val messageHandler = (mmd: MessageAndMetadata[String, String]) => (mmd.topic, mmd.key, mmd.message)
@@ -28,11 +28,11 @@ object OutputToKafka {
     val data = messages.map(x => x._2).map(x => {
       //TODO:与华为的接口格式未定，姑且认为每个事件的数据是不同的topic,且字段用"|"分隔
       consumerFrom.head match {
-        case Conf.consume_topic_netpay => {
+        case Conf.consume_topic_usim => {
           val a = x.split("\\|")
           Map("phone_no"->a(0), "date" -> a(1))
         }
-        case Conf.consume_topic_usim => {
+        case Conf.consume_topic_netpay => {
           val a = x.split("\\|")
           Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> a(3))
         }
@@ -53,9 +53,10 @@ object OutputToKafka {
           val jedis = new Jedis("192.168.99.130");
           jedis.auth("redispass");
           //拉取生效规则,规则在redis中缓存
-          //tips:后续如果规则太多的话放在不同的key中
+          //
           //val rules = Set(new Rule("payment_fee eq 10"), new Rule("payment_fee ge 30"))
-          val rules = jedis.smembers(Conf.redis_rule_key).asScala.map(r=>new Rule(r)).filter(r=>{
+          val rules =  jedis.hgetAll(Conf.redis_rule_key).asScala.map(x =>{new Rule(x._2)}).filter(r=>{
+            //来源数据与规则的匹配判断，tips:后续如果规则太多的话放在不同的key中就不需要在这里面判断了
             consumerFrom.head match {
               case Conf.consume_topic_netpay => {
                 r.getEventid.equalsIgnoreCase(Conf.eventNetpay)
@@ -69,6 +70,10 @@ object OutputToKafka {
               case _ => false
             }
           });
+          println("===================================")
+          rules.foreach(println);
+          println(line.mkString("{",",","}"))
+          println("===================================")
 
           //规则判断,生成最终结果
           val data = rules.map(rule => rule.rule(line.toMap.asJava, jedis)).filter(e=>e.hasData)
@@ -85,6 +90,8 @@ object OutputToKafka {
             val producer = new KafkaProducer[String, String](props)
             //根据规则放入规定的topic
             d.output(producer)
+
+            producer.close();
           })
         })
       })
