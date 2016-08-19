@@ -29,13 +29,13 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
-            <scope>provided</scope>
+
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
-            <scope>provided</scope>
+
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -128,6 +128,7 @@
                         <manifest>
                             <mainClass>com.asiainfo.rule.RuleSender</mainClass>
                         </manifest>
+
                     </archive>
 
                 </configuration>
@@ -139,8 +140,10 @@
                         <goals>
                             <goal>assembly</goal>
                         </goals>
+
                     </execution>
                 </executions>
+
             </plugin>
         </plugins>
     </build>

@@ -46,6 +46,7 @@ object OutputToKafka {
 
     //源数据格式解析完毕,判断规则发送数据
     data.foreachRDD(rdd => {
+      //TODO:是不是可以在这里面将规则广播出去？或周期性的广播
       rdd.foreachPartition(p => {
         p.foreach(line => {
           import redis.clients.jedis.Jedis
@@ -87,7 +88,7 @@ object OutputToKafka {
               "org.apache.kafka.common.serialization.StringSerializer")
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
               "org.apache.kafka.common.serialization.StringSerializer")
-            val producer = new KafkaProducer[String, String](props)
+            val producer = new KafkaProducer[String, String](props)  //放在foreach外面写不进去？
             //根据规则放入规定的topic
             d.output(producer)
 

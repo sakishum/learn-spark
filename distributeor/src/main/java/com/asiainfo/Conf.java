@@ -42,6 +42,7 @@ public class Conf {
 
     //规则缓存相关
     public static final String redis_host = "192.168.99.130";
+    public static final int redis_port = 6379;
     public static final String redis_pwd = "redispass";
     public static final String redis_rule_key="redis_rule_key";
 

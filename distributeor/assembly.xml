@@ -1,0 +1,28 @@
+<!--
+ 用来打包的
+  -->
+<assembly>
+    <id>spark-app</id>
+    <formats>
+        <format>jar</format>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <useProjectArtifact>false</useProjectArtifact>
+            <excludes>
+                <exclude>org.apache.hadoop:*:jar</exclude>
+                <exclude>org.apache.spark:*:jar</exclude>
+                <exclude>org.apache.zookeeper:*:jar</exclude>
+                <exclude>org.apache.avro:*:jar</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

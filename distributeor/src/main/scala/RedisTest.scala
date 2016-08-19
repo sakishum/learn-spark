@@ -1,5 +1,6 @@
 import com.asiainfo.Conf
 import com.asiainfo.rule.Rule
+import redis.clients.jedis.JedisPool
 import scala.collection.JavaConverters._
 
 /**
@@ -33,4 +34,10 @@ object RedisTest {
 
     rules.foreach(r=>println(r.toString));
   }
+
+  def redispool():Unit={
+    val jpool = new JedisPool()
+
+  }
+
 }
