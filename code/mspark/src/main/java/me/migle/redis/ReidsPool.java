@@ -25,15 +25,23 @@ public class ReidsPool {
     private ReidsPool() {
     }
 
-    public static JedisPool pool() {
-        if (pool == null) {
-            synchronized (ReidsPool.class) {
-                if (pool == null) {
-                    pool = new JedisPool(new GenericObjectPoolConfig(), "192.168.99.130", 6379, 2000, "redispass");
-                }
-            }
-        }
-        return pool;
+//    public static JedisPool pool() {
+//        if (pool == null) {
+//            synchronized (ReidsPool.class) {
+//                if (pool == null) {
+//                    pool = new JedisPool(new GenericObjectPoolConfig(), "192.168.99.130", 6379, 2000, "redispass");
+//                }
+//            }
+//        }
+//        return pool;
+//    }
+
+    public static final JedisPool pool(){
+        return PoolHolder.pool;
+    }
+
+    private static class PoolHolder{
+      public final static JedisPool pool = new JedisPool(new GenericObjectPoolConfig(), "192.168.99.130", 6379, 2000, "redispass");
     }
 
     public static void main(String[] args) {
