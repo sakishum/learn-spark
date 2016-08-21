@@ -22,7 +22,16 @@ kafka&spark streaming
 http://blog.selfup.cn/1665.html
 http://blog.cloudera.com/blog/2015/03/exactly-once-spark-streaming-from-apache-kafka/
 http://allegro.tech/2015/08/spark-kafka-integration.html
-
-
-
 http://spark.apache.org/docs/latest/submitting-applications.html
+http://mkuthan.github.io/blog/2016/01/29/spark-kafka-integration2/
+
+
+
+1:打包
+    spark app 与规则解析分开打包
+    
+    http://www.jianshu.com/p/afb79650b606
+    
+2:连接池(合并redis,完成kafka)
+3.多条件表达式
+
