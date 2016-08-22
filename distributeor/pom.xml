@@ -123,7 +123,8 @@
                       <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>-->
                     <descriptors>
-                        <descriptor>assembly.xml</descriptor>
+                        <descriptor>assembly-spark-app.xml</descriptor>
+                        <descriptor>assembly-java-app.xml</descriptor>
                     </descriptors>
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
