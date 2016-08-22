@@ -10,7 +10,6 @@ public class Exp {
     //先满足现有需求，后需要完善
     //exp = var op exp
     //exp = value or (exp and|or exp)
-
     //var op value 和  a > v and 的样式，更复杂的后续再实现，和token用空格区分，省的再做拆分
     private String field;
     private String op;    //eq\lt\gt\ge\le\in\nin\and\or
@@ -21,7 +20,6 @@ public class Exp {
         this.op = op;
         this.value = value;
     }
-
 
     //public com.asiainfo.rule.Exp(String exp){};  //解析出表达式
     //递归

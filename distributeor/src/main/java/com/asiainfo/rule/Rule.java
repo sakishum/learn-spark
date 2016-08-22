@@ -3,7 +3,7 @@ package com.asiainfo.rule;
 import com.alibaba.fastjson.JSON;
 import com.asiainfo.Conf;
 import redis.clients.jedis.Jedis;
-
+import com.asiainfo.common.ReidsPool;
 import java.io.Serializable;
 import java.util.*;
 
@@ -56,7 +56,7 @@ public class Rule implements Serializable {
                 return false;
             }
 
-            //in 列表取值有不验证了
+            //in 列表取值不验证了
         }
 
         //groupkey判断
@@ -97,40 +97,34 @@ public class Rule implements Serializable {
             //FIXME
             System.out.println("规则错误");
         }
-
-
     }
 
-    public Output rule(Map<String, String> data, Jedis jedis) {
+    public Output rule(Map<String, String> data) {
+        //TODO:容错处理！！！
         //todo:字段选择也是规则的一部分
-        //是否在要求的时间段内：
+        //是否在要求的时间段内
         if (System.currentTimeMillis() < this.starttime.getTime() || System.currentTimeMillis() > this.endtime.getTime()) {
             //时间未到或已结束
             return new Output();
         }
-
         if (this.groupkey == null ? this.exp.compute(data) :
                 //FIXME:暂时群组判断就取"phone_no"字段
-                this.exp.compute(data) && exists(data.get("phone_no"), jedis)) {
+                this.exp.compute(data) && IsInRedis(data.get("phone_no"))) {
             Map<String, String> m = new HashMap<>(data);
             m.put("ruleid", this.ruleid);
             m.put("eventid", this.eventid);
             //TODO:后续根据规则中的配置输出
             Output out = new Output(Conf.eventToTopic.get(m.get("eventid")), m);
             return out;
-
         } else {
             return new Output();
         }
 
     }
 
-    //    public Map<String, String> rule(Map<String, String> data) {
-//        //todo:字段选择也是规则的一部分
-//        return this.exp.compute(data) ? data : null;
-//    }
-//后需要把这一部分合并成Exp的一部分
-    private boolean exists(String str, Jedis jedis) {
+//TODO:要把这一部分合并成Exp的一部分  filed:redis#redis_key
+    private boolean IsInRedis(String str) {
+        Jedis jedis = ReidsPool.pool().getResource();
         return jedis.sismember(groupkey, str);
     }
 
@@ -186,7 +180,7 @@ public class Rule implements Serializable {
     public static void main(String[] args) {
         //    Rule r = new Rule("payment_fee eq 10");
 //        //System.out.println(r.rule(data));
-//        System.out.println(r.exists("13358628685", jedis));
+//        System.out.println(r.IsInRedis("13358628685", jedis));
 
 //        String rule1="{\"ruleid\":\"123\",\"eventid\":\"event_netpay\",\"fields\":\"payment_fee >= 10\"," +
 //                "\"groupkey\":\"guser1\",\"starttime\":\"2016-08-15 10:49:27\",\"endtime\":\"2016-09-15 14:49:27\" }";

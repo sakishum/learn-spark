@@ -1,9 +1,5 @@
 
-import java.util.HashMap
-
-import com.asiainfo.Conf
 import com.asiainfo.rule.Rule
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig}
 import redis.clients.jedis.Jedis
 
 import scala.collection.JavaConverters._;
@@ -37,7 +33,7 @@ object KafkaTest{
 
     //val rules =List(new Rule("payment_fee ge 30"),new Rule("payment_fee le 10", "guser1"),new Rule("payment_fee gt 5", "guser1"),new Rule("payment_fee eq 10", "guser1"))
     val rules =List(new Rule("payment_fee ge 30"),new Rule("payment_fee le 10"),new Rule("payment_fee gt 5"),new Rule("payment_fee eq 10"))
-    val r = rules.map(r=>r.rule(data.toMap.asJava,jedis)) .filter(e=>e != null)
+    val r = rules.map(r=>r.rule(data.toMap.asJava)) .filter(e=>e != null)
 
     //Producer<String, String> producer = new KafkaProducer<>(props);
     //producer.send(new ProducerRecord<String, String>("kafkatest", "hello kafka "));
@@ -46,15 +42,7 @@ object KafkaTest{
 
     r.foreach(out=>
       {
-        val props = new HashMap[String, Object]()
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Conf.kafka)
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-          "org.apache.kafka.common.serialization.StringSerializer")
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-          "org.apache.kafka.common.serialization.StringSerializer")
-
-        val producer = new KafkaProducer[String, String](props)
-        out.output(producer)
+        out.output()
         //producer.close()
       })
 
