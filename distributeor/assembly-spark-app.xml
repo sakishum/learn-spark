@@ -8,24 +8,17 @@
         <includeBaseDirectory>false</includeBaseDirectory>
         <dependencySets>
             <dependencySet>
-                <useTransitiveDependencies>true</useTransitiveDependencies>
                 <outputDirectory>/</outputDirectory>
-                <useProjectArtifact>true</useProjectArtifact>
+                <useTransitiveFiltering>true</useTransitiveFiltering>
                 <unpack>true</unpack>
                 <scope>runtime</scope>
-                <includes>
-                     <include>redis.clients:*:jar</include>
-                     <include>org.apache.commons:commons-pool2:jar</include>
-                     <include>com.alibaba:*:jar</include>
-                 </includes>
-                <!--
                  <excludes>
                      <exclude>org.apache.hadoop:*:jar</exclude>
                      <exclude>org.apache.spark:*:jar</exclude>
                      <exclude>org.apache.zookeeper:*:jar</exclude>
                      <exclude>org.apache.avro:*:jar</exclude>
+                     <exclude>org.mariadb.jdbc:*:jar</exclude>
                  </excludes>
-                 -->
         </dependencySet>
     </dependencySets>
 </assembly>
