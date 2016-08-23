@@ -52,12 +52,22 @@ public class KafkaTopicOffsetTool {
             System.out.println();
     }
 
-
+//获取topic的最大offset
     public Map<TopicAndPartition, Long> getLargstOffsets(String hosts,Set<String> topics){
         Map<TopicAndPartition, Long> map = new TreeMap<>();
 
 
         return  map;
     }
+
+ //从zk中返回offset
+
+
+//看实际应用选择
+//从redis或mysql中返回保存的offset
+
+
+//最小的就不需要了吧
+
 
 }
