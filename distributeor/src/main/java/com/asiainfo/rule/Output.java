@@ -46,18 +46,18 @@ public class Output implements Serializable {
         switch (data.get("eventid")) {
             case Conf.eventUSIMChange:
                 msg = String.format("{\"ruleid\":\"%s\",\"eventid\":\"%s\",\"phone_no\":\"%s\",\"date\":\"%s\"}", data.get("ruleid"),data.get("eventid"),data.get("phone_no"),data.get("date"));
-                KafkaProducerPool.producer().send(new ProducerRecord<String, String>(this.topic, null, msg));
+                KafkaProducerPool.producer().send(new ProducerRecord<String, String>(this.topic, data.get("phone_no"), msg));
                 break;
             case Conf.eventNetpay:
                 msg = String.format("{\"ruleid\":\"%s\",\"eventid\":\"%s\",\"phone_no\":\"%s\",\"payment_fee\":\"%s\",\"login_no\":\"%s\",\"date\":\"%s\"}",
                         data.get("ruleid"),data.get("eventid"),data.get("phone_no"),data.get("payment_fee"),data.get("login_no"),data.get("date"));
                 System.out.println(msg);
                 System.out.println("****************************");
-                KafkaProducerPool.producer().send(new ProducerRecord<String, String>(this.topic, null, msg));
+                KafkaProducerPool.producer().send(new ProducerRecord<String, String>(this.topic, data.get("phone_no"), msg));
                 break;
             case Conf.eventBusiOrder:
                 msg = String.format("{\"ruleid\":\"%s\",\"eventid\":\"%s\",\"phone_no\":\"%s\",\"prod_prcid\":\"%s\",\"date\":\"%s\"}", data.get("ruleid"),data.get("eventid"),data.get("phone_no"),  data.get("prod_prcid"),data.get("date"));
-                KafkaProducerPool.producer().send(new ProducerRecord<String, String>(this.topic, null, msg));
+                KafkaProducerPool.producer().send(new ProducerRecord<String, String>(this.topic, data.get("phone_no"), msg));
                 break;
             default:
                 System.out.println("error event id,do nothing!");

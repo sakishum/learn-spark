@@ -46,6 +46,9 @@ kafka的消息分几个层次：
 2. Partition： Topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列。partition中的每条消息都会被分配一个有序的id（offset）。
 3. Message：消息，最小订阅单元
 
+同一个topic的同一个Partition只能被同一个group的一个Consumer消费，也就是说如果Consumer数多于Partition数时会有Consumer空闲
+
+
 ##JAVA
 **注意server与Consumer、Producer版本的兼容！！！**
 

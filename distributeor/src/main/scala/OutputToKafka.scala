@@ -1,3 +1,5 @@
+package com.asiainfo.spark
+
 import com.asiainfo.Conf
 import com.asiainfo.common.ReidsPool
 import com.asiainfo.rule.Rule
@@ -6,9 +8,9 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import scala.collection.JavaConverters._
-
 /**
   * Created by migle on 2016/8/12.
+ *  每次处理一个topic,数据从kafka的最新offset开始
   */
 object OutputToKafka {
   def main(args: Array[String]) {
@@ -18,8 +20,7 @@ object OutputToKafka {
     val sparkConf = new SparkConf().setAppName("KafkaStreamDist").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "group.id" -> Conf.groupid)
-
-    // 每次启动的时候默认从Latest offset开始读取，或者设置参数auto.offset.reset="smallest"后将会从Earliest offset开始读取
+    // 每次启动的时候默认从Latest offset开始读取，后续如果有特殊需求再说
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, consumerFrom)
     val data = messages.map(x => x._2).map(x => {
@@ -31,6 +32,7 @@ object OutputToKafka {
         }
         case Conf.consume_topic_netpay => {
           val a = x.split("\\|")
+
           Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> a(3))
         }
         case Conf.consume_topic_order => {
@@ -40,7 +42,6 @@ object OutputToKafka {
         case _ => Map[String,String]()
       }
     }).filter(!_.isEmpty)
-
     //源数据格式解析完毕,判断规则发送数据
     data.foreachRDD(rdd => {
       //TODO:是不是可以将规则周期性的广播???
@@ -69,24 +70,10 @@ object OutputToKafka {
           rules.foreach(println);
           println(line.mkString("{",",","}"))
           println("===================================")
-
           //规则判断,生成最终结果
           val data = rules.map(rule => rule.rule(line.toMap.asJava)).filter(e=>e.hasData)
           //将最终结果写入kafka
           data.foreach(out=>out.output());
-//          data.foreach(d => {
-//            //TODO 连接池
-//            val props = new util.HashMap[String, Object]()
-//            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
-//            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-//              "org.apache.kafka.common.serialization.StringSerializer")
-//            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-//              "org.apache.kafka.common.serialization.StringSerializer")
-//            val producer = new KafkaProducer[String, String](props)  //放在foreach外面写不进去？
-//            //根据规则放入规定的topic
-//            d.output(producer)
-//            producer.close();
-//          })
         })
       })
     })

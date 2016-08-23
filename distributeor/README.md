@@ -6,14 +6,16 @@
 
 
 
-bin/spark-submit --packages org.apache.spark:spark-streaming-kafka_2.10:1.6.0   --class "OutputToKafka"  --master spark://vm-centos-00:7077 /home/migle/spark-app/data-qcd-jar-with-dependencies.jar
-bin/spark-submit --packages org.apache.spark:spark-streaming-kafka_2.10:1.6.0   --class "OutputToKafka"  --master spark://vm-centos-00:7077 /home/migle/spark-app/data-qcd-jar-with-dependencies.jar
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka_2.10:1.6.0   --class "OutputToKafka"  --master spark://vm-centos-00:7077 /home/migle/spark-app/data-qcd-spark-app.jar
+bin/spark-submit --packages org.apache.spark:spark-streaming-kafka_2.10:1.6.0   --class "OutputToKafka"  --master spark://vm-centos-00:7077 /home/migle/spark-app/data-qcd-spark-app.jar
 
 
 
 
 bin/kafka-console-producer.sh --broker-list vm-centos-00:9092,vm-centos-01:9092   
 bin/kafka-console-consumer.sh --zookeeper   vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181  --from-beginning --topic qcd_ruselt_netpay
+bin/kafka-topics.sh --zookeeper   vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181  --delete   --topic qcd_ruselt_netpay
+bin/kafka-topics.sh --zookeeper   vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181  --delete   --topic topic-1
 
 
 bin/kafka-topics.sh  --zookeeper vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181  --list
