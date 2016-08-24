@@ -8,7 +8,7 @@ import kafka.consumer.SimpleConsumer
  * Created by migle on 2016/8/24.
  *  获取(topic,partition)的offset的工具类
  *  原理还有些不清楚的地方，看api先实现了一个不太完善的功能
- *  
+ *
  */
 object KafkaOffsetTool {
   /**
