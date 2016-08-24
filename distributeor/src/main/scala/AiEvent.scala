@@ -59,7 +59,7 @@ object AiEvent {
           val rules =  jedis.hgetAll(Conf.redis_rule_key).asScala.map(x =>{new Rule(x._2)}).filter(r=>{
             //来源数据与规则的匹配判断，tips:后续如果规则太多的话放在不同的key中就不需要在这里面判断了
             //规则让规则来判断
-            line.get("s_topic") match {
+            line.get("s_topic").get match {
               case Conf.consume_topic_netpay => {
                 r.getEventid.equalsIgnoreCase(Conf.eventNetpay)
               }
