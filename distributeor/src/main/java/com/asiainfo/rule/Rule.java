@@ -109,12 +109,12 @@ public class Rule implements Serializable {
         }
         if (this.groupkey == null ? this.exp.compute(data) :
                 //FIXME:暂时群组判断就取"phone_no"字段
-                this.exp.compute(data) && IsInRedis(data.get("phone_no"))) {
+                this.exp.compute(data) && IsInRedis(data.getOrDefault("phone_no",""))) {
             Map<String, String> m = new HashMap<>(data);
             m.put("ruleid", this.ruleid);
             m.put("eventid", this.eventid);
             //TODO:后续根据规则中的配置输出
-            Output out = new Output(Conf.eventToTopic.get(m.get("eventid")), m);
+            Output out = new Output(Conf.eventToTopic.get(m.getOrDefault("eventid","")), m);
             return out;
         } else {
             return new Output();

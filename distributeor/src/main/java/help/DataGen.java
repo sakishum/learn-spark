@@ -32,7 +32,7 @@ public class DataGen {
             System.out.println(msg);
             //Thread.sleep(2000);
 
-            producer.send(new ProducerRecord<String, String>("test-1","K:"+msg, msg));
+            producer.send(new ProducerRecord<String, String>("topic-2","K:"+msg, msg));
         }
 
         //producer.send(new ProducerRecord<String, String>("kafkatest", Integer.toString(i), Integer.toString(i)));

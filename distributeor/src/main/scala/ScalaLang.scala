@@ -1,4 +1,6 @@
-;
+import com.asiainfo.common.KafkaTopicOffsetTool
+
+import scala.collection.JavaConverters._;
 /**
  * Created by migle on 2016/8/17.
  */
@@ -23,8 +25,13 @@ object ScalaLang {
 //    println(data)
 
 
-    val x = Map("c"->"d","e"->"f")
-    println(x.mkString("{",",","}"))
+    //val x = Map("c"->"d","e"->"f")
+   // println(x.mkString("{",",","}"))
     //print(x.getClass.getName)
+    val topics = Set("test-1","test-2","test3")
+    val offsets = KafkaTopicOffsetTool.getLargstOffsets(topics.asJava).asScala.toMap
+
+    offsets.foreach(k=>println(k._1.topic +" " +k._1.partition +" " + k._2))
+
   }
 }
