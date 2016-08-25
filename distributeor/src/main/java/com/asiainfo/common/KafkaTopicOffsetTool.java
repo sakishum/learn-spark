@@ -1,6 +1,7 @@
 package com.asiainfo.common;
 
 
+import com.asiainfo.Conf;
 import kafka.api.PartitionOffsetRequestInfo;
 import kafka.cluster.Broker;
 import kafka.common.TopicAndPartition;
@@ -17,9 +18,9 @@ public class KafkaTopicOffsetTool {
     public static void main(String[] args) {
 
         Set<String> topics = new HashSet<>();
-        topics.add("test-1");
-        topics.add("test-2");
-        topics.add("test3");
+        topics.add(Conf.consume_topic_netpay);
+        topics.add(Conf.consume_topic_order);
+        topics.add(Conf.consume_topic_usim);
 
         Map<TopicAndPartition, Long> largstOffsets = getLargstOffsets(topics);
 
@@ -70,7 +71,7 @@ public class KafkaTopicOffsetTool {
 
         TopicMetadataRequest tmr = new TopicMetadataRequest(new ArrayList<>(topics));
 
-        SimpleConsumer consumer = new SimpleConsumer("vm-centos-00", 9092, 100000, 64 * 1024, "leaderLookup");
+        SimpleConsumer consumer = new SimpleConsumer("QCD-kafka-001", 9092, 100000, 64 * 1024, "leaderLookup");
         TopicMetadataResponse msg = consumer.send(tmr);
         Map<TopicAndPartition, PartitionOffsetRequestInfo> tp = new HashMap<>();
 

@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Exp {
 
-    //先满足现有需求，后需要完善
+    //先满足现有需求，后续再完善
     //exp = var op exp
     //exp = value or (exp and|or exp)
     //var op value 和  a > v and 的样式，更复杂的后续再实现，和token用空格区分，省的再做拆分
@@ -67,7 +67,6 @@ public class Exp {
 //        Map<String,String> data = new HashMap<>();
 //        data.put("x","ee");
 //        com.asiainfo.rule.Exp exp = new com.asiainfo.rule.Exp("x","in","aa,bb,cc,dd");
-
         Map<String,String> data = new HashMap<>();
         data.put("x","50");
         Exp exp = new Exp("x","range","50,100");

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by migle on 2016/8/16.
@@ -106,10 +107,9 @@ public class RuleSender {
         Jedis jedis = new Jedis(redis_host);
         jedis.auth(redis_pwd);
         //清理过期规则
-        jedis.smembers(redis_rule_key).forEach(e -> {
-            Rule r = new Rule(e);
+        jedis.hgetAll(redis_rule_key).forEach((k,v) -> {
+            Rule r = new Rule(v);
             if (r.getEndtime().getTime() <= System.currentTimeMillis()) {
-                //jedis.srem(redis_rule_key, e);
                 jedis.hdel(redis_rule_key,r.getRuleid());
             }
         });
@@ -151,19 +151,17 @@ public class RuleSender {
 //        r.cacheRuler();     //送缓存
 //        // r.cleanRedis();
 
+while(true){
+    RuleSender r = new RuleSender();
+    System.out.println("------------------receiveRuel----------------");
+    r.receiveRuel();
+    System.out.println("------------------cacheRuler----------------");
+    r.cacheRuler();
+    System.out.println("------------------cleanRedis----------------");
+    r.cleanRedis();
+    Thread.sleep(1000*60*5);
+}
 
-        long start = System.currentTimeMillis();
-        Jedis jedis = new Jedis(Conf.redis_host);
-        jedis.auth(Conf.redis_pwd);
-
-        for (int i = 0; i < 100; i++) {
-           jedis.hgetAll(Conf.redis_rule_key).forEach((k,v)->{
-               Rule r = new Rule(v);
-               //System.out.println(r.getRuleid());
-           });
-        }
-
-        System.out.println(System.currentTimeMillis() - start);
 
     }
 }

@@ -1,6 +1,5 @@
-import com.asiainfo.common.KafkaTopicOffsetTool
-
-import scala.collection.JavaConverters._;
+import com.asiainfo.Conf
+;
 /**
  * Created by migle on 2016/8/17.
  */
@@ -28,10 +27,16 @@ object ScalaLang {
     //val x = Map("c"->"d","e"->"f")
    // println(x.mkString("{",",","}"))
     //print(x.getClass.getName)
-    val topics = Set("test-1","test-2","test3")
-    val offsets = KafkaTopicOffsetTool.getLargstOffsets(topics.asJava).asScala.toMap
+//    val topics = Set("test-1","test-2","test3")
+//    val offsets = KafkaTopicOffsetTool.getLargstOffsets(topics.asJava).asScala.toMap
+//
+//    offsets.foreach(k=>println(k._1.topic +" " +k._1.partition +" " + k._2))
 
-    offsets.foreach(k=>println(k._1.topic +" " +k._1.partition +" " + k._2))
-
+   // println(Conf.consume_topic_netpay)
+   val hostport=Conf.kafka.split(",")(0)
+    val host=hostport.split(":")(0)
+    val port=hostport.split(":")(1).toInt
+    println(host)
+    println(port)
   }
 }

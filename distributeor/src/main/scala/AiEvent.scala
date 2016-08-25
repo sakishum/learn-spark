@@ -6,7 +6,7 @@ import com.asiainfo.rule.Rule
 import kafka.message.MessageAndMetadata
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
-import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.kafka.{KafkaTool, KafkaUtils}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import scala.collection.JavaConverters._
 /**
@@ -16,13 +16,14 @@ import scala.collection.JavaConverters._
 object AiEvent {
   def main(args: Array[String]) {
     //一个topic启一个app
-    val topics = Set(Conf.consume_topic_netpay)
+    val topics = Set(Conf.consume_topic_netpay,Conf.consume_topic_order,Conf.consume_topic_usim)
     val brokers  = Conf.kafka
-    val sparkConf = new SparkConf().setAppName("AiEvent").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
+    val sparkConf = new SparkConf().setAppName("AiEventTest")//.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "group.id" -> Conf.groupid)
-    val offsets = KafkaOffsetTool.getEarliestOffset(topics)
-
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "group.id" -> Conf.groupid,"auto.offset.reset"->"smallest")
+    //val offsets = KafkaOffsetTool.getLatestOffset(topics)
+    //TODO
+    val offsets = KafkaTool.getOffsets(kafkaParams,topics)
     val DStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder, (String,String,String)](
             ssc, kafkaParams, offsets,
             (m: MessageAndMetadata[String, String]) => (m.topic,m.key(),m.message()))
@@ -36,7 +37,6 @@ object AiEvent {
         }
         case Conf.consume_topic_netpay => {
           val a = m._2.split("\\|")
-
           Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> a(3),"s_topic"->m._1)
         }
         case Conf.consume_topic_order => {
@@ -47,7 +47,6 @@ object AiEvent {
       }
     }).filter(!_.isEmpty)
 
-     data.print()
     //源数据格式解析完毕,判断规则发送数据
     data.foreachRDD(rdd => {
       //TODO:是不是可以将规则周期性的广播???

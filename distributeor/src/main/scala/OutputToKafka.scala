@@ -17,14 +17,15 @@ object OutputToKafka {
     //一个topic启一个app
     val consumerFrom = Set(Conf.consume_topic_netpay)
     val brokers  = Conf.kafka
-    val sparkConf = new SparkConf().setAppName("KafkaStreamDist").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
+    val sparkConf = new SparkConf().setAppName("KafkaStreamDist") //.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "group.id" -> Conf.groupid)
     // 每次启动的时候默认从Latest offset开始读取，后续如果有特殊需求再说
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, consumerFrom)
-
+    println("=============================++++++++++++++++++++++++++++++")
     val data = messages.map(x => x._2).map(x => {
+      println("XXXXXXXXXXXXXXXXXXXXXXXX")
       //TODO:与华为的接口格式未定，姑且认为每个事件的数据是不同的topic,且字段用"|"分隔
       consumerFrom.head match {
         case Conf.consume_topic_usim => {
@@ -33,7 +34,9 @@ object OutputToKafka {
         }
         case Conf.consume_topic_netpay => {
           val a = x.split("\\|")
-
+          println("===========================")
+          println(x)
+          println("===========================")
           Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> a(3))
         }
         case Conf.consume_topic_order => {

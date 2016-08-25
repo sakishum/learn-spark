@@ -52,6 +52,13 @@
             <artifactId>mariadb-java-client</artifactId>
             <version>1.4.6</version>
         </dependency>
+      <!--  <dependency>
+            <groupId>db2jcc</groupId>
+            <artifactId>db2jcc</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/db2jcc.jar</systemPath>
+        </dependency> -->
     </dependencies>
     <build>
         <finalName>data-qcd</finalName>
@@ -132,7 +139,6 @@
                             <mainClass>com.asiainfo.rule.RuleSender</mainClass>
                         </manifest>
                     </archive>
-
                 </configuration>
                 <executions>
                     <execution>

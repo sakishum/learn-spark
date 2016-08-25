@@ -9,7 +9,7 @@
 
 ### 集群安装 
 zoo.cfg  添加以下
-server.0=vm-centos-01:2888:3888
+server.0=vm-centos-00:2888:3888
 server.1=vm-centos-01:2888:3888
 server.2=vm-centos-02:2888:3888
 server.3=vm-centos-03:2888:3888

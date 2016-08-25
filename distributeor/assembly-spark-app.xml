@@ -12,9 +12,10 @@
                 <useTransitiveFiltering>true</useTransitiveFiltering>
                 <unpack>true</unpack>
                 <scope>runtime</scope>
+
                  <excludes>
                      <exclude>org.apache.hadoop:*:jar</exclude>
-                     <exclude>org.apache.spark:*:jar</exclude>
+                     <exclude>org.apache.spark:spark-core*:jar</exclude>
                      <exclude>org.apache.zookeeper:*:jar</exclude>
                      <exclude>org.apache.avro:*:jar</exclude>
                      <exclude>org.mariadb.jdbc:*:jar</exclude>

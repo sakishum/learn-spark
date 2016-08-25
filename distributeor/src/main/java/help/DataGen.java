@@ -1,4 +1,5 @@
 package help;
+import com.asiainfo.Conf;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import  org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -15,7 +16,7 @@ public class DataGen {
     public static void main(String[] args) throws InterruptedException {
         Properties props = new Properties();
         //props.put("bootstrap.servers", "vm-centos-00:9092,vm-centos-01:9092");
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "vm-centos-00:9092");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Conf.kafka);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
@@ -24,19 +25,19 @@ public class DataGen {
 
         String[] topics=new String[]{"topic-1","topic-2"};
         String topic ="";
-        Producer<String, String> producer = new KafkaProducer<>(props);
+        //Producer<String, String> producer = new KafkaProducer<>(props);
         //producer.send(new ProducerRecord<String, String>("kafkatest", "hello kafka "));
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             String msg = String.format("%s|%s|%s|%s",getPhoneNo(),new Random().nextInt(200),"m"+new Random().nextInt(1000), "20160810");
             //topic = topics[new Random().nextInt(2)];
             System.out.println(msg);
             //Thread.sleep(2000);
 
-            producer.send(new ProducerRecord<String, String>("topic-2","K:"+msg, msg));
+           // producer.send(new ProducerRecord<String, String>(Conf.consume_topic_netpay,"K:"+msg, msg));
         }
 
         //producer.send(new ProducerRecord<String, String>("kafkatest", Integer.toString(i), Integer.toString(i)));
-        producer.close();
+       // producer.close();
     }
 
     public static String  getPhoneNo()  {

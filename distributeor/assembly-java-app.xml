@@ -17,6 +17,7 @@
                 <exclude>org.apache.spark:*:jar</exclude>
                 <exclude>org.apache.zookeeper:*:jar</exclude>
                 <exclude>org.apache.avro:*:jar</exclude>
+                <exclude>org.mariadb.jdbc:*:jar</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
