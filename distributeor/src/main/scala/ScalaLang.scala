@@ -1,4 +1,4 @@
-import com.asiainfo.Conf
+
 ;
 /**
  * Created by migle on 2016/8/17.
@@ -33,10 +33,14 @@ object ScalaLang {
 //    offsets.foreach(k=>println(k._1.topic +" " +k._1.partition +" " + k._2))
 
    // println(Conf.consume_topic_netpay)
-   val hostport=Conf.kafka.split(",")(0)
-    val host=hostport.split(":")(0)
-    val port=hostport.split(":")(1).toInt
-    println(host)
-    println(port)
+//   val hostport=Conf.kafka.split(",")(0)
+//    val host=hostport.split(":")(0)
+//    val port=hostport.split(":")(1).toInt
+//    println(host)
+//    println(port)
+
+    val s:String = null;
+    println(s!= null && s.isEmpty)
+    println(Some(s).isEmpty)
   }
 }

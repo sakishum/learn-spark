@@ -27,6 +27,9 @@ object OutputToKafka {
     val data = messages.map(x => x._2).map(x => {
       println("XXXXXXXXXXXXXXXXXXXXXXXX")
       //TODO:与华为的接口格式未定，姑且认为每个事件的数据是不同的topic,且字段用"|"分隔
+
+      if(Some(x).isEmpty){  Map[String,String]()}
+      else{
       consumerFrom.head match {
         case Conf.consume_topic_usim => {
           val a = x.split("\\|")
@@ -44,8 +47,9 @@ object OutputToKafka {
           Map("phone_no"->a(0), "prod_prcid" -> a(1),"date" -> a(2 ))
         }
         case _ => Map[String,String]()
-      }
+      }}
     }).filter(!_.isEmpty)
+
     //源数据格式解析完毕,判断规则发送数据
     data.foreachRDD(rdd => {
       //TODO:是不是可以将规则周期性的广播???

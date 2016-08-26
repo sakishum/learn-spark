@@ -11,7 +11,7 @@ def main(args:Array[String]): Unit ={
   val sparkConf = new SparkConf().setAppName("KafkaStreamDist").setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
   val ssc = new StreamingContext(sparkConf, Seconds(5))
   val topicsSet=Set(Conf.consume_topic_netpay,Conf.consume_topic_order,Conf.consume_topic_usim)
-  val kafkaParams = Map[String, String]("metadata.broker.list" -> Conf.kafka,"group.id" -> Conf.groupid,"auto.offset.reset"->"smallest")
+  val kafkaParams = Map[String, String]("metadata.broker.list" -> Conf.kafka,"group.id" -> Conf.groupid)
 
   //DirectStream
   val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](

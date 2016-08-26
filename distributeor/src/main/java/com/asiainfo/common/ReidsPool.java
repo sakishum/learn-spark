@@ -3,6 +3,8 @@ package com.asiainfo.common;
 import com.asiainfo.Conf;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Protocol;
+
 import java.io.Serializable;
 
 /**
@@ -10,6 +12,7 @@ import java.io.Serializable;
  * Created by migle on 2016/8/19.
  */
 public class ReidsPool{
+    private final static GenericObjectPoolConfig poolConfig  = new GenericObjectPoolConfig();
     private ReidsPool() {
     }
 //private volatile static JedisPool pool;
@@ -23,7 +26,11 @@ public class ReidsPool{
 //        }
 //        return pool;
 //    }
-//TODO:连接池参数设置
+
+    static {
+        poolConfig.setMaxIdle(5);
+        poolConfig.setMaxTotal(20);
+    }
 
     public static final JedisPool pool(){
         return PoolHolder.pool;
@@ -37,7 +44,8 @@ public class ReidsPool{
         System.out.println("=========================redispool================================");
     }
     private static class PoolHolder{
-        public final static JedisPool pool = new JedisPool(new GenericObjectPoolConfig(), Conf.redis_host, Conf.redis_port, 2000, Conf.redis_pwd);
+       // public final static JedisPool pool = new JedisPool(new GenericObjectPoolConfig(), Conf.redis_host, Conf.redis_port, Protocol.DEFAULT_TIMEOUT, Conf.redis_pwd);
+        public final static JedisPool pool = new JedisPool(poolConfig, Conf.redis_host, Conf.redis_port, Protocol.DEFAULT_TIMEOUT, Conf.redis_pwd);
         static{
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
@@ -51,9 +59,9 @@ public class ReidsPool{
     }
 
     public static void main(String[] args) {
-        ReidsPool.pool();
-        ReidsPool.pool();
-        ReidsPool.pool();
+        ReidsPool.pool().getResource();
+        ReidsPool.pool().getResource();
+        ReidsPool.getInfo();
     }
 }
 
