@@ -5,12 +5,14 @@ package com.asiainfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 public class Conf {
     private static final Properties param = new Properties();
+
     static {
         InputStream in = Conf.class.getClassLoader().getResourceAsStream("ai-event.properties");
         try {
@@ -21,7 +23,7 @@ public class Conf {
         }
     }
 
-
+    public static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //    public static final String kafka="vm-centos-00:9092,vm-centos-01:9092";
 //    public static final String zkhosts="vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181";
 //    public static final String groupid="ai-event";

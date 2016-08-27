@@ -1,4 +1,4 @@
-
+import com.asiainfo.Conf
 ;
 /**
  * Created by migle on 2016/8/17.
@@ -39,8 +39,14 @@ object ScalaLang {
 //    println(host)
 //    println(port)
 
-    val s:String = null;
-    println(s!= null && s.isEmpty)
-    println(Some(s).isEmpty)
+//    val s:String = null;
+//    println(s!= null && s.isEmpty)
+//    println(Some(s).isEmpty)
+
+   if(!args(0).equals(Conf.consume_topic_netpay)){
+
+     println(s"only support three topics: ${Conf.consume_topic_netpay}  ")
+     sys.exit(-1)
+   }
   }
 }
