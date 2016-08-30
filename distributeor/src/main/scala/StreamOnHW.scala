@@ -6,15 +6,18 @@ import com.asiainfo.rule.Rule
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
 /**
  * Created by migle on 2016/8/26.
+ * 每次处理一个topic,数据从kafka的最新offset开始
+ * 网厅缴费、4g换卡、业务订购三个事件的处理
+ *
  */
 object StreamOnHW {
   def main(args: Array[String]) {
-
     if(args.length<1){
       System.err.println("please input topic")
       System.exit(-1)
@@ -29,10 +32,17 @@ object StreamOnHW {
     val consumerFrom = Set(args(0))
     val sparkConf = new SparkConf().setAppName("AiQcdEvent") //.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
-    val topicMap = consumerFrom.map((_, 2)).toMap
+    val topicMap = consumerFrom.map((_, 1)).toMap
     val messages = KafkaUtils.createStream(ssc,Conf.zkhosts,Conf.groupid,topicMap);
+    val log =  LoggerFactory.getLogger("StreamOnHW")
+
     //KafkaUtils.createDirectStream()  在华为的平台上会报错估计是版本兼容问题
-    val data = messages.map(x => x._2).map(x => {
+    val data = messages.map(x => {
+      log.info("-----------------init------------------")
+      print(x._2)
+      log.info("-----------------init------------------")
+      x._2}
+    ).map(x => {
       //TODO:时间字段是与取系统时间呢还是华为加？
       //每个事件的数据是不同的topic,且字段用"|"分隔
       if(Some(x).isEmpty){  Map[String,String]()}
@@ -43,6 +53,7 @@ object StreamOnHW {
             Map("phone_no"->a(0), "date" -> Conf.sf.format(new Date()))
           }
           case Conf.consume_topic_netpay => {
+              println(x)
             val a = x.split("\\|")
             Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> Conf.sf.format(new Date()))
           }
@@ -79,7 +90,7 @@ object StreamOnHW {
             }
           });
           jedis.close()
-          rules.foreach(println);
+          //rules.foreach(println);
           //规则判断,生成最终结果
           val data = rules.map(rule => rule.rule(line.toMap.asJava)).filter(e=>e.hasData)
           //将最终结果写入kafka

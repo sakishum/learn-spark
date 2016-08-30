@@ -11,7 +11,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import scala.collection.JavaConverters._
 /**
  * Created by migle on 2016/8/12.
- * 每次处理一个topic,数据从kafka的最新offset开始
+ *
  */
 object AiEvent {
   def main(args: Array[String]) {
