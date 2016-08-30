@@ -17,7 +17,7 @@ zookeeper.connect=vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181
 启动：bin/kafka-server-start.sh config/server.properties
 
 创建一个topic
-bin/kafka-topics.sh --create --zookeeper vm-centos-01:2181 --replication-factor 1 --partitions 1 --topic kafkatest
+bin/kafka-topics.sh --create --zookeeper vm-centos-01:2181 --replication-factor 1 --partitions 3 --topic kafkatest
 
 查看topic 
 bin/kafka-topics.sh --list --zookeeper vm-centos-01:2181
@@ -29,6 +29,22 @@ bin/kafka-console-producer.sh --broker-list vm-centos-00:9092   --topic kafkates
 
 启动consumer
 bin/kafka-console-consumer.sh --zookeeper   vm-centos-01:2181 --from-beginning --topic kafkatest
+
+
+
+
+bin/kafka-topics.sh --zookeeper vm-centos-01:2181 --describe  --topic kafkatest 
+查看分区\leader\
+
+查看Consumer的Group、Topic、分区ID、分区对应已经消费的Offset、logSize大小，Lag以及Owner等信息
+bin/kafka-consumer-offset-checker.sh --zookeeper www.iteblog.com:2181 --topic test --group spark --broker-info
+
+
+
+
+
+更多管理工具
+http://blog.csdn.net/wuliusir/article/details/51062904
 
 ## 集群
 scp -r /opt/kafka_2.11-0.9.0.1 vm-centos-01:/opt/
@@ -69,4 +85,5 @@ kafka.send('kafkatest', b"helo kafka-python")
 
 
 
-
+########其它
+Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个set里的所有replica都跟上了leader，只有ISR里的成员才有被选为leader的可能

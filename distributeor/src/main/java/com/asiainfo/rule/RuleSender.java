@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by migle on 2016/8/16.
- * <p/>
+ * <p>
  * 读取数据库中的规则，检查正确性及时间，发送至redis中供数据处理程序读取,清理缓存中的过期规则
  */
 public class RuleSender {
@@ -52,16 +52,16 @@ public class RuleSender {
         });
 
         //清理下线规则
-        if(rules.size() != jedis.hlen(redis_rule_key)){
-            String offlinesql = String.format("select * from  %s  where state != '1'",ruleTableName);
+        if (rules.size() != jedis.hlen(redis_rule_key)) {
+            String offlinesql = String.format("select * from  %s  where state != '1'", ruleTableName);
             System.out.println(offlinesql);
             List<String> offline = db.query(offlinesql, new RuleResultMapper());
-            offline.forEach(str->{
+            offline.forEach(str -> {
                 Rule r = new Rule(str);
-               // System.out.println(r);
+                // System.out.println(r);
                 //System.out.println(jedis.sismember(redis_rule_key,r));
-               // jedis.srem(redis_rule_key,r);
-                jedis.hdel(redis_rule_key,r.getRuleid());
+                // jedis.srem(redis_rule_key,r);
+                jedis.hdel(redis_rule_key, r.getRuleid());
             });
         }
         jedis.close();
@@ -75,7 +75,7 @@ public class RuleSender {
         String curDate = sf.format(new Date());
         String sql = String.format("select * from  %s  where state='0'  and start_time<= '%s'  and end_time > '%s' ", ruleTableName, curDate, curDate);  //FIXME:时间段控制
         System.out.println(sql);
-        List<String> query = db.query(sql,new RuleResultMapper());
+        List<String> query = db.query(sql, new RuleResultMapper());
 
         query.stream().forEach(str -> {
             Rule r = new Rule(str);
@@ -107,16 +107,16 @@ public class RuleSender {
         Jedis jedis = new Jedis(redis_host);
         jedis.auth(redis_pwd);
         //清理过期规则
-        jedis.hgetAll(redis_rule_key).forEach((k,v) -> {
+        jedis.hgetAll(redis_rule_key).forEach((k, v) -> {
             Rule r = new Rule(v);
             if (r.getEndtime().getTime() <= System.currentTimeMillis()) {
-                jedis.hdel(redis_rule_key,r.getRuleid());
+                jedis.hdel(redis_rule_key, r.getRuleid());
             }
         });
         jedis.close();
     }
 
-    class RuleResultMapper implements ResultMapper<String>{
+    class RuleResultMapper implements ResultMapper<String> {
         @Override
         public String map(ResultSet rs) throws SQLException {
             StringBuilder ss = new StringBuilder("{");
@@ -151,18 +151,16 @@ public class RuleSender {
 //        r.cacheRuler();     //送缓存
 //        // r.cleanRedis();
 
-while(true){
-    RuleSender r = new RuleSender();
-    System.out.println("------------------receiveRuel----------------");
-    r.receiveRuel();
-    System.out.println("------------------cacheRuler----------------");
-    r.cacheRuler();
-    System.out.println("------------------cleanRedis----------------");
-    r.cleanRedis();
-    Thread.sleep(1000*60*5);
-}
-
-
+        while (true) {
+            RuleSender r = new RuleSender();
+            System.out.println("------------------receiveRuel----------------");
+            r.receiveRuel();
+            System.out.println("------------------cacheRuler----------------");
+            r.cacheRuler();
+            System.out.println("------------------cleanRedis----------------");
+            r.cleanRedis();
+            Thread.sleep(1000 * 60 * 10);
+        }
     }
 }
 
@@ -177,14 +175,14 @@ while(true){
  * end_time      timestamp,
  * state         varchar(2)
  * );
- * <p/>
+ * <p>
  * insert into rule_data_transfer values
  * ('qcd_123','event_netpay','payment_fee range 10,50','guser1','2016-08-15 10:49:27','2016-09-15 14:49:27','0')
- * <p/>
+ * <p>
  * insert into rule_data_transfer values
  * ('qcd_456','event_netpay','payment_fee range 100,200','guser1','2016-08-15 10:49:27','2016-09-15 14:49:27','0')
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * insert into rule_data_transfer values
  * ('qcd_789','event_netpay','payment_fee range 100,200','guser1','2016-08-15 10:49:27','2016-08-15 14:49:27','0')
  * insert into rule_data_transfer values

@@ -1,4 +1,4 @@
-package com.asiainfo.spark
+package com.asiainfo.aistream
 
 import com.asiainfo.Conf
 import com.asiainfo.common.ReidsPool
@@ -7,6 +7,7 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+
 import scala.collection.JavaConverters._
 /**
   * Created by migle on 2016/8/12.

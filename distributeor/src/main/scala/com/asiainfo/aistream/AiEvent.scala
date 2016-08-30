@@ -1,4 +1,4 @@
-package com.asiainfo.spark
+package com.asiainfo.aistream
 
 import com.asiainfo.Conf
 import com.asiainfo.common.ReidsPool
@@ -8,14 +8,15 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.{KafkaTool, KafkaUtils}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+
 import scala.collection.JavaConverters._
 /**
  * Created by migle on 2016/8/12.
+ * 三个topic启一个app
  *
  */
 object AiEvent {
   def main(args: Array[String]) {
-    //一个topic启一个app
     val topics = Set(Conf.consume_topic_netpay,Conf.consume_topic_order,Conf.consume_topic_usim)
     val brokers  = Conf.kafka
     val sparkConf = new SparkConf().setAppName("AiEventTest")//.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
@@ -58,12 +59,8 @@ object AiEvent {
     }}
     ).filter(!_.isEmpty)
 
-
-
-
     //源数据格式解析完毕,判断规则发送数据
     data.foreachRDD(rdd => {
-      //TODO:是不是可以将规则周期性的广播???
       //TODO:是不是在这里保存一下OFFSET
       rdd.foreachPartition(p => {
 
@@ -74,8 +71,7 @@ object AiEvent {
           jedis.close()
 
           val rules  = rulesData.asScala.map(x =>{new Rule(x._2)}).filter(r=>{
-            //来源数据与规则的匹配判断，tips:后续如果规则太多的话放在不同的key中就不需要在这里面判断了
-            //规则让规则来判断
+            //TODO:规则让规则来判断
             line.get("s_topic").get match {
               case Conf.consume_topic_netpay => {
                 r.getEventid.equalsIgnoreCase(Conf.eventNetpay)
@@ -89,7 +85,6 @@ object AiEvent {
               case _ => false
             }
           });
-
 
           println("===================================")
           rules.foreach(println);

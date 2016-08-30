@@ -30,17 +30,19 @@ object StreamOnHW {
     }
 
     val consumerFrom = Set(args(0))
-    val sparkConf = new SparkConf().setAppName("AiQcdEvent") //.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
-    val ssc = new StreamingContext(sparkConf, Seconds(5))
+    val sparkConf = new SparkConf().setAppName("AiQcdEvent")
+    val ssc = new StreamingContext(sparkConf, Seconds(60*5))
     val topicMap = consumerFrom.map((_, 1)).toMap
     val messages = KafkaUtils.createStream(ssc,Conf.zkhosts,Conf.groupid,topicMap);
     val log =  LoggerFactory.getLogger("StreamOnHW")
 
+    log.info("=====================STREAMONHW===============================")
+
     //KafkaUtils.createDirectStream()  在华为的平台上会报错估计是版本兼容问题
     val data = messages.map(x => {
-      log.info("-----------------init------------------")
-      print(x._2)
-      log.info("-----------------init------------------")
+      log.info("-----------------printmsg------------------")
+      log.info(x._2)
+      log.info("-----------------printmsg------------------")
       x._2}
     ).map(x => {
       //TODO:时间字段是与取系统时间呢还是华为加？
@@ -53,7 +55,7 @@ object StreamOnHW {
             Map("phone_no"->a(0), "date" -> Conf.sf.format(new Date()))
           }
           case Conf.consume_topic_netpay => {
-              println(x)
+            println(x)
             val a = x.split("\\|")
             Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> Conf.sf.format(new Date()))
           }
@@ -67,8 +69,6 @@ object StreamOnHW {
 
     //源数据格式解析完毕,判断规则发送数据
     data.foreachRDD(rdd => {
-      //TODO:是不是可以将规则周期性的广播???
-      //TODO:是不是在这里保存一下OFFSET
       rdd.foreachPartition(p => {
         p.foreach(line => {
           val jedis = ReidsPool.pool.getResource;

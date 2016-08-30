@@ -112,3 +112,15 @@ public class FTPUploader {
         ftp.close();
     }
 }
+
+
+
+
+
+java 
+-cp 通配符 
+java -cp /app/lib/*  Main   
+而不是  java -cp /app/lib/*.jar
+
+低版本
+java -cp $(echo /app/lib/*.jar | tr ' ' ':') Main
