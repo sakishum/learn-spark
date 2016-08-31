@@ -1,4 +1,5 @@
 package org.apache.spark.streaming.kafka
+
 import kafka.common.TopicAndPartition
 
 /**
@@ -12,4 +13,5 @@ object KafkaTool {
     //TODO:自己实现一个
     KafkaUtils.getFromOffsets(kc,kafkaParams,topics)
   }
+
 }

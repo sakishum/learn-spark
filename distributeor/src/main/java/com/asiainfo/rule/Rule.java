@@ -2,8 +2,7 @@ package com.asiainfo.rule;
 
 import com.alibaba.fastjson.JSON;
 import com.asiainfo.Conf;
-import redis.clients.jedis.Jedis;
-import com.asiainfo.common.ReidsPool;
+import com.asiainfo.common.RedisClusterPool;
 import java.io.Serializable;
 import java.util.*;
 
@@ -100,7 +99,6 @@ public class Rule implements Serializable {
     }
 
     public Output rule(Map<String, String> data) {
-        //TODO:容错处理！！！
         //todo:字段选择也是规则的一部分
         //是否在要求的时间段内
         if (System.currentTimeMillis() < this.starttime.getTime() || System.currentTimeMillis() > this.endtime.getTime()) {
@@ -109,7 +107,7 @@ public class Rule implements Serializable {
         }
         if (this.groupkey == null ? this.exp.compute(data) :
                 //FIXME:暂时群组判断就取"phone_no"字段
-                this.exp.compute(data) && IsInRedis(data.getOrDefault("phone_no",""))) {
+                this.exp.compute(data) && IsInRedis(data.getOrDefault("phone_no",""),this.ruleid)) {
             Map<String, String> m = new HashMap<>(data);
             m.put("ruleid", this.ruleid);
             m.put("eventid", this.eventid);
@@ -123,9 +121,12 @@ public class Rule implements Serializable {
     }
 
 //TODO:要把这一部分合并成Exp的一部分  filed:redis#redis_key
-    private boolean IsInRedis(String str) {
-        Jedis jedis = ReidsPool.pool().getResource();
-        return jedis.sismember(groupkey, str);
+    private boolean IsInRedis(String str,String ruldid) {
+
+        //Jedis jedis = ReidsPool.pool().getResource();
+        //FIXME:找阿杜确认key
+        return RedisClusterPool.pool().sismember("ACTIVITYLIST."+ruldid+".d01", str);
+
     }
 
 

@@ -188,6 +188,7 @@ public class RedisAPIDemo {
         //lrem key count value   //删除最多count个值为value的元素; count大于0从表头搜索，小于0从表尾搜索，等于0全部删除
         jedis.lrem("users", -1, "u3");
 
+
     }
 
     /**

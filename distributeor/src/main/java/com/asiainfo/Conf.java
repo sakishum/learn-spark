@@ -64,6 +64,7 @@ public class Conf {
 
     //规则缓存相关
     public static final String redis_host = param.getProperty("redis.hosts");
+    public static final String redis_cluster = param.getProperty("redis.cluster");
     public static final int redis_port = Integer.valueOf(param.getProperty("redis.port"));
     public static final String redis_pwd =  param.getProperty("redis.pwd");
     public static final String redis_rule_key=param.getProperty("redis.rule.key");

@@ -11,6 +11,7 @@ import java.io.Serializable;
  * Redis连接池
  * Created by migle on 2016/8/19.
  */
+
 public class ReidsPool{
     private final static GenericObjectPoolConfig poolConfig  = new GenericObjectPoolConfig();
     private ReidsPool() {

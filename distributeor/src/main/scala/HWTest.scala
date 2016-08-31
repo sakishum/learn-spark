@@ -25,7 +25,7 @@ object HWTest {
     println("-"*50)
    //
     val kafkaParams = Map[String, String]("metadata.broker.list" -> Conf.kafka,
-                                          "group.id" -> Conf.groupid,
+                                          "group.id" -> "aitest",
                                           "auto.offset.reset"->"smallest",
                                           "zookeeper.connect" -> Conf.zkhosts,
                                           "group.id" -> Conf.groupid,
@@ -36,7 +36,7 @@ object HWTest {
     val sparkConf = new SparkConf().setAppName("AiQcdEventTest") //.setMaster("local[2]") //.setMaster("spark://vm-centos-00:7077")
     val ssc = new StreamingContext(sparkConf, Seconds(5*60))
     val topicMap = consumerFrom.map((_, 2)).toMap
-    //val messages = KafkaUtils.createStream(ssc,Conf.zkhosts,Conf.groupid,topicMap);
+    //val messages = KafkaUtils.createStream(ssc,Conf.zkhosts,"aitest",topicMap);
     val messages = KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](ssc,kafkaParams,topicMap,StorageLevel.MEMORY_AND_DISK_SER_2);
     //KafkaUtils.createDirectStream()  在华为的平台上会报错估计是版本兼容问题
     messages.print()

@@ -1,9 +1,10 @@
 package com.asiainfo.rule;
 
 import com.asiainfo.Conf;
+import com.asiainfo.common.RedisClusterPool;
 import com.asiainfo.util.DbUtil;
 import com.asiainfo.util.ResultMapper;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,9 +23,6 @@ public class RuleSender {
     private String url = Conf.db_url;
     private String user = Conf.db_user;
     private String pwd = Conf.db_pwd;
-
-    private String redis_host = Conf.redis_host;
-    private String redis_pwd = Conf.redis_pwd;
     private String redis_rule_key = Conf.redis_rule_key;
 
 
@@ -39,14 +37,12 @@ public class RuleSender {
         String sql = String.format("select * from  %s  where state='1'  and start_time<= '%s'  and end_time > '%s' ", ruleTableName, curDate, curDate);
         System.out.println(sql);
         List<String> rules = db.query(sql, new RuleResultMapper());
-        Jedis jedis = new Jedis(redis_host);
-        jedis.auth(redis_pwd);
+        JedisCluster jedis = RedisClusterPool.pool();
         //写入redis，规则应该不多，一条一条写入也没关系
         //当前生效的规则全部重新写入一次
         rules.stream().forEach(str -> {
             Rule r = new Rule(str);
             if (r.validate()) {
-                //jedis.sadd(redis_rule_key, str);
                 jedis.hset(redis_rule_key, r.getRuleid(), str);
             }
         });
@@ -58,13 +54,9 @@ public class RuleSender {
             List<String> offline = db.query(offlinesql, new RuleResultMapper());
             offline.forEach(str -> {
                 Rule r = new Rule(str);
-                // System.out.println(r);
-                //System.out.println(jedis.sismember(redis_rule_key,r));
-                // jedis.srem(redis_rule_key,r);
                 jedis.hdel(redis_rule_key, r.getRuleid());
             });
         }
-        jedis.close();
         db.close();
     }
 
@@ -104,8 +96,7 @@ public class RuleSender {
 
     //定期从redis里面清理过期及下线的规则
     public void cleanRedis() throws SQLException {
-        Jedis jedis = new Jedis(redis_host);
-        jedis.auth(redis_pwd);
+       JedisCluster jedis = RedisClusterPool.pool();
         //清理过期规则
         jedis.hgetAll(redis_rule_key).forEach((k, v) -> {
             Rule r = new Rule(v);
@@ -113,7 +104,6 @@ public class RuleSender {
                 jedis.hdel(redis_rule_key, r.getRuleid());
             }
         });
-        jedis.close();
     }
 
     class RuleResultMapper implements ResultMapper<String> {
