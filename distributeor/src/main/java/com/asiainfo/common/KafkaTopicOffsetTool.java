@@ -74,8 +74,6 @@ public class KafkaTopicOffsetTool {
         SimpleConsumer consumer = new SimpleConsumer("QCD-kafka-001", 9092, 100000, 64 * 1024, "leaderLookup");
         TopicMetadataResponse msg = consumer.send(tmr);
         Map<TopicAndPartition, PartitionOffsetRequestInfo> tp = new HashMap<>();
-
-
         for (TopicMetadata tm : msg.topicsMetadata()) {
             //System.out.println(tm.topic());
             for (PartitionMetadata pm : tm.partitionsMetadata()) {
@@ -108,8 +106,9 @@ public class KafkaTopicOffsetTool {
 //看实际应用选择
 //从redis或mysql中返回保存的offset
 
-
 //最小的就不需要了吧
+
+
 
 
 }

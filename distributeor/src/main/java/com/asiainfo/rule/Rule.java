@@ -121,12 +121,14 @@ public class Rule implements Serializable {
     }
 
 //TODO:要把这一部分合并成Exp的一部分  filed:redis#redis_key
-    private boolean IsInRedis(String str,String ruldid) {
-
+    private boolean IsInRedis(String val,String ruldid) {
         //Jedis jedis = ReidsPool.pool().getResource();
-        //FIXME:找阿杜确认key
-        return RedisClusterPool.pool().sismember("ACTIVITYLIST."+ruldid+".d01", str);
-
+        //ruleid：qcd_营销活动编码
+        //目前只有短信渠道有实时营销,目标用户谢谢在list中，后面需要改成set，目前先不做判断
+        //String key = "ACTIVELIST:d01:" + ruleid.substring(4);
+        //return RedisClusterPool.pool().sismember(key, val);
+        //FIXME:目标客户存在redis的list，后续修改成set后在此判断
+        return true;
     }
 
 

@@ -1,5 +1,3 @@
-import java.util.Date
-
 import com.asiainfo.Conf
 import com.asiainfo.common.RedisClusterPool
 import com.asiainfo.rule.Rule
@@ -29,39 +27,31 @@ object StreamOnHW {
     }
 
     val consumerFrom = Set(args(0))
-    val sparkConf = new SparkConf().setAppName("AiQcdEvent")
+    val sparkConf = new SparkConf().setAppName("AiQcdEvent-"+consumerFrom.head)
     val ssc = new StreamingContext(sparkConf, Seconds(5))
     val topicMap = consumerFrom.map((_, 1)).toMap
     val messages = KafkaUtils.createStream(ssc,Conf.zkhosts,Conf.groupid,topicMap);
     val log =  LoggerFactory.getLogger("StreamOnHW")
-
-
     log.info("=====================STREAMONHW===============================")
 
     //KafkaUtils.createDirectStream()  在华为的平台上会报错估计是版本兼容问题
-    val data = messages.map(x => {
-      log.info("-----------------printmsg------------------")
-      log.info(x._2)
-      log.info("-----------------printmsg------------------")
-      x._2}
-    ).map(x => {
-      //TODO:时间字段是华为加,但还没有加进来暂时取系统时间
+    val data = messages.map(x => x._2).map(x => {
       //每个事件的数据是不同的topic,且字段用"|"分隔
       if(Some(x).isEmpty){  Map[String,String]()}
       else{
         consumerFrom.head match {
           case Conf.consume_topic_usim => {
             val a = x.split("\\|")
-            Map("phone_no"->a(0), "date" -> Conf.sf.format(new Date()))
+            Map("phone_no"->a(0), "date" -> a(1))
           }
           case Conf.consume_topic_netpay => {
               println(x)
             val a = x.split("\\|")
-            Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> Conf.sf.format(new Date()))
+            Map("phone_no"->a(0), "payment_fee" -> a(1), "login_no" -> a(2), "date" -> a(3))
           }
           case Conf.consume_topic_order => {
             val a = x.split("\\|")
-            Map("phone_no"->a(0), "prod_prcid" -> a(1),"date" -> Conf.sf.format(new Date()))
+            Map("phone_no"->a(0), "prod_prcid" -> a(1),"date" -> a(2))
           }
           case _ => Map[String,String]()
         }}

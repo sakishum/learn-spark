@@ -67,11 +67,7 @@ public class Exp {
 //        Map<String,String> data = new HashMap<>();
 //        data.put("x","ee");
 //        com.asiainfo.rule.Exp exp = new com.asiainfo.rule.Exp("x","in","aa,bb,cc,dd");
-        Map<String,String> data = new HashMap<>();
-        data.put("x","50");
-        Exp exp = new Exp("x","range","50,100");
+        String ruleid="qcd_123";
 
-
-        System.out.println(exp.compute(data));
     }
 }
