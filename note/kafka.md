@@ -87,3 +87,8 @@ kafka.send('kafkatest', b"helo kafka-python")
 
 ########其它
 Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个set里的所有replica都跟上了leader，只有ISR里的成员才有被选为leader的可能
+
+
+###
+kafka.utils.ZkUtils
+类中定义了从zk查询kafka的broker\topic\consumer等的信息方法
