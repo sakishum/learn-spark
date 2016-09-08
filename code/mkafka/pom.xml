@@ -10,22 +10,16 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mkafka</artifactId>
     <dependencies>
-        <dependency>
+        <!--注意，此处的版本一定要与server版本兼容！-->
+        <!--<dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <!--注意，此处的版本一定要与server版本兼容！-->
             <version>0.9.0.0</version>
-        </dependency>
-
+        </dependency>-->
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.10</artifactId>
+            <version>0.8.2.1</version>
         </dependency>
     </dependencies>
 </project>
