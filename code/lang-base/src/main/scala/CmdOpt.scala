@@ -3,6 +3,9 @@
  */
 object CmdOpt {
   def main(args: Array[String]) {
-      println("parse opt")
+      val x =Set("aa","bb","cc")
+      val m = x.map(x=>x+"!!")
+    println(m.toSeq)
+
   }
 }

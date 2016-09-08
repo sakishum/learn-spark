@@ -1,6 +1,8 @@
 spark streaming
 
 
+ KafkaUtils.createStream读kafka中数据中kafka-consumer-offset-checker.sh中的offset和lag不变!!
+
 
 ##foreachRDD 
 
