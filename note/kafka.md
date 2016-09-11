@@ -92,3 +92,23 @@ Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个s
 ###
 kafka.utils.ZkUtils
 类中定义了从zk查询kafka的broker\topic\consumer等的信息方法
+
+
+从指定位置开始读取
+1. 修改zk中的offset
+`set  /consumers/[groupid]/offsets/[topic]/[partitionid] offset`
+set  /consumers/g1/offsets/sdi_scdt_3/0 10
+
+
+
+auto.offset.reset:*如果zookeeper中没有初始化的offset或者被清空时*从那个offset开始消费的问题
+
+smallest：如果zookeeper中没有初始化的offset时，从最小位置开始
+largest：如果zookeeper中没有初始化的offset时，从最大位置开始，也就是新生产的消息才能被消费到
+
+如何zk中有offset,则程序开始后从接着消费后面的消息
+
+
+TODO:
+1.如何只读取指定条数的信息  
+2. offset何时提交？
