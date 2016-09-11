@@ -88,6 +88,14 @@ kafka.send('kafkatest', b"helo kafka-python")
 ########其它
 Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个set里的所有replica都跟上了leader，只有ISR里的成员才有被选为leader的可能
 
+##关于 offset
+auto.commit.enable默认为true, consumer会定时地将offset写入到zookeeper上(时间间隔由auto.commit.interval.ms决定，默认1分钟).
+收到消息但还没有commit offset时如果程序结束下次启动时会重复收到消息 //TODO:code
+
+##关于auto.offset.reset
+smallest, 将offset设为当前所能用的最小的offset。 注意不一定是0。
+largest, 将offset设为当前可用的最大的offset。也就是consumer将只处理最新写入的消息。 默认值。
+
 
 ###
 kafka.utils.ZkUtils

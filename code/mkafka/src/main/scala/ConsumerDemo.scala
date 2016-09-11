@@ -11,7 +11,7 @@ object ConsumerDemo {
  private[this] val downLatch = new CountDownLatch(10);
   def main(args: Array[String]) {
     val props = new Properties()
-    props.put("zookeeper.connect", "vm-centos-00:2181")
+    props.put("zookeeper.connect", "vm-centos-01:2181")
     props.put("group.id", "g2")
     props.put("zookeeper.session.timeout.ms", "15000")
     props.put("zookeeper.sync.time.ms", "2000")
