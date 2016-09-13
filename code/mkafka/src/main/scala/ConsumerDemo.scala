@@ -3,12 +3,12 @@
  */
 
 import java.util.Properties
-import java.util.concurrent.{CountDownLatch, Executors}
+import java.util.concurrent.Executors
 
 import kafka.consumer.{ConsumerConfig, KafkaStream}
 
 object ConsumerDemo {
- private[this] val downLatch = new CountDownLatch(10);
+ //private[this] val downLatch = new CountDownLatch(10);  //FIXME  读取指定条数
   def main(args: Array[String]) {
     val props = new Properties()
     props.put("zookeeper.connect", "vm-centos-00:2181")
@@ -18,7 +18,6 @@ object ConsumerDemo {
     props.put("auto.commit.interval.ms", "1000")
     props.put("auto.offset.reset", "smallest")
     val consumer = kafka.consumer.Consumer.create(new ConsumerConfig(props))
-
 
     val mtot = Map("sdi_scdt_3" -> 1) //, "sdi_scdt_4" -> 2, "sdi_scdt_5" -> 1
     val tstreams = consumer.createMessageStreams(mtot)
@@ -32,12 +31,10 @@ object ConsumerDemo {
             }
           }
         }
-        downLatch.await()
+        //downLatch.await()
         //executorpool.shutdown()
         //executorpool.awaitTermination(0, TimeUnit.MILLISECONDS)
         //consumer.shutdown()
-
-
     println("运行结束")
   }
 
@@ -50,7 +47,7 @@ object ConsumerDemo {
 
           val msgAndMetadata = streamIterator.next()
           println("%s:%-5d:%s".format(msgAndMetadata.topic,msgAndMetadata.offset,new String(msgAndMetadata.message())))
-          downLatch.countDown()
+          //downLatch.countDown()
         }
       } catch {
         case e: Throwable => e.printStackTrace()
