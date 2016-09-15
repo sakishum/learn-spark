@@ -7,11 +7,11 @@ import java.util.concurrent.Executors
 
 import kafka.consumer.{ConsumerConfig, KafkaStream}
 
-object ConsumerDemo {
+object HighLevelConsumer {
  //private[this] val downLatch = new CountDownLatch(10);  //FIXME  读取指定条数
   def main(args: Array[String]) {
     val props = new Properties()
-    props.put("zookeeper.connect", "vm-centos-00:2181")
+    props.put("zookeeper.connect", "vm-centos-01:2181")
     props.put("group.id", "g1")
     props.put("zookeeper.session.timeout.ms", "15000")
     props.put("zookeeper.sync.time.ms", "2000")
@@ -19,7 +19,7 @@ object ConsumerDemo {
     props.put("auto.offset.reset", "smallest")
     val consumer = kafka.consumer.Consumer.create(new ConsumerConfig(props))
 
-    val mtot = Map("sdi_scdt_3" -> 1) //, "sdi_scdt_4" -> 2, "sdi_scdt_5" -> 1
+    val mtot = Map("sdi_scdt_x" -> 1) //, "sdi_scdt_4" -> 2, "sdi_scdt_5" -> 1
     val tstreams = consumer.createMessageStreams(mtot)
 
     val executorpool = Executors.newFixedThreadPool(mtot.values.sum)

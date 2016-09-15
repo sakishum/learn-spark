@@ -22,20 +22,20 @@ public class DataGen {
                 "org.apache.kafka.common.serialization.StringSerializer");
 
 
-        String[] topics=new String[]{"sdi_scdt_3","sdi_scdt_4","sdi_scdt_5"};
+        String[] topics=new String[]{"sdi_scdt_x"};
         String topic ="";
         Producer<String, String> producer = new KafkaProducer<>(props);
         //producer.send(new ProducerRecord<String, String>("kafkatest", "hello kafka "));
         for(int i = 0; i < 100; i++){
             String msg = String.format("%s|%s|%s|%s",getPhoneNo(),new Random().nextInt(200),"m"+new Random().nextInt(1000), "20160810");
-            topic = topics[new Random().nextInt(1)];
+            topic = topics[new Random().nextInt(topics.length)];
             System.out.println(topic + "  " + msg);
-             Thread.sleep(1000);
+             //Thread.sleep(1000);
             producer.send(new ProducerRecord<String, String>(topic, msg));
         }
 
         //producer.send(new ProducerRecord<String, String>("kafkatest", Integer.toString(i), Integer.toString(i)));
-        // producer.close();
+        producer.close();
     }
 
     public static String  getPhoneNo()  {
