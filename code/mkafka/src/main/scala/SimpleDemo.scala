@@ -207,7 +207,7 @@ class SimpleDemo(val kafkaParams: Map[String, String]) {
         consumer = new SimpleConsumer(broker._1, broker._2, 100000,
           64 * 1024, kafkaParams.get("group.id").getOrElse("default.group"))
         fn(consumer)
-        // catch
+        // catch exception
       } finally {
         consumer.close
       }
