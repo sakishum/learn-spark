@@ -124,7 +124,7 @@ class SimpleDemo(val kafkaParams: Map[String, String]) {
   }
 
   /**
-   * 返回此consumer group 当前消费到的offset
+   * 返回此consumer group当前offset
    * @param tps
    * @return
    */
