@@ -112,3 +112,8 @@ largest：如果zookeeper中没有初始化的offset时，从最大位置开始�
 TODO:
 1.如何只读取指定条数的信息  
 2. offset何时提交？
+
+
+关于offset 
+各种样例代码中的getLeaderOffsets其实取的是可以读取(topic,partition)的最大或最小的offset
+而不是此consumer上次消费到的offset,要读取这个offset需要读取zk，当然前提是已提交到zk

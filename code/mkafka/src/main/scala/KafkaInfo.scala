@@ -1,4 +1,4 @@
-import kafka.utils.ZkUtils
+import kafka.utils.{ZKStringSerializer, ZkUtils}
 import org.I0Itec.zkclient.ZkClient
 
 //import com.aistream.kafka.SecurityUtils
@@ -8,7 +8,7 @@ object KafkaInfo{
     //SecurityUtils.securityPrepare()
     //"vm-centos-00:2181"
     //val zk = new ZkClient(args(0))
-    val zk = new ZkClient("vm-centos-00:2181")
+    val zk = new ZkClient("vm-centos-00:2181",30000, 30000, ZKStringSerializer)
 
 
     val topics = ZkUtils.getAllTopics(zk)
