@@ -193,7 +193,23 @@ Java.asScala
 
 Option:是一个表示有可能包含值的容器
 Option本身是泛型的，并且有两个子类： Some[T] 或 None
+>>scala推荐在可能返回空的方法使用Option[X]作为返回类型。如果有值就返回Some[x](Some也是Option的子类)，否则返回None
 
+Null是所有AnyRef的子类，在scala的类型系统中，AnyRef是Any的子类，同时Any子类的还有AnyVal。对应java值类型的所有类型都是AnyVal的子类。所以Null可以赋值给所有的引用类型(AnyRef)，不能赋值给值类型，这个java的语义是相同的。 null是Null的唯一对象。 
+
+Nothing是所有类型的子类，也是Null的子类。Nothing没有对象，但是可以用来定义类型。例如，如果一个方法抛出异常，则异常的返回值类型就是Nothing(虽然不会返回) 
+
+Nil是一个空的List，定义为List[Nothing]，根据List的定义List[+A]，所有Nil是所有List[T]的子类
+
+Either
+Either 也是一个容器类型，但不同于 Try、Option，它需要两个类型参数： Either[A, B] 要么包含一个类型为 A 的实例，要么包含一个类型为 B 的实例。 这和 Tuple2[A, B] 不一样， Tuple2[A, B] 是两者都要包含。
+
+Either 只有两个子类型： Left、 Right， 如果 Either[A, B] 对象包含的是 A 的实例，那它就是 Left 实例，否则就是 Right 实例。
+
+在语义上，Either 并没有指定哪个子类型代表错误，哪个代表成功， 毕竟，它是一种通用的类型，适用于可能会出现两种结果的场景。 而异常处理只不过是其一种常见的使用场景而已， 不过，按照约定，处理异常时，Left 代表出错的情况，Right 代表成功的情况
+
+Option: 解决null（空指针）问题
+Either: 解决返回值不确定（返回两个值的其中一个）问题
 
 ###容器操作
 foreach
