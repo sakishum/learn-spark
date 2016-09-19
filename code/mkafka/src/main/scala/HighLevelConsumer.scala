@@ -7,6 +7,13 @@ import java.util.concurrent.Executors
 
 import kafka.consumer.{ConsumerConfig, KafkaStream}
 
+/**
+ * High Level Consumer API
+ * 1. 会自动提交offset至zk
+ * 2. 会接着在zk中消费的offset往后继续消费消息
+ * 3. 也可以从头开头消费:删除zk中的offset并且有"auto.offset.reset"->"smallest"
+ * 4. 也可以消费新产生的消费:删除zk中的offset并且有"auto.offset.reset"->"largest"
+ */
 object HighLevelConsumer {
  //private[this] val downLatch = new CountDownLatch(10);  //FIXME  读取指定条数
   def main(args: Array[String]) {

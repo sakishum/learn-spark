@@ -1,6 +1,7 @@
 import kafka.api._
 import kafka.common.TopicAndPartition
 import kafka.consumer.SimpleConsumer
+import kafka.message.MessageAndOffset
 import kafka.utils.{ZKStringSerializer, ZKGroupTopicDirs, ZkUtils}
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNoNodeException
@@ -21,66 +22,11 @@ object SimpleDemo {
 
 
     val demo = new SimpleDemo(kafkaparam)
-     val tps =  demo.getPartitions(topics.toSeq)
+    val tps =  demo.getPartitions(topics.toSeq)
 
-
-    demo.getGroupOffset(tps.get).foreach(m=>println("%s-%s-%s".format(m._1.topic,m._1.partition,m._2)))
-
-
-//
-//
-//        println("========================")
-//        tps.foreach(println)
-//        println("========================")
-//        demo.getLeaderOffsets(tps.get,OffsetRequest.LatestTime,100).foreach(
-//        x=>x.foreach(m=>m._2.foreach{
-//          o=>println("[%s-%s==%s-%s-%s]".format(m._1.topic,m._1.partition,o._1,o._2,o._3))
-//      }))
-
-
-
-//        val simple = new SimpleConsumer("vm-centos-01", 9092, 100000,
-//          64 * 1024, "g2")
-//
-//    val rinfo = simple.fetchOffsets(OffsetFetchRequest("g2",tps.get,versionId=0)).requestInfo
-//        rinfo.foreach{m=>println(m._1.topic + ":" +  m._1.partition + " : " + m._2.toString)}
-
-
-
-
-
-//    println(demo.findLeader("sdi_scdt_x", 0).get)
-//    println(demo.findLeader("sdi_scdt_x", 1).get)
-
-
-//    val tmr = new TopicMetadataRequest(TopicMetadataRequest.CurrentVersion, 0, TopicMetadataRequest.DefaultClientId, Seq())
-//    val tmresp = simple.send(tmr)
-//    tmresp.topicsMetadata.foreach(tm => {
-//      tm.partitionsMetadata.foreach(pm => {
-//        //topic,partition,leader,replicas,isr
-//        println("topic:" + tm.topic + pm.toString())
-//      })
-//    })
-
-
-//    println("simple consumer client")
-//
-//    val req = new FetchRequestBuilder()
-//      .clientId("gx")
-//      .addFetch("sdi_scdt_x", 1, 0L, 200)
-//      .build()
-//
-//    val resp = simple.fetch(req)
-//    //println(resp.messageSet("sdi_scdt_x", 1).size)
-//    resp.messageSet("sdi_scdt_x", 1).foreach(messageAndOffset => {
-//      //println(messageAndOffset.offset)
-//      println(messageAndOffset.nextOffset)
-//      val payload = messageAndOffset.message.payload;
-//      payload.limit()
-//      val bytes = new Array[Byte](payload.limit);
-//      payload.get(bytes);
-//      System.out.println(new String(bytes, "UTF-8"));
-//    })
+    //demo.getGroupOffset(tps.get).foreach(m=>println("%s-%s-%s".format(m._1.topic,m._1.partition,m._2)))
+  val m = demo.fetchMessage((TopicAndPartition("sdi_scdt_x",0),0)).next()
+  println(m.message.payload)
   }
 }
 
@@ -95,7 +41,7 @@ class SimpleDemo(val kafkaParams: Map[String, String]) {
   })
 
   /**
-   * 返回此leader可以
+   * 返回此leader
    * @param topicAndPartitions
    * @param before
    * @param maxNumOffsets   最大返回几个offset? 有什么作用？
@@ -123,6 +69,18 @@ class SimpleDemo(val kafkaParams: Map[String, String]) {
     None
   }
 
+  def fetchMessage(tpo :(TopicAndPartition, Long)):Iterator[MessageAndOffset]={
+    withBrokers(findLeader(tpo._1.topic,tpo._1.partition)){
+      consumer=>{
+        /** the number of byes of messages to attempt to fetch  1MB*/
+        val req = new FetchRequestBuilder().addFetch(tpo._1.topic,tpo._1.partition,tpo._2,1024*1024).build()
+        val resp = consumer.fetch(req)
+        return resp.messageSet(tpo._1.topic,tpo._1.partition).iterator.dropWhile(_.offset < tpo._2)
+      }
+    }
+    null
+  }
+
   /**
    * 返回此consumer group当前offset
    * @param tps
@@ -141,22 +99,13 @@ class SimpleDemo(val kafkaParams: Map[String, String]) {
           if(ZkUtils.pathExists(zkClient,topicDirs.consumerOffsetDir))
             offsetMap.put(tp,-1L)
           else
-            throw z
+            offsetMap.put(tp,0L)  //如果没有，则没有则从0开始
+            //throw z
       }
     })
     zkClient.close()
-
     offsetMap.toMap
   }
-
-
-
-
-  //  private def getFromOffsets(kafkaParams: Map[String, String],
-  //                                     topics: Set[String]
-  //                                     ): Map[TopicAndPartition, Long]{
-  //
-  //  }
 
   def getPartitions(topics: Seq[String]): Option[Seq[TopicAndPartition]] = {
     getPartitionMetadata(topics).map(tms => tms.flatMap(tm => tm.partitionsMetadata.map(pm => TopicAndPartition(tm.topic, pm.partitionId))))

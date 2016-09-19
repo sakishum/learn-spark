@@ -28,20 +28,16 @@ object KafkaInfo{
     //println("--broker--")
     //ZkUtils.getAllBrokersInCluster(zk).foreach(println)
 
+    while (true){
+      var cmd = Console.readLine();
+      cmd match {
+        case "listtopic" => ZkUtils.getAllTopics(zk).foreach(println)
+        case "brokers" => ZkUtils.getAllBrokersInCluster(zk).foreach(println)
+        case "quit" => sys.exit(0)
+        case _  => println("listtopic \t brokers")
+      }
 
-
-
-
-//    while (true){
-//      var cmd = Console.readLine();
-//      cmd match {
-//        case "listtopic" => ZkUtils.getAllTopics(zk).foreach(println)
-//        case "brokers" => ZkUtils.getAllBrokersInCluster(zk).foreach(println)
-//        case "quit" => sys.exit(0)
-//        case _  => println("listtopic \t brokers")
-//      }
-//
-//    }
+    }
 
 
   }
