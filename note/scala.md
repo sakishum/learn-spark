@@ -217,6 +217,10 @@ map
 zip
 partition
 
+###异常
+一般来说，在 Scala 中，好的做法是通过从函数里返回一个合适的值来通知人们程序出错了
+
+
 ##进阶
 
 ### 隐式转换(implicit conversion)
@@ -439,3 +443,8 @@ effective scala
 http://twitter.github.io/effectivescala/index-cn.html
 
 http://docs.scala-lang.org/zh-cn/overviews/collections/conversions-between-java-and-scala-collections
+
+
+
+
+
