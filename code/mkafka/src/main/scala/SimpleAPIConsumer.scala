@@ -6,7 +6,7 @@ import kafka.message.MessageAndOffset
 import kafka.utils.{Logging, ZKStringSerializer, ZKGroupTopicDirs, ZkUtils}
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNoNodeException
-import org.apache.spark.SparkException
+
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer

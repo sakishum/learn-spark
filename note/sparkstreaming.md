@@ -3,6 +3,8 @@ spark streaming
 
  KafkaUtils.createStream读kafka中数据中kafka-consumer-offset-checker.sh中的offset和lag不变!!
 
+##transform 
+转换RDD到另一个RDD
 
 ##foreachRDD 
 
@@ -20,8 +22,13 @@ spark streaming
 
 
 
+##Broadcast
+累加器（Accumulators）和广播变量（Broadcast variables）是无法从Spark Streaming的检查点中恢复回来的
+
+
+
 ##HDFS
-文件为什么读不出来
+文件为什么读不出来！！
 
 ```
 
@@ -58,3 +65,11 @@ initialModTimeIgnoreThreshold = if (newFilesOnly) clock.getTimeMillis() else 0L
 
 
 实现不了根据不同文件名规则处理逻辑稍微有些不一样的情况，返回值里面没有带文件名！
+
+
+
+
+需要关联外部数据来扩展或过滤时:
+1. 数据量大、更新频繁：hbase,Redis直接每条查询
+2. 数据量不大且没有变化:直接broadcast
+3. 数据量不太大，有更新：重新广播  ？？？
