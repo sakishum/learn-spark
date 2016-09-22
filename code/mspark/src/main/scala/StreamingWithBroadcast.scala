@@ -12,6 +12,7 @@ object StreamingWithBroadcast {
     val topics = Set("sdi_scdt_x")
     val conf = new SparkConf().setAppName("StreamingWithBroadcast").setMaster("local[2]")
     val ssc = new StreamingContext(conf, Seconds(10))
+
     val kafkaparam = Map("bootstrap.servers" -> "vm-centos-00:9092,vm-centos-01:9092",
       "zookeeper.connect" -> "vm-centos-01:2181",
       "auto.offset.reset" -> "smallest",
@@ -40,7 +41,7 @@ object StreamingWithBroadcast {
 
 object TermInfo {
   @volatile private var terminfo: Broadcast[Map[String, (String, String)]] = null
-  //针对数量不大，但有更新的外部关联数据是不是可以这样做？比如终端类型表，敏感词过滤等等数
+  //针对数量不大，但有更新的外部关联数据是不是可以这样做？比如终端类型表，敏感词过滤等等数据
   //必要时可以根据累加器或时间来判断是不是要广播来控制频次
   //刷新
   def getTermInfo(sc: SparkContext): Broadcast[Map[String, (String, String)]] = {
@@ -57,6 +58,4 @@ object TermInfo {
     }
     terminfo
   }
-
-
 }

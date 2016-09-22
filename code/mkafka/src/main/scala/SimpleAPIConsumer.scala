@@ -2,11 +2,9 @@ import _root_.SimpleAPIConsumer.Errors
 import kafka.api._
 import kafka.common.{ErrorMapping, TopicAndPartition}
 import kafka.consumer.SimpleConsumer
-import kafka.message.MessageAndOffset
-import kafka.utils.{Logging, ZKStringSerializer, ZKGroupTopicDirs, ZkUtils}
+import kafka.utils.{Logging, ZKGroupTopicDirs, ZKStringSerializer, ZkUtils}
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNoNodeException
-
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -31,8 +29,7 @@ object SimpleAPIConsumer {
     val tps = demo.getPartitions(topics.toSet)
 
     //demo.getGroupOffset(tps.get).foreach(m=>println("%s-%s-%s".format(m._1.topic,m._1.partition,m._2)))
-    val m = demo.fetchMessage((TopicAndPartition("sdi_scdt_x", 0), 0)).next()
-    println(m.message.payload)
+
   }
 }
 
@@ -45,6 +42,8 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
     val hp = x.split(":")
     (hp(0), hp(1).toInt)
   })
+
+
 
   /**
    * 返回此leader
@@ -228,5 +227,12 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
       }
     })
   }
+
+
+//  private def withZookeeper(errs: Errors)(fn:ZkClient=>Any):Unit={
+//    val zkInfo = kafkaParams.get("zookeeper.connect").getOrElse(throw new Exception(
+//      "Must specify zookeeper.connect for read data from zookeeper"))
+//    val zkClient = new ZkClient(zkInfo, 30000, 30000, ZKStringSerializer)
+//  }
 }
 
