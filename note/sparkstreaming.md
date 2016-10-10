@@ -27,6 +27,9 @@ spark streaming
 
 
 
+spark.streaming.kafka.maxRatePerPartition
+
+
 ##HDFS
 文件为什么读不出来！！
 

@@ -9,7 +9,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
  * KafkaUtils.createDirectStream不会将offset提交到zk中，做了checkpoint之后，driver重启后从检查点恢复，会接着offset继续消费
  *
  */
-object StreamingWithKafka {
+object KafkaStreamingWithChk {
   def kafkaContext(chkdir:String)={
     val conf = new SparkConf().setAppName("StreamingWithKafka").setMaster("local[2]")
     val ssc = new StreamingContext(conf,Seconds(60))
@@ -22,11 +22,13 @@ object StreamingWithKafka {
 
     val kafka = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc,kafkaparam,topics).map(_._2)
    // kafka.foreachRDD(_.foreachPartition(_.foreach(println)))
+
     kafka.foreachRDD(rdd=>{
-       rdd.distinct()
-      rdd.foreachPartition(p=>{
-        //
-      })
+      println(rdd.partitions.size)
+//       rdd.distinct()
+//      rdd.foreachPartition(p=>{
+//        //
+//      })
     })
     //kafka.checkpoint()  //这个可以设置检查点的时间间隔,太频繁的保存检查点会影响性能
     ssc.checkpoint(chkdir)

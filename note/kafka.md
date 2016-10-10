@@ -40,8 +40,27 @@ bin/kafka-topics.sh --zookeeper vm-centos-01:2181 --describe  --topic kafkatest
 bin/kafka-consumer-offset-checker.sh --zookeeper www.iteblog.com:2181 --topic test --group spark --broker-info
 
 
+##kafka储存机制
+命名、结构、查找机制、文件清理后offset
+
+1. 磁盘文件
+2. 命名：在kafka数据目录(server.propertiesr的log.dirs中配置)下每个topic一个目录：“topicname-partitionid”比如sdi_scdt_x-0代表sdi_scdt_x的第1个partition(从0开始)
+目录下可能会有多个文件
+每个partion(目录)相当于一个巨型文件被平均分配到多个大小相等segment(段)数据文件中。但每个段segment file消息数量不一定相等，这种特性方便old segment file快速被删除。
+
+segment file组成：由2大部分组成，分别为index file和data file，此2个文件一一对应，成对出现，后缀”.index”和“.log”分别表示为segment索引文件、数据文件.
+segment文件命名规则：partion全局的第一个segment从0开始，后续每个segment文件名为上一个segment文件最后一条消息的offset值。数值最大为64位long大小，19位数字字符长度，没有数字用0填充。
+
+3. Partition中的每条Message由offset来表示它在这个partition中的偏移量，这个offset不是该Message在partition数据文件中的实际存储位置，而是逻辑上一个值，它唯一确定了partition中的一条Message
 
 
+
+
+
+
+参考资料：
+http://tech.meituan.com/kafka-fs-design-theory.html
+http://blog.csdn.net/jewes/article/details/42970799
 
 更多管理工具
 http://blog.csdn.net/wuliusir/article/details/51062904
@@ -120,7 +139,8 @@ largest：如果zookeeper中没有初始化的offset时，从最大位置开始�
 TODO:
 1.如何只读取指定条数的信息  
 2. offset何时提交？
-
+3. log文件格式(python)
+4. 日志清理后offset如何变化？一直递增？
 
 关于offset 
 各种样例代码中的getLeaderOffsets其实取的是可以读取(topic,partition)的最大或最小的offset

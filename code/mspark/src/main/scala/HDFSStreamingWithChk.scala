@@ -7,7 +7,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 /**
  * Created by migle on 2016/9/18.
  */
-object StreamingWithHDFS {
+object HDFSStreamingWithChk {
 
   //有了checkpoint后，程序如果遇到异常而退出，在此期间写入此目录的文件，程序下次启动后能继续接着处理
   def createContext(checkpointdir: String,datafile:String)={

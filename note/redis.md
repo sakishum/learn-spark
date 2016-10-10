@@ -44,15 +44,25 @@ flushall 删除所有数据库的所有key
 flushdb 删除当前数据库的所有key
 ```
 
-###批量执行w命令
+###批量执行命令
 
 ```
-echo "set op pipeline" |./src/redis-cli --pipe
+echo "set op pipeline" |./src/redis-cli 
 
 ```
 
+###大量数据插入
+协议格式：http://www.redis.cn/topics/mass-insert.html
+http://www.redis.cn/topics/protocol.html
 
+cat  xxxx.dat |./src/redis-cli 
 
+redis cluster
+先用 
+cluster keyslot  找到slot
+再找到slot对应的node
+执行时连接找到的node 
+cat  xxxx.dat |./src/redis-cli -c -h xxxx -p xx --pipe
 
 
 ## 数据类型

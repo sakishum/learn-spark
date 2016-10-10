@@ -1,4 +1,3 @@
-import _root_.SimpleAPIConsumer.Errors
 import kafka.api._
 import kafka.common.{ErrorMapping, TopicAndPartition}
 import kafka.consumer.SimpleConsumer
@@ -9,13 +8,14 @@ import org.I0Itec.zkclient.exception.ZkNoNodeException
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+import scala.util.control.NonFatal
 
 
 /**
  * Created by migle on 2016/9/8.
  */
 object SimpleAPIConsumer {
-  private type Errors = ArrayBuffer[Throwable]
+  type Errors = ArrayBuffer[Throwable]
 
   def main(args: Array[String]) {
     val topics = Set("sdi_scdt_x")
@@ -27,13 +27,14 @@ object SimpleAPIConsumer {
 
     val demo = new SimpleAPIConsumer(kafkaparam)
     val tps = demo.getPartitions(topics.toSet)
-
-    //demo.getGroupOffset(tps.get).foreach(m=>println("%s-%s-%s".format(m._1.topic,m._1.partition,m._2)))
+    println(tps.right)
+    //demo.getGroupOffset(tps.right).foreach(m=>println("%s-%s-%s".format(m._1.topic,m._1.partition,m._2)))
 
   }
 }
 
 class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
+  import SimpleAPIConsumer.Errors
   //group.id,zookeeper
   val brokers = kafkaParams.get("metadata.broker.list")
     .orElse(kafkaParams.get("bootstrap.servers"))
@@ -112,6 +113,12 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
     zkClient.close()
     offsetMap.toMap
   }
+
+
+//  def getLogSize():Long={
+//
+//  }
+
 
   /**
    * 查询topic和patition的对应
@@ -221,7 +228,8 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
           64 * 1024, kafkaParams.get("group.id").getOrElse("default.group"))
         fn(consumer)
       } catch {
-        case Exception =>
+        case NonFatal(e) =>
+          errs.append(e)
       } finally {
         consumer.close
       }

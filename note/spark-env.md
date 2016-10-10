@@ -15,3 +15,11 @@
 >>WARN NativeCodeLoader: Unable to load native-hadoop library for your platfor
 
 `export LD_LIBRARY_PATH=/opt/hadoop-2.6.4/lib/native/:$LD_LIBRARY_PATH`
+
+
+
+如果是yarn-client模式，Executor数目由spark-env.sh中的SPARK_EXECUTOR_INSTANCES指定
+`SPARK_EXECUTOR_INSTANCE=100`
+或者用 `--conf "spark.executor.instances=100"` or `--num-executors 100`
+
+

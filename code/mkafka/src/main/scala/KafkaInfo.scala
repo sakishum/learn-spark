@@ -36,9 +36,6 @@ object KafkaInfo{
         case "quit" => sys.exit(0)
         case _  => println("listtopic \t brokers")
       }
-
     }
-
-
   }
 }
