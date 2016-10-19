@@ -12,6 +12,7 @@
         <java.version>1.8</java.version>
         <hadoop.version>2.6.4</hadoop.version>
         <spark.version>1.6.1</spark.version>
+        <hbase.version>1.2.0</hbase.version>
         <kafka.version>2.6.4</kafka.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,6 +39,7 @@
     <modules>
         <module>mhive</module>
         <module>mhdfs</module>
+        <module>mhbase</module>
         <module>myarn</module>
         <module>mspark</module>
         <module>makka</module>

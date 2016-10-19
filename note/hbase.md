@@ -10,28 +10,20 @@ hbase-env.sh中设置JAVA_HOME
 
 ``` 
 <configuration>
-    <property>
-        <name>hbase.zookeeper.quorum</name>
-        <value>avgopt2,avgwebt1,avgweb2</value>
-        <description>The directory shared by RegionServers.
-        </description>
-        </property>
-    <property>
-        <name>hbase.zookeeper.property.dataDir</name>
-        <!--注意这个值在169上要改成/vgopbak/hadoop2/zookeeper-->
-        <value>/vgopbak/hadoop/zookeeper</value>
-        <description>Property from ZooKeeper's config zoo.cfg.
-        The directory where the snapshot is stored.
-        </description>
-    </property>
-
-    <property>
-        <name>hbase.rootdir</name>
-        <value>hdfs://135.191.27.175:9999/hbase</value>
-        <description>The directory shared by RegionServers.
-        </description>
-    </property>
-
+<property>
+<name>hbase.rootdir</name>
+<value>hdfs://vm-centos-01:9999/hbase</value>
+</property>
+<property>  
+<name>hbase.zookeeper.quorum</name>  
+<value>vm-centos-01</value>  
+<!--<value>vm-centos-01,vm-centos-02,vm-centos-03</value> -->
+</property>
+<property>  
+<name>hbase.zookeeper.property.dataDir</name>  
+<value>/opt/hadoop/zkdata</value>  
+</property> 
+<property> 
     <property>
         <name>hbase.cluster.distributed</name>
         <value>true</value>
@@ -40,11 +32,9 @@ hbase-env.sh中设置JAVA_HOME
             true: fully-distributed with unmanaged Zookeeper Quorum (see hbase-env.sh)
         </description>
     </property>
-
-    <!--这个端口默认是60000，但已被占用-->
     <property>
         <name>hbase.master.port</name>
-        <value>40001</value>
+        <value>60000</value>
     </property>
 </configuration>
 
@@ -52,12 +42,11 @@ hbase-env.sh中设置JAVA_HOME
 在*conf/regionservers*中添加:  
 
 ``` 
-135.191.27.156 
-135.191.27.161  
-135.191.27.176 
+vm-centos-02
+vm-centos-03
 ```
 
->>135.191.27.175是Hadoop的Master，NameNode也在上面    
+>>vm-centos-01是Hadoop的Master，NameNode也在上面    
 
 复制到其它结点：  
 
@@ -80,8 +69,8 @@ jps
 其它机器上会有HRegionServer和HQuorumPeer进程
 
 
-HMaster Web界面
-http://135.191.27.175:60010/
+HMaster Web界面,*版本升级了端口变了16010*
+http://vm-centos-01:16010/
 
 ## 测试
 
@@ -172,3 +161,12 @@ sed -i 's/ //g' 's/"//g' gmi_mbuser_baseinfo.dat
     
 
 `bin/hbase org.apache.hadoop.hbase.mapreduce.ImportTsv  -Dimporttsv.separator=","  -Dimporttsv.columns=HBASE_ROW_KEY,pro:product_no,pro:cust_name,pro:city_id,pro:area_code,pro:channel_id,pro:brand_level1_id,pro:brand_level2_id,pro:product_id,pro:age,pro:sex_id,pro:innet_date,pro:is_staff,pro:is_test,pro:is_group_user,pro:is_data_card,pro:is_cpe,pro:mobile_online,pro:usim_4g_flag gdi_mbuser_20140424 /vgopbak/gmi_mbuser_baseinfo.dat  `   
+
+
+
+
+
+##导入数据
+1. 使用HTable API
+2. Mapper从HDFS导入
+3. BulkLoad

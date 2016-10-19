@@ -129,7 +129,95 @@ namenode挂的情况
 动态增加yarn的nodemanager
 resourcemanager ha
 
-http://192.168.99.131:50070/
+hdfs web ui:http://192.168.99.131:50070/
+yarn web ui:http://192.168.99.131:8088/cluster
+
+wordcount
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar wordcount /hdata/getdata.py /hdata/test
+
+## hadoop native
+
+### 安装依赖
+
+        sudo yum -y install lzo-devel zlib-devel autoconf automake  libtool cmake openssl–devel 
+        sudo yum install snappy snappy-devel
+        sudo yum install bzip2 bzip2-devel
+
+#### 安装protobuf
+
+        wget https://github.com/google/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.bz2
+        ./configure
+        make   
+        make install 
+
+### 编译hadoop
+    
+        mvn clean package -DskipTests -Pdist,native -Dtar  -Dbundle.snappy  -Dsnappy.lib=/usr/lib64
+
+### 复制native lib 至hadoop 
+
+        cd /opt/hadoop-2.7.3-src/hadoop-dist/target/hadoop-2.7.3/lib/native
+        cp * $HADOOP_HOME/lib/native
+        hadoop checknatve  ## 查看结果
+之前：
+➜  ~ hadoop checknative
+16/10/13 15:09:13 WARN bzip2.Bzip2Factory: Failed to load/initialize native-bzip2 library system-native, will use pure-Java version
+16/10/13 15:09:13 INFO zlib.ZlibFactory: Successfully loaded & initialized native-zlib library
+Native library checking:
+hadoop:  true /opt/hadoop-2.7.3/lib/native/libhadoop.so
+zlib:    true /lib64/libz.so.1
+snappy:  false 
+lz4:     true revision:99
+bzip2:   false 
+openssl: false Cannot load libcrypto.so (libcrypto.so: 无法打开共享对象文件: 没有那个文件或目录)!
+
+之后：
+
+➜  native hadoop checknative                             
+16/10/13 16:00:16 INFO bzip2.Bzip2Factory: Successfully loaded & initialized native-bzip2 library system-native
+16/10/13 16:00:16 INFO zlib.ZlibFactory: Successfully loaded & initialized native-zlib library
+Native library checking:
+hadoop:  true /opt/hadoop-2.7.3/lib/native/libhadoop.so.1.0.0
+zlib:    true /lib64/libz.so.1
+snappy:  true /opt/hadoop-2.7.3/lib/native/libsnappy.so.1
+lz4:     true revision:99
+bzip2:   true /lib64/libbz2.so.1
+openssl: true /lib64/libcrypto.so
+
+
+//TODO
+
+core-site.xml中添加
+<property>
+    <name>io.compression.codecs</name>
+    <value>
+      org.apache.hadoop.io.compress.GzipCodec,
+      org.apache.hadoop.io.compress.DefaultCodec,
+      org.apache.hadoop.io.compress.BZip2Codec,
+      org.apache.hadoop.io.compress.SnappyCodec
+    </value>
+</property>
+
+
+LD_LIBRARY_PATH=$HADOOP_HOME/lib/native  hbase --config $HBASE_HOME/conf org.apache.hadoop.util.NativeLibraryChecker 
+
+hbase org.apache.hadoop.hbase.util.CompressionTest hdfs://vm-centos-01:9999/user/migle/output-1474182810000/part-00003 snappy
+
+在应用程序中使用
+Configuration conf = new Configuration();
+ 
+//对map输出的内容进行压缩
+conf.set("mapred.compress.map.output","true");
+conf.set("mapred.map.output.compression.codec",
+                      "org.apache.hadoop.io.compress.SnappyCodec");
+ 
+//对reduce输出的内容进行压缩
+conf.set("mapred.output.compress","true");
+conf.set("mapred.output.compression",
+                     "org.apache.hadoop.io.compress.SnappyCodec");
+
+
+
 
 #Hive
 
@@ -192,6 +280,7 @@ hive-site.xml
 ./bin/hive
 在hive中创建一个表
 CREATE TABLE pokes (foo INT, bar STRING);
+
 
 
 #HBASE

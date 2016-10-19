@@ -27,7 +27,10 @@ object KafkaOffset {
     }).map(_._2)
     // kafka.foreachRDD(_.foreachPartition(_.foreach(println)))
 
-    kafka.foreachRDD(rdd=>rdd.foreach(println))
+    kafka.foreachRDD(rdd=>{
+      println(kafka)
+      rdd.foreach(println)
+    })
     kafka.print()
     println("=="*10)
     ssc.start()

@@ -6,7 +6,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 /**
  * Created by migle on 2016/9/22.
  * 带checkpoint的kafka消费
- * KafkaUtils.createDirectStream不会将offset提交到zk中，做了checkpoint之后，driver重启后从检查点恢复，会接着offset继续消费
+ * KafkaUtils.createDirectStream不会将offset提交到zk中，做了checkpoint之后，driver重启后从检查点恢复，会接着之前的offset继续消费
  *
  */
 object KafkaStreamingWithChk {

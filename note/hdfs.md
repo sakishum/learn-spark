@@ -31,6 +31,9 @@ date:  2016-6-14 9:08:30
 2. 文件系统：
 hadoop dfsadmin -report  
 
+
+hdfs fsck -blocks -files /XXXXx  #查看文件块信息
+
 ## 在线增加datanode 
 1. 准备工作：ssh互信、hosts文件修改
 2. 修改namenode结点slaves文件，添加新增结点(否则下次集群重启时不能自动拉起此结点)
