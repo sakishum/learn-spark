@@ -59,8 +59,8 @@ scp ./authorized_keys  migle@192.168.254.133:/home/migle/.ssh/authorized_keys
 
 
 ##安装hadoop
-    gzip -d hadoop-2.6.4.gz
-    tar xvf hadoop-2.6.4
+    gzip -d hadoop-2.7.3.gz
+    tar xvf hadoop-2.7.3
 mkdir -p /opt/hadoop/datadir
 
 ### core-site.xml
@@ -111,7 +111,7 @@ mkdir -p /opt/hadoop/datadir
 </property>
 
 分发到其它结点
- scp -r /opt/hadoop-2.6.4 vm-centos-02:/opt/
+ scp -r /opt/hadoop-2.7.3 vm-centos-02:/opt/
 ##测试
 格式化新的文件系统
 $HADOOP_PREFIX/bin/hdfs namenode -format mhadoop
@@ -139,7 +139,7 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.j
 
 ### 安装依赖
 
-        sudo yum -y install lzo-devel zlib-devel autoconf automake  libtool cmake openssl–devel 
+        sudo yum -y install lzo-devel zlib-devel autoconf automake  libtool cmake openssl-devel 
         sudo yum install snappy snappy-devel
         sudo yum install bzip2 bzip2-devel
 
@@ -227,7 +227,7 @@ bin/hadoop fs -chmod g+w   /tmp
 bin/hadoop fs -chmod g+w   /user/hive/warehouse
 
 修改hive-env.sh
-HADOOP_HOME=**/opt/hadoop-2.6.4**
+HADOOP_HOME=**/opt/hadoop-2.7.3**
 安装mariadb-server 
 vm-centos-00上
 yum install mariadb-server
