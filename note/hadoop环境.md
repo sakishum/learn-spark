@@ -1,14 +1,14 @@
 ## 规划
 在vmware中添加4台虚拟机.主机名，ip如下：
-1. vm-centos-00   192.168.254.130  
-2. vm-centos-01   192.168.254.131
-3. vm-centos-02   192.168.254.132
-4. vm-centos-03   192.168.254.133
+1. vm-centos-00   192.168.254.130    
+2. vm-centos-01   192.168.254.131  
+3. vm-centos-02   192.168.254.132  
+4. vm-centos-03   192.168.254.133  
 >>可以先装好一台之后克隆3份，然后再分别修改主机名和ip地址
 
 vm-centos-00: mysql、动态扩容实验   
-vm-centos-01：namenode
-vm-centos-02\vm-centos-03: datanode  
+vm-centos-01：namenode   
+vm-centos-02\vm-centos-03: datanode    
 
 ## 基础环境
 1. 固定ip设置
