@@ -1,123 +1,146 @@
-##规划
-在vmware中虚拟4台机器，可以先装好一台之后克隆3份，然后再分别修改主机名和ip地址
-
+## 规划
+在vmware中添加4台虚拟机.主机名，ip如下：
 1. vm-centos-00   192.168.254.130  
 2. vm-centos-01   192.168.254.131
 3. vm-centos-02   192.168.254.132
 4. vm-centos-03   192.168.254.133
+>>可以先装好一台之后克隆3份，然后再分别修改主机名和ip地址
 
+vm-centos-00:  
+vm-centos-01：\namenode
+vm-centos-02\vm-centos-03: datanode
 
-vm-centos-00:
-    操作用客户端
-    msyql安装 
-    动态扩容试验用
-vm-centos-01：
-    namenode
-
-vm-centos-02\vm-centos-03
-    datanode
-
-
-##基础环境
+## 基础环境
 1. 固定ip设置
-
     编辑：*/etc/sysconfig/network-scripts/ifcfg-e....*
-
+```
+        TYPE=Ethernet
+        DEFROUTE=yes
+        PEERDNS=yes
+        PEERROUTES=yes
+        IPV4_FAILURE_FATAL=no
+        IPV6INIT=yes
+        IPV6_AUTOCONF=yes
+        IPV6_DEFROUTE=yes
+        IPV6_PEERDNS=yes
+        IPV6_PEERROUTES=yes
+        IPV6_FAILURE_FATAL=no
+        NAME=eno16777736
+        DEVICE=eno16777736
+        ONBOOT=yes
+        BOOTPROTO=static
+        IPADDR=192.168.99.130
+        GATEWAY=192.168.99.1
+        NETMASK=255.255.255.0
+```
 2. 主机名
+   >>注意:主机名最好能好写好记，不要包含下划线“_”
     依次：
-        `hostnamectl set-hostname  vm-centos-00`    130
-        `hostnamectl set-hostname  vm-centos-01`    131
-        `hostnamectl set-hostname  vm-centos-02`    132
-        `hostnamectl set-hostname  vm-centos-03`    133
+        `hostnamectl set-hostname  vm-centos-00`    //130
+        `hostnamectl set-hostname  vm-centos-01`    //131
+        `hostnamectl set-hostname  vm-centos-02`    //132
+        `hostnamectl set-hostname  vm-centos-03`    //133
 
 3. ssh互信配置
+  a.依次生成密钥： `ssh-keygen -t rsa`  
+  b.将其它三台公钥复制到130,在130合并至*authorized_keys* 后依次分发到其它机器:
 
-    依次生成密钥： ssh-keygen -t rsa  
-    其它三台公钥复制到130
-    scp migle@192.168.254.131:/home/migle/.ssh/id_rsa.pub ./a.pub
-    scp migle@192.168.254.132:/home/migle/.ssh/id_rsa.pub ./b.pub
-    scp migle@192.168.254.133:/home/migle/.ssh/id_rsa.pub ./c.pub
-    
-    合并后依次分发到其它机器
-
+    ```
+        scp migle@192.168.254.131:/home/migle/.ssh/id_rsa.pub ./a.pub
+        scp migle@192.168.254.132:/home/migle/.ssh/id_rsa.pub ./b.pub
+        scp migle@192.168.254.133:/home/migle/.ssh/id_rsa.pub ./c.pub
+  
     cat id_rsa.pub >> authorized_keys   
     cat ./a.pub >> authorized_keys
     cat ./b.pub >> authorized_keys
     cat ./c.pub >> authorized_keys
 
-scp ./authorized_keys  migle@192.168.254.133:/home/migle/.ssh/authorized_keys 
-
+    scp ./authorized_keys  migle@192.168.254.133:/home/migle/.ssh/authorized_keys 
+  ```
 4. hosts文件
+
     192.168.254.130  vm-centos-00
     192.168.254.131  vm-centos-01
     192.168.254.132  vm-centos-02
     192.168.254.133  vm-centos-03
 
+scp至其它机器
 
-4. jdk
+4. jdk安装
     略
 
-
 ##安装hadoop
-    gzip -d hadoop-2.7.3.gz
-    tar xvf hadoop-2.7.3
-mkdir -p /opt/hadoop/datadir
+
+    gzip -d hadoop-2.7.3.tar.gz
+    tar xvf hadoop-2.7.3.tar
 
 ### core-site.xml
- <property>
-     <name>fs.defaultFS</name>
-     <value>hdfs://vm-centos-01:9999</value>
- </property>
+
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://vm-centos-01:9999</value>
+    </property>
 
 ###hdfs-site.xml
 
-<!--namenode-->
-<property>
-        <name>dfs.namenode.name.dir</name>
-        <value>/opt/hadoop/namedir</value>
-</property>
-<!--DataNode-->
-<property>
-        <name>dfs.datanode.data.dir</name>
-        <value>/opt/hadoop/datadir</value>
-</property>
+    <!--namenode-->
+    <property>
+            <name>dfs.namenode.name.dir</name>
+            <value>/opt/hadoop/namedir</value>
+    </property>
+    <!--DataNode-->
+    <property>
+            <name>dfs.datanode.data.dir</name>
+            <value>/opt/hadoop/datadir</value>
+    </property>
 
 ###yarn-site.xml
 
 
-<!-- Site specific YARN configuration properties -->
-<property>
-        <name>yarn.resourcemanager.address</name>
-        <value>vm-centos-01:8032</value>
-</property>
-<property>
-        <name>yarn.resourcemanager.scheduler.address</name>
-        <value>vm-centos-01:8030</value>
-</property>
+    <!-- Site specific YARN configuration properties -->
+    <property>
+            <name>yarn.resourcemanager.address</name>
+            <value>vm-centos-01:8032</value>
+    </property>
+    <property>
+            <name>yarn.resourcemanager.scheduler.address</name>
+            <value>vm-centos-01:8030</value>
+    </property>
+    
+    <property>
+            <name>yarn.resourcemanager.resource-tracker.address</name>
+            <value>vm-centos-01:8031</value>
+    </property>
+    
+    <property>
+            <name>yarn.resourcemanager.admin.address</name>
+            <value>vm-centos-01:8033</value>
+    </property>
+    
+    <property>
+            <name>yarn.resourcemanager.webapp.address</name>
+            <value>vm-centos-01:8088</value>
+    </property>
 
-<property>
-        <name>yarn.resourcemanager.resource-tracker.address</name>
-        <value>vm-centos-01:8031</value>
-</property>
+分发到其它结点:
+  `scp -r /opt/hadoop-2.7.3 vm-centos-02:/opt/`
 
-<property>
-        <name>yarn.resourcemanager.admin.address</name>
-        <value>vm-centos-01:8033</value>
-</property>
 
-<property>
-        <name>yarn.resourcemanager.webapp.address</name>
-        <value>vm-centos-01:8088</value>
-</property>
 
-分发到其它结点
- scp -r /opt/hadoop-2.7.3 vm-centos-02:/opt/
-##测试
+
+创建数据目录
+    mkdir -p /opt/hadoop/datadir ##在datanode执行
+    mkdir -p /opt/hadoop/namedir ##在namenode执行 
+
 格式化新的文件系统
-$HADOOP_PREFIX/bin/hdfs namenode -format mhadoop
-start-dfs.sh
-start-yarn.sh
+    $HADOOP_HOME/bin/hdfs namenode -format mhadoop
 
+### 启动
+
+`$HADOOP_HOME/sbin/start-dfs.sh`
+`$HADOOP_HOME/sbin/start-yarn.sh`
+
+##测试
 上传文件：hdfs dfs -put dw_user_info.dat /hdata
 
 //TODO 
@@ -138,6 +161,7 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.j
 ## hadoop native
 
 ### 安装依赖
+>>每个结点都需要安装
 
         sudo yum -y install lzo-devel zlib-devel autoconf automake  libtool cmake openssl-devel 
         sudo yum install snappy snappy-devel

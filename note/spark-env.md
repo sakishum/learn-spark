@@ -22,4 +22,9 @@
 `SPARK_EXECUTOR_INSTANCE=100`
 或者用 `--conf "spark.executor.instances=100"` or `--num-executors 100`
 
+spark on yarn 中
+
+1. --num-executors + 1 为分配到的container数(master占用一个)
+2. --num-executors * --executor-cors  + 1 的值为分配到的vcore数(master占用一个)
+3. 
 

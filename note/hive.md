@@ -153,6 +153,7 @@ In the previous examples, the user has to know which partition to insert into an
 
 ## 表
 ### 外部分表
+create external table tablename() location ''
 
 ### 分区表
 
