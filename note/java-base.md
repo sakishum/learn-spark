@@ -124,3 +124,10 @@ java -cp /app/lib/*  Main
 
 低版本
 java -cp $(echo /app/lib/*.jar | tr ' ' ':') Main
+
+
+### 查找class所在的jar包
+String name = SparkConf.class.getName();
+System.out.println(name);
+URL uri = SparkConf.class.getResource("/"+name.replace(".","/")+ ".class");
+System.out.println(uri.toString());
