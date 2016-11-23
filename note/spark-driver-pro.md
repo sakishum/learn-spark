@@ -239,4 +239,4 @@ http://www.jianshu.com/p/bc1e9755143e
 
 
 
-
+Dirver中维护一个executorDataMap 包含着所有executorid

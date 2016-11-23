@@ -133,7 +133,10 @@ In the previous examples, the user has to know which partition to insert into an
     insert overwrite local directory 'test_2' ROW FORMAT DELIMITED  FIELDS TERMINATED BY ',' select * from test_2;
     insert overwrite directory '/user/migle/data/test_2' select * from test_2;
 
- >>导出数据默认列分隔符为\x01(^A)
+>>导出数据默认列分隔符为\x01(^A)
+>> 导入文件压缩输出
+>> `set hive.exec.compress.output=true;
+>> set mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.GzipCodec;`
 
 ### 有关dual
 可以参照oracle创建dual，方便查询常量及测试函数:
@@ -226,7 +229,17 @@ map的输入是上一阶段的reduce输出
 1. 不是所有的语句都会转化成MR运行比如：explain select * from dw_user_info limit 10;
 2. 有些任务可能只有M没有R
 
+Reduce
+1. Hive自己如何确定reduce数： 
+    reduce个数的设定极大影响任务执行效率，不指定reduce个数的情况下，Hive会猜测确定一个reduce个数，基于以下两个设定：
+hive.exec.reducers.bytes.per.reducer（每个reduce任务处理的数据量，默认为1000^3=1G） 
+hive.exec.reducers.max（每个任务最大的reduce数，默认为999）
+计算reducer数的公式很简单N=min(参数2，总输入数据量/参数1)
+即，如果reduce的输入（map的输出）总大小不超过1G,那么只会有一个reduce任务；
 
+调整方法：
+1. 调整 hive.exec.reducers.bytes.per.reducer
+2. 调整 mapreduce.job.reduces
 
 ### explain
 

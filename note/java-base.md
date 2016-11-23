@@ -131,3 +131,9 @@ String name = SparkConf.class.getName();
 System.out.println(name);
 URL uri = SparkConf.class.getResource("/"+name.replace(".","/")+ ".class");
 System.out.println(uri.toString());
+
+
+for i in `ls *.jar*`
+do
+jar -tf $i|grep HBaseContext
+done

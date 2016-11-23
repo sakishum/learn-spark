@@ -138,4 +138,4 @@ http://www.iteblog.com/archives/1223
 
 
 
-
+yarn中*yarn.scheduler.maximum-allocation-mb* 的值小于spark executor 申请的内存时，spark作业初始化失败

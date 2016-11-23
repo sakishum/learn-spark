@@ -170,3 +170,15 @@ sed -i 's/ //g' 's/"//g' gmi_mbuser_baseinfo.dat
 1. 使用HTable API
 2. Mapper从HDFS导入
 3. BulkLoad
+
+
+
+
+
+## 常用
+
+count
+  `count table_name`  效率不高，大表不行
+
+MR统计行数：
+  $HBASE_HOME/bin/hbase   org.apache.hadoop.hbase.mapreduce.RowCounter ‘table_name’  
