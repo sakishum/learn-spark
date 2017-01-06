@@ -184,6 +184,24 @@ Databases,Table,Partitions,Buckets
 ## export/import
 https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ImportExport
 
+distribute by 与 group by
+Distribute by 和Sort by
+
+order by 与sort by 
+order by 是全局排序，sort by 只是确保每个reduce上面输出的数据有序，如果只有一个reduce时，和order by 作用一样
+
+cluster by 
+把有相同值的数据聚集到一起，并排序
+
+
+##存储格式
+
+1. *TextFile*: 数据不做压缩，磁盘开销大，数据解析开销大。可结合Gzip、Bzip2、Snappy等进行压缩（系统自动检查，执行查询时自动解压），但使用这种方式，hive不会对数据进行切分，从而无法对数据进行并行操作
+
+2.ORCFile:
+自带压缩，压缩效率比gzip略高 
+
+
 
 ## 其它
 
@@ -201,13 +219,15 @@ CLI
 
 
 ### 命令行参数
-CLI or beeplin
+CLI or beelin
 
 1. set            //显示所有参数值
 2. set key=value  //设置参数值
 3. 更多:[命令行参数](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Commands)
 
-
+### beeline 
+1. beeline -e 不支持nohup 方式运行 
+2. ~/.beeline的history文件太大导致beeline不正常启动！这问题也遇上了 
 
 ------------------------------------
 
@@ -221,7 +241,7 @@ select `d[0-9]+` from tab1;  --选择列名以d开头，后带数字的列
 /tmp/hive/$USER/
 
 ## 自定义函数
-## 自定义格式
+
 
 ## 性能优化
 map的输入是上一阶段的reduce输出

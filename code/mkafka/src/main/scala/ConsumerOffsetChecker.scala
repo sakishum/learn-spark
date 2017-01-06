@@ -48,6 +48,7 @@ object ConsumerOffsetChecker extends Logging {
     val groupDirs = new ZKGroupTopicDirs(group, topic)
     val owner = ZkUtils.readDataMaybeNull(zkClient, groupDirs.consumerOwnerDir + "/%s".format(pid))._1
     ZkUtils.getLeaderForPartition(zkClient, topic, pid) match {
+
       case Some(bid) =>
         val consumerOpt = consumerMap.getOrElseUpdate(bid, getConsumer(zkClient, bid))
         consumerOpt match {

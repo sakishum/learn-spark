@@ -14,7 +14,9 @@ zookeeper.connect=vm-centos-01:2181,vm-centos-02:2181,vm-centos-03:2181
 
 启动：
 >>先启动zk集群
-启动：bin/kafka-server-start.sh config/server.properties
+启动：bin/kafka-server-start.sh config/server.properties  
+后台启动: bin/kafka-server-start.sh -daemon /opt/kafka_2.11-0.9.0.1/config/server.properties
+
 
 创建一个topic
 bin/kafka-topics.sh --create --zookeeper vm-centos-01:2181 --replication-factor 1 --partitions 3 --topic kafkatest

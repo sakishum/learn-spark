@@ -2,6 +2,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.FlatMapFunction;
 import scala.Tuple2;
 
 import java.util.Arrays;
@@ -30,12 +31,12 @@ public class JWordCount {
         JavaRDD<String> jrdd = jsc.textFile("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/CHANGES.txt");
 
 
-//        JavaRDD<String> words = jrdd.flatMap(new FlatMapFunction<String, String>() {
-//            @Override
-//            public Iterable<String> call(String s) throws Exception {
-//                return Arrays.asList(s.split(" "));
-//            }
-//        });
+        JavaRDD<String> words = jrdd.flatMap(new FlatMapFunction<String, String>() {
+            @Override
+            public Iterable<String> call(String s) throws Exception {
+                return Arrays.asList(s.split(" "));
+            }
+        });
 //
 //        JavaPairRDD<String, Integer> ones = words.mapToPair(new PairFunction<String, String, Integer>() {
 //            @Override

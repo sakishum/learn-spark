@@ -5,6 +5,9 @@ import java.util.HashMap;
  */
 public class Main {
     public static void main(String[] args) {
-
+        InnerStaticClass.ISC i1 = new InnerStaticClass.ISC();
+        InnerStaticClass.ISC i2 = new InnerStaticClass.ISC();
+        System.out.println(i1);
+        System.out.println(i2);
     }
 }

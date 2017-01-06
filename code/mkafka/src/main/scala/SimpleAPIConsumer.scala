@@ -16,10 +16,11 @@ import scala.util.control.NonFatal
  */
 object SimpleAPIConsumer {
   type Errors = ArrayBuffer[Throwable]
+  case class LeaderOffset(host: String, port: Int, offset: Long)
 
   def main(args: Array[String]) {
     val topics = Set("sdi_scdt_x")
-
+    val test = Seq("x")
     val kafkaparam = Map("bootstrap.servers" -> "vm-centos-00:9092,vm-centos-01:9092",
       "zookeeper.connect" -> "vm-centos-01:2181",
       "group.id" -> "g2")
@@ -27,7 +28,10 @@ object SimpleAPIConsumer {
 
     val demo = new SimpleAPIConsumer(kafkaparam)
     val tps = demo.getPartitions(topics.toSet)
-    println(tps.right)
+    tps.right.get.foreach(tp=>println("%s:%s".format(tp.topic,tp.partition)))
+    demo.getLatestLeaderOffsets(demo.getPartitions(topics.toSet).right.get).right.foreach(println)
+
+    demo.getLatestLeaderOffsets(demo.getPartitions(topics.toSet).right.get).right.foreach(m=>m.foreach(kv=>println("%s:%s".format(kv._1,kv._2))))
     //demo.getGroupOffset(tps.right).foreach(m=>println("%s-%s-%s".format(m._1.topic,m._1.partition,m._2)))
 
   }
@@ -35,6 +39,8 @@ object SimpleAPIConsumer {
 
 class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
   import SimpleAPIConsumer.Errors
+  import SimpleAPIConsumer.LeaderOffset
+
   //group.id,zookeeper
   val brokers = kafkaParams.get("metadata.broker.list")
     .orElse(kafkaParams.get("bootstrap.servers"))
@@ -44,49 +50,79 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
     (hp(0), hp(1).toInt)
   })
 
+  def getLatestLeaderOffsets(
+                              topicAndPartitions: Set[TopicAndPartition]
+                            ): Either[Errors, Map[TopicAndPartition, LeaderOffset]] =
+    getLeaderOffsets(topicAndPartitions, OffsetRequest.LatestTime)
+
+  def getEarliestLeaderOffsets(
+                                topicAndPartitions: Set[TopicAndPartition]
+                              ): Either[Errors, Map[TopicAndPartition, LeaderOffset]] =
+    getLeaderOffsets(topicAndPartitions, OffsetRequest.EarliestTime)
+
+  def getLeaderOffsets(
+                        topicAndPartitions: Set[TopicAndPartition],
+                        before: Long
+                      ): Either[Errors, Map[TopicAndPartition, LeaderOffset]] = {
+    getLeaderOffsets(topicAndPartitions, before, 1).right.map { r =>
+      r.map { kv =>
+        kv._1 -> kv._2.head
+      }
+    }
+  }
 
 
   /**
-   * 返回此leader
    * @param topicAndPartitions
    * @param before
    * @param maxNumOffsets   最大返回几个offset? 有什么作用？
    * @return
    */
-  def getLeaderOffsets(topicAndPartitions: Set[TopicAndPartition], before: Long, maxNumOffsets: Int): Option[Map[TopicAndPartition, Seq[(String, Int, Long)]]] = {
-    val leaders = findLeaders(topicAndPartitions)
-    val err = new Errors
-    withBrokers(brokers,err) {
-      consumer => {
-        val reqMap = topicAndPartitions.map(tp => (tp, PartitionOffsetRequestInfo(before, maxNumOffsets))).toMap
+  def getLeaderOffsets(
+                        topicAndPartitions: Set[TopicAndPartition],
+                        before: Long,
+                        maxNumOffsets: Int
+                      ): Either[Errors, Map[TopicAndPartition, Seq[LeaderOffset]]] = {
+    findLeaders(topicAndPartitions).right.flatMap { tpToLeader =>
+      val leaderToTp: Map[(String, Int), Seq[TopicAndPartition]] = flip(tpToLeader)
+      val leaders = leaderToTp.keys
+      var result = Map[TopicAndPartition, Seq[LeaderOffset]]()
+      val errs = new Errors
+      withBrokers(leaders, errs) { consumer =>
+        val partitionsToGetOffsets: Seq[TopicAndPartition] =
+          leaderToTp((consumer.host, consumer.port))
+        val reqMap = partitionsToGetOffsets.map { tp: TopicAndPartition =>
+          tp -> PartitionOffsetRequestInfo(before, maxNumOffsets)
+        }.toMap
         val req = OffsetRequest(reqMap)
         val resp = consumer.getOffsetsBefore(req)
         val respMap = resp.partitionErrorAndOffsets
-        respMap.foreach(_.toString())
-        //出错时处理！！！没有访问过的topic会抛出UnknownTopicOrPartitionException
-        val res = respMap.map(m => (m._1, m._2.offsets.map(x => {
-          println(m._1.toString() + ":" + m._2.offsets)
-          (consumer.host, consumer.port, x)
-        }))
-        ).toMap
-
-        return Some(res)
+        partitionsToGetOffsets.foreach { tp: TopicAndPartition =>
+          respMap.get(tp).foreach { por: PartitionOffsetsResponse =>
+            if (por.error == ErrorMapping.NoError) {
+              if (por.offsets.nonEmpty) {
+                result += tp -> por.offsets.map { off =>
+                  LeaderOffset(consumer.host, consumer.port, off)
+                }
+              } else {
+                errs.append(new Exception(
+                  s"Empty offsets for ${tp}, is ${before} before log beginning?"))
+              }
+            } else {
+              errs.append(ErrorMapping.exceptionFor(por.error))
+            }
+          }
+        }
+        if (result.keys.size == topicAndPartitions.size) {
+          return Right(result)
+        }
       }
+      val missing = topicAndPartitions.diff(result.keySet)
+      errs.append(new Exception(s"Couldn't find leader offsets for ${missing}"))
+      Left(errs)
     }
-    None
   }
 
-  //  def fetchMessage(tpo: (TopicAndPartition, Long)): Iterator[MessageAndOffset] = {
-  //    withBrokers(findLeader(tpo._1.topic, tpo._1.partition)) {
-  //      consumer => {
-  //        /** the number of byes of messages to attempt to fetch  1MB */
-  //        val req = new FetchRequestBuilder().addFetch(tpo._1.topic, tpo._1.partition, tpo._2, 1024 * 1024).build()
-  //        val resp = consumer.fetch(req)
-  //        return resp.messageSet(tpo._1.topic, tpo._1.partition).iterator.dropWhile(_.offset < tpo._2)
-  //      }
-  //    }
-  //    null
-  //  }
 
   /**
    * 返回此consumer group当前offset
@@ -113,11 +149,6 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
     zkClient.close()
     offsetMap.toMap
   }
-
-
-//  def getLogSize():Long={
-//
-//  }
 
 
   /**
@@ -219,7 +250,10 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
     leaderMap
   }
 
-
+  private def flip[K, V](m: Map[K, V]): Map[V, Seq[K]] =
+    m.groupBy(_._2).map { kv =>
+      kv._1 -> kv._2.keys.toSeq
+    }
   private def withBrokers(brokers: Iterable[(String, Int)], errs: Errors)(fn: SimpleConsumer => Any): Unit = {
     brokers.foreach(broker => {
       var consumer: SimpleConsumer = null;
@@ -235,12 +269,5 @@ class SimpleAPIConsumer(val kafkaParams: Map[String, String]) extends Logging {
       }
     })
   }
-
-
-//  private def withZookeeper(errs: Errors)(fn:ZkClient=>Any):Unit={
-//    val zkInfo = kafkaParams.get("zookeeper.connect").getOrElse(throw new Exception(
-//      "Must specify zookeeper.connect for read data from zookeeper"))
-//    val zkClient = new ZkClient(zkInfo, 30000, 30000, ZKStringSerializer)
-//  }
 }
 

@@ -1,6 +1,6 @@
 ##从源码编译
 
-./make-distribution.sh --name my-spark --tgz -Psparkr -Phadoop-2.6 -Phive -Phive-thriftserver -Pyarn
+./make-distribution.sh --name my-spark --tgz -Psparkr -Phadoop-2.7.3 -Phive -Phive-thriftserver -Pyarn
 
 
 ##standlone

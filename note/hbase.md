@@ -98,7 +98,8 @@ bin/hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," 
 
 
 
-## HBASE SHELL 基本操作
+## HBASE SHELL 
+###基本操作
 `hbase shell` 进入HBASE SHELL,提示符会变成类似:**hbase(main):002:0>**以下命令都在HBASE SHELL执行. 
 
 * 查看状态 :`status`  
@@ -112,7 +113,8 @@ bin/hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," 
     **单行:**get 'mtable' , 'rowKey1'  
      get 'mtable','rowKey1','cf:acc_nbr'
      get 'mtable','rowKey1','cf'
-    **所有:**scan 'mtable'    
+    **所有:**scan 'mtable' 
+    **所有:**scan 'mtable',{LIMIT=>5}   
 * 行数：`count 'mtable'`  
 * 更新数据：`put 'mtable','1','cf:acc_nbr','18797384481'`
 * 删除数据：`delete 'mtable','1','cf:name'`  
@@ -136,6 +138,40 @@ bin/hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," 
 disable 'mtable'
 drop 'mtable'
 ```
+查询表中行数*大表勿用*  
+`count 'mtable', {INTERVAL => 1000, CACHE => 5000}`  
+
+修改TTL    
+ `alter 'mtable',{NAME=>'cf2',TTL=>'3600'}`    #单位:秒
+
+修改块压缩算法  
+ `alter 'mtable',{NAME=>'cf2',DATA_BLOCK_ENCODING=>'PREFIX_TREE'}` 
+ PREFIX_TREE压缩算法后转换的HFile大致是原始文件(用gZIP压缩后)的2倍，不加DATA_BLOCK_ENCODING算法大致是倍
+1.9G源文件不用snappy压缩，转换成HFile41.2G
+用snappy+prefix_tree之后转换成HFile 3.8G
+###region管理  
+
+1. 手动触发major compaction  
+  `major_compact 'mtable'`  
+
+2. 移动region 
+  `move 'encodeRegionName', 'ServerName'`  
+
+3. 手动split
+  `split 'regionName', 'splitKey'`  
+
+4. 
+
+
+## 系统表
+## .META.
+  scan 'hbase:meta'
+
+## -ROOT-
+
+
+## shell
+echo "scan 'hbase:meta'" | hbase shell
 
 ## 程序开发
 ### JAVA API
