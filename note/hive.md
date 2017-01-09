@@ -199,6 +199,7 @@ cluster by
 1. *TextFile*: 数据不做压缩，磁盘开销大，数据解析开销大。可结合Gzip、Bzip2、Snappy等进行压缩（系统自动检查，执行查询时自动解压），但使用这种方式，hive不会对数据进行切分，从而无法对数据进行并行操作
 
 2.ORCFile:
+Orcfile(Optimized Row Columnar)，hive0.11开始支持 ，和RCFile类似，一些row为一个存储块，块内每列按照列存储
 自带压缩，压缩效率比gzip略高 
 
 
