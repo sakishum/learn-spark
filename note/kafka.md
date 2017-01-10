@@ -141,8 +141,7 @@ largest：如果zookeeper中没有初始化的offset时，从最大位置开始�
 TODO:
 1.如何只读取指定条数的信息  
 2. offset何时提交？
-3. log文件格式(python)
-4. 日志清理后offset如何变化？一直递增？
+3. 日志清理后offset如何变化？一直递增？
 
 关于offset 
 各种样例代码中的getLeaderOffsets其实取的是可以读取(topic,partition)的最大或最小的offset
