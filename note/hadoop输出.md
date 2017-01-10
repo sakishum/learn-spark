@@ -1,4 +1,5 @@
 ## OutputFormat
+
 1. getRecordWriter返回真正输出执行者RecordWriter
 2. checkOutputSpecs作一些检查工作
 

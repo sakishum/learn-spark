@@ -201,6 +201,9 @@ cluster by
 2.ORCFile:
 Orcfile(Optimized Row Columnar)，hive0.11开始支持 ，和RCFile类似，一些row为一个存储块，块内每列按照列存储
 自带压缩，压缩效率比gzip略高 
+压缩比高，压缩比达10以上
+过滤性读取数据，谓词下推
+1. 空值NULL优化
 
 
 
