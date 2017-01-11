@@ -90,14 +90,6 @@ bin/hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," 
 
 
 
-
-
-
-
-
-
-
-
 ## HBASE SHELL 
 ###基本操作
 `hbase shell` 进入HBASE SHELL,提示符会变成类似:**hbase(main):002:0>**以下命令都在HBASE SHELL执行. 
