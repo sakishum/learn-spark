@@ -190,9 +190,10 @@ sed -i 's/ //g' 's/"//g' gmi_mbuser_baseinfo.dat
 
 `bin/hbase org.apache.hadoop.hbase.mapreduce.ImportTsv  -Dimporttsv.separator=","  -Dimporttsv.columns=HBASE_ROW_KEY,pro:product_no,pro:cust_name,pro:city_id,pro:area_code,pro:channel_id,pro:brand_level1_id,pro:brand_level2_id,pro:product_id,pro:age,pro:sex_id,pro:innet_date,pro:is_staff,pro:is_test,pro:is_group_user,pro:is_data_card,pro:is_cpe,pro:mobile_online,pro:usim_4g_flag gdi_mbuser_20140424 /vgopbak/gmi_mbuser_baseinfo.dat  `   
 
-
-
-
+转换成hfile
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="|" -Dmapreduce.job.queuename=yx_swrz-1 -Dmapreduce.map.memory.mb=2048 -Dmapreduce.reduce.memory.mb=2048 -Dmapreduce.job.name=yx_gndata_$i -Dmapreduce.map.cpu.vcores=1 -Dmapreduce.reduce.cpu.vcores=1  -Dimporttsv.bulk.output=/yx_swrz/hfile/$data_date/$i -Dimporttsv.columns=HBASE_ROW_KEY,F:BUSI_ID,F:TERM_MODEL_ID,F:TERM_MODEL_CODE,F:FLOW,F:START_TIME,F:END_TIME,F:CHARGING_ID,F:ACCESS_MODE_ID,F:ACCE_URL,F:SEIT_FLAG,F:IP,F:TOPIC $tablename /yx_temp/$i
+导入表中
+hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles /yx_swrz/hfile/$data_date/$i $tablename
 
 ##导入数据
 1. 使用HTable API

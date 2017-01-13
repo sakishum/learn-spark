@@ -32,7 +32,7 @@ def createDirectStream(
       fromOffsets: Map[TopicAndPartition, Long],
       messageHandler: MessageAndMetadata[K, V] => R
   )
->>可以将offset保存在zk或redis方便监控，然后下次启动时再从中读取
+>>可以将offset保存在zk或redis等外部存储中方便监控，然后下次启动时再从中读取
 
 ### 分区partition
 Kafka中的partition和Spark中的partition是不同的概念，但createDirectStream方式时topic的总partition数量和Spark和partition数量。
@@ -51,7 +51,34 @@ partition中数据分布不均会导致有些任务，有些任务慢，影响�
 >>！！使用flume加载到kafka的使用默认配置十有八九分布不匀
 
 ### 检查点
+代码：
 
+```
+Object SparkApp(){
+def gnStreamContext(chkdir:String,batchDuration: Duration,partitions:Int)={
+    val conf = new SparkConf().setAppName("GnDataToHive") //.setMaster("local[2]")
+    val ssc = new StreamingContext(conf, batchDuration)
+    KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, Set(topic))
+    ...........
+    ...........
+    ...........
+    val terminfos = ssc.sparkContext.broadcast(ttis) //TODO:可不可以启一个线程周期性广播？？？？
+    ssc.checkpoint(chkdir)
+    ssc
+  }
+ def main(args: Array[String]): Unit = {
+    val chkdir="hdfs://hacluster/yx_qcd/chkpoint/gndatatohive-chkpoint"
+    val chkssc = StreamingContext.getOrCreate(chkdir,()=>gnStreamContext(chkdir,Seconds(args(0).toInt),args(1).toInt))
+    chkssc.start()
+    chkssc.awaitTermination()
+  }
+}
+```
+offset会在保存至检查点中，下次启动会继续接着读取但是以下问题需要注意：
+
+1. kafka中数通常保存周期都不会太长，都有清理周期，如果记录的offset对应数据已经被清理，从检查点恢复时程序会一直报错。 //TODO 处理
+
+2. 如果程序逻辑发生变化， 
 
 ### 限流
 正常情况下SparkStreaming的资源配置一般是满足正常情况下kafka中的数据处理，但是在某些特殊情况下，如果kafka中的数据暴涨的话，会导致每批次处理数据太多，单个处理时间变长甚至崩溃，所以就需要限制每个批次处理的最大数据量。
