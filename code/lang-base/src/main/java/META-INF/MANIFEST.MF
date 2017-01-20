@@ -1,4 +1,3 @@
 Manifest-Version: 1.0
-Class-Path: dns-cache-manipulator-1.5.1.jar
-Main-Class: DNSTest
+Main-Class: me.migle.util.db.DBUtil
 
