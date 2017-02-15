@@ -76,3 +76,9 @@ initialModTimeIgnoreThreshold = if (newFilesOnly) clock.getTimeMillis() else 0L
 1. 数据量大、更新频繁：hbase,Redis直接每条查询
 2. 数据量不大且没有变化:直接broadcast
 3. 数据量不太大，有更新：重新广播  ？？？
+
+
+
+
+
+>>追数据的时候可能在一个批次的时候间隔内处理多个批次的内容(处理速度变快了！，比如受hdfs，网络等因素的原因，前期处理速度过慢导致有数据积压，而之后问题解决，速度加快所以会。。)

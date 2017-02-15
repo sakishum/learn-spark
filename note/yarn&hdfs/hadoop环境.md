@@ -258,11 +258,11 @@ yum install mariadb-server
 
 systemctl start mariadb // 启动mariadb
 systemctl enable mariadb //设置成开机自启动
-mysql_secure_installation ///设置 root密码等相关,根据提示操作   root/iammigle
+mysql_secure_installation ///设置 root密码等相关,根据提示操作   root/mysqladmin
 
 //允许root远程方便管理
 mysql -uroot -p
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'iammigle' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'mysqladmin' WITH GRANT OPTION;
 flush privileges;
 
 新建数据hive,新建用户hive/hive
