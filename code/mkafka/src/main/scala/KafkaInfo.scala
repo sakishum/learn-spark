@@ -9,7 +9,7 @@ import kafka.common.TopicAndPartition
   * 统计各topic的partition中数据分布情况
   */
 object KafkaInfo {
-  private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")
+  private val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss")
 
   def main(args: Array[String]): Unit = {
 
@@ -48,13 +48,14 @@ object KafkaInfo {
   def printSummary(tpl: Map[TopicAndPartition, Long]): Unit = {
     val tmp = tpl.groupBy(k => k._1.topic)
     val tms = tmp.map(k => k._1 -> summary(k._2.map(t => t._2)))
-    tms.foreach(t => println(("topic:%-18s" +
+    tms.foreach(t => println(("time:%s|topic:%-18s" +
       "|partition:%-3.0f" +
       "|sum:%-12.0f" +
       "|max:%-10.0f" +
       "|min:%-10.0f" +
       "|avg:%-10.0f|" +
       "sd:%.2f").format(
+      LocalDateTime.now.format(dtf),
       t._1,
       t._2("count"),
       t._2("sum"),
