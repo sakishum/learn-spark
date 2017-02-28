@@ -8,15 +8,20 @@ import java.util.Map;
  */
 public class MapTest {
     public static void main(String[] args) {
+//
         Map<String,String> m = new HashMap<>();
-        m.put("a","a1111");
-        m.put("c","c1111");
-        m.put("b","b1111");
-
-        for(Map.Entry<String,String> ks:m.entrySet()){
-            System.out.println(ks.getKey()+":" +ks.getValue());
-        }
-
-
+//        m.put("a","a1111");
+//        m.put("c","c1111");
+//        m.put("b","b1111");
+//
+//        for(Map.Entry<String,String> ks:m.entrySet()){
+//            System.out.println(ks.getKey()+":" +ks.getValue());
+//        }
+//        Object a = new Object();
+//        Object b = new Object();
+//        System.out.println(a.hashCode());
+//        System.out.println(b.hashCode());
+        String a = "0";
+        System.out.println(a.hashCode());
     }
 }

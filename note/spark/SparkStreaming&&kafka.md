@@ -114,7 +114,7 @@ spark-submit提交时带上即可：`--conf spark.streaming.kafka.maxRatePerPart
 ### 外部数据关联
 某些情况下载关联外部数据进行关联或计算。
 1. 外部数据放在redis中,在`mapPartitions`中关联
-2. 外部数据放在hdfs中，启动是broadcast发送后再关联
+2. 外部数据放在hdfs中，以broadcast变量关联
 
 
 ### 其它

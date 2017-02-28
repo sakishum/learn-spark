@@ -14,6 +14,29 @@ System.getProperty\System.getPropertys #获取系统属性
 
 - [ ] HashMap WeakHashMap
 
+## hashcode
+Object中默认实现为native方法实现
+JDK类库中的不同类有不同Integer直接返回，Double会移位异或运算后得到一个正数，
+String.hashCode
+
+```
+    public int hashCode() {
+        int h = hash;
+        if (h == 0 && value.length > 0) {
+            char val[] = value;
+
+            for (int i = 0; i < value.length; i++) {
+                h = 31 * h + val[i];
+            }
+            hash = h;
+        }
+        return h;
+    }
+```
+自写义实现的hashcode要满足：
+同一个对象hashcode一致
+不同对象hashcode不同
+
 
 ## 数据类型
 
