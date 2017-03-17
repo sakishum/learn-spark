@@ -5,6 +5,7 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -39,7 +40,7 @@ public class AESUtil {
             //这里用Base64Encoder中会找不到包
             //解决办法：
             //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
-            
+            System.out.println(new BigInteger(byte_AES).toString(16));
             String AES_encode=new String(new BASE64Encoder().encode(byte_AES));
             //11.将字符串返回
             return AES_encode;

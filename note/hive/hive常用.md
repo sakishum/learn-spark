@@ -80,9 +80,12 @@ name string comment ‘姓名’,
 salary float comment ‘薪水’)
 comment ‘这是一个测试的表’
 tblproperties(‘creator’=’me’,’created_at’=’2014-11-13 09:50:33’)
-location ‘/user/hive/warehouse/sopdm.db/test1’
+--location ‘/user/hive/warehouse/sopdm.db/test1’
  
- 
+ 外部表导入数据
+ alter table table_name add if not exists partition(year=2011,month=1,day=1)
+location ‘/logs/2011/01/01’;
+
 --分区表
 create table if not exists sopdm.test1(
 name string comment ‘姓名’,
