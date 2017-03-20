@@ -11,7 +11,7 @@ import java.util.Base64;
 /**
  * Created by migle on 2017/3/15.
  * Base64编、解码实现
- * Base64一种常见的将二进制或非ascii字符编码成:0-9,a-z,A-Z,+,/ 等字符组成的字符串。
+ * Base64一种常见的将二进制或包含非ascii字符的字符串编码成:0-9,a-z,A-Z,+,/ 等字符组成的字符串。
  * <p>
  * 规则见：http://www.ruanyifeng.com/blog/2008/06/base64.html
  */
@@ -141,29 +141,29 @@ public class MBase64 {
         System.out.println("decode is correct:" + s.equals(new String(MBase64.decode(mybase64.getBytes()))));
 
 
-        try {
-            //图片编码测试
-            File f = new File("/Users/migle/Downloads/test.png");
-            FileImageInputStream image = new FileImageInputStream(f);
-            byte[] data = new byte[(int) f.length()];
-            image.read(data, 0, data.length);
-            image.close();
-            //把图片编码成字符串
-            String mimg64 = new String(MBase64.encode(data));
-            String img64 = new String(Base64.getEncoder().encode(data));
-            System.out.println(mimg64);
-            System.out.println(img64);
-            System.out.println("encode img is correct:" + mimg64.equals(img64));
-
-            //解码后写回文件
-            FileOutputStream fout = new FileOutputStream(new File("/Users/migle/Downloads/test-2.png"));
-            byte[] decode = MBase64.decode(mimg64.getBytes());
-            fout.write(decode, 0, decode.length);
-            fout.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //图片编码测试
+//            File f = new File("/Users/migle/Downloads/test.png");
+//            FileImageInputStream image = new FileImageInputStream(f);
+//            byte[] data = new byte[(int) f.length()];
+//            image.read(data, 0, data.length);
+//            image.close();
+//            //把图片编码成字符串
+//            String mimg64 = new String(MBase64.encode(data));
+//            String img64 = new String(Base64.getEncoder().encode(data));
+//            System.out.println(mimg64);
+//            System.out.println(img64);
+//            System.out.println("encode img is correct:" + mimg64.equals(img64));
+//
+//            //解码后写回文件
+//            FileOutputStream fout = new FileOutputStream(new File("/Users/migle/Downloads/test-2.png"));
+//            byte[] decode = MBase64.decode(mimg64.getBytes());
+//            fout.write(decode, 0, decode.length);
+//            fout.close();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 }
