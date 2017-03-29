@@ -164,7 +164,7 @@ IDEA要稍显复杂，要多点几次鼠标，需要先创建一个*artifacts*�
 “build”->"build artifacts"->"helloss"(你起的名字)->"build"即可
 ![](./_image/2017-03-28-11-25-07.jpg)
 
-完整代码可以见：<https://github.com/longforfreedom/hellospark>    
+完整代码见：<https://github.com/longforfreedom/hellospark>    
 生产环境中要提交到集群中运行时一般会用spark-submit来提交运行，类似以下语句:`spark-submit --master yarn-client  --num-executors 10 --executor-memory 20g --executor-cores 10  --class "WordCount"   helloss-1.0-SNAPSHOT.jar`
 集群部署方式不一样 **--master** 后面的参数不一样，部分参数也会有一些不同， 更多信息可以参考:<http://spark.apache.org/docs/1.6.2/submitting-applications.html>  ，程序的部署和运行监控后续会有单独进行介绍。  
 
@@ -254,7 +254,7 @@ object SSWordCount {
         jssc.awaitTermination();
     }
 ```
-完整代码可以见：<https://github.com/longforfreedom/hellospark>    
+完整代码见：<https://github.com/longforfreedom/hellospark>    
 运行程序后，在前面打开的消费者窗口中输入消息  
 ![](./_image/2017-03-28-18-59-24.jpg)
 在IDEA中观察输出情况，可以看到类似如下输出：
