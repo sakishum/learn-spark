@@ -45,7 +45,7 @@ IDEA的maven工程会默认创建java代码的目录，scala代码目录需要�
 ![](./_image/2017-03-27-14-52-58.jpg)
 
 ### 声明依赖  
-使用maven的好处在于只需要在pom.xml声明一下依赖，maven会自动处理，而不需要我们手工下载每个依赖包添加到classpath中，此项目中我们需要在pom.xml中声明scala库、scala编译插件及spark的依赖，在pom.xml中`<project>`标签中添加以下内容  
+使用maven的好处在于只需要在pom.xml声明依赖，后续工作maven会自动处理，而不需要我们手工下载每个依赖包添加到classpath中，此项目中我们需要在pom.xml中声明scala库、scala编译插件及spark的依赖，在pom.xml中`<project>`标签中添加以下内容  
 ```
 <dependencies>
     <!--scala项目需要-->
