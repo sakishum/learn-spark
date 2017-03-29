@@ -1,5 +1,5 @@
 ## 概要
-目前Spark官方提供Java,Scala,Python三种语言的API。因为Spark是用Scala开发，而Scala本身是基于JVM的语言，所以Scala和Java的API完整稳定；Python相对不太完整，有些新特性刚开始不支持，但省去了编译打包，用起稍微能方便一些。  
+目前Spark官方提供Java,Scala,Python三种语言的API。因为Spark是用Scala开发，而Scala本身是基于JVM的语言，所以Scala和Java的API完整稳定；Python相对不太完整，有些新特性刚开始不支持，但Python语言简单明了，且省去了编译打包，用起稍微能方便一些。  
 本文件将介绍在IDEA+Maven环境下使用Java和Scala的开发Spark和SparkStreaming程序的过程。包括开发工具安装、配置、scala&java混合项目创建、样例代码开发、运行、打包。详细API介绍不在本文范围，请查阅官方文档。  
 >>参考资料
 1. 官方文档:<http://spark.apache.org/docs/>  :英文，所有版本的都在这里面。最权威也比较全面。
