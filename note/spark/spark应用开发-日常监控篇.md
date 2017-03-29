@@ -3,6 +3,7 @@
 每个程序的启动会占用driver侧一个端口，默认为*4040*，由参数**spark.ui.port**控制。
 
 ![](./_image/2017-03-29-15-33-17.jpg)
+
 可以在driver侧的配置文件中设置默认端口或提交运行时通过参数指定 `--conf spark.ui.port=4141`
 当然也可以在代码中写死`val conf = new SparkConf().set("spark.ui.port","4141")  `
 如果在同一台机器上会提交大量作业时需要注意，如果默认端口已被占用，会在此端口基础上+1再试，不行再+1一直持续成功或超过`spark.port.maxRetries`指定的次数还没有成功的话，任务启动失败，所以这种情况最好通过参数`--conf spark.ui.port=xxxxx`给每个作业都指定端口。
