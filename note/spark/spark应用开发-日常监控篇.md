@@ -1,0 +1,1 @@
+Spark 提供了较为完整的WEB UI来监控Spark以及Spark Streaming程序的运行情况，界面如下图所示
