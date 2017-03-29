@@ -1,7 +1,7 @@
 # Spark应用程序开发
 ## 概要
 目前Spark官方提供Java,Scala,Python三种语言的API。因为Spark是用Scala开发，而Scala本身是基于JVM的语言，所以Scala和Java的API完整稳定；Python相对不太完整，有些新特性刚开始不支持，但省去了编译打包，用起稍微能方便一些。  
-本文件将介绍在IDEA+Maven环境下使用Java8和Scala的开发Spark和SparkStreaming程序的过程。包括开发工具安装、配置、scala&java混合项目创建、样例代码开发、运行、打包。详细API介绍不在本文范围，请查阅官方文档。  
+本文件将介绍在IDEA+Maven环境下使用Java和Scala的开发Spark和SparkStreaming程序的过程。包括开发工具安装、配置、scala&java混合项目创建、样例代码开发、运行、打包。详细API介绍不在本文范围，请查阅官方文档。  
 >>参考资料
 1. 官方文档:<http://spark.apache.org/docs/>  :英文，所有版本的都在这里面。最权威也比较全面。
 2. 汉化的官方文档  <http://ifeve.com/spark/> ：v1.6官方文档汉化版。1.3.0到1.6之间API之间变化不大，可以参考。
@@ -24,11 +24,11 @@ IDEA自带maven，所以不用再单独下载安装了:)，也可以不用IDEA�
 在搜索结果中选择"scala" 选择“install”安装完成后需要重启
 ![](./_image/2017-03-27-10-53-12.jpg)
 
->>**最新的社区版的IDEA在安装完成后的初始界面就已经提供了"scala插件"的安装选择，直接选择即可**  
+>>最新社区版的IDEA在安装完成后的初始界面就已经提供了"scala插件"的安装选择，直接选择即可  
 >>scala插件是在用scala开发Spark程序时所需要，如果只是用java开发，可以不用安装，考虑到有时候会看scala代码，有这个插件还是方便很多
 
 ## Spark WordCount
-本小节分别用Scala和Java8实现一个简单的统计单词个数的程序，并在IDEA中以Local方式运行。
+本小节通过用Scala和Java8分别实现一个简单的统计单词个数的程序为例，依次介绍工程创建、编码、测试运行、打包这一过程。
 ### 创建工程
 1. 新建工程  
 "create new project" -> "maven" ，如下图
@@ -93,7 +93,7 @@ Java vs Scala
 java8 is good   
 scala is better      
 
-####  **scala**  
+####  **scala**  版代码
 在scala目录上右键单击，选择“NEW”->"Scala Class" 如下图：
 ![](./_image/2017-03-27-15-34-18.jpg)
 然后在弹出的对话框中输入类名"WordCount"，选择“Kind”为"object" *默认为class*
@@ -114,8 +114,8 @@ object WordCount {
   }
 }
 ```
-#### **java**  
-
+#### **java**  版代码
+功能和scala一样，用JAVA8实现代码也简洁了很多，限了需要声明类型外，几乎和scala一样。
 右键单击“main/java”新建Java类 JWordCount  
 //JWordCount.java
 ```
@@ -133,8 +133,7 @@ object WordCount {
     }
 ```
 
-Scala和Java程序运行方式一样，在左侧"project"窗口中右键单击文件(或在编辑窗口中)，选择“Run 'WordCount'”(快捷键:Ctrl+Shift+F10)
-运行结果如下:
+Scala和Java程序运行方式一样，在左侧"project"窗口中右键单击文件(或在编辑窗口中)，选择“Run 'WordCount'”(快捷键:Ctrl+Shift+F10)，可以分别运行一下，以下是scala版运行的结果:
 ![](./_image/2017-03-28-15-54-50.jpg)
 
 *src/main/java*和*src/main/scala*下分别放java和scala代码。可以用java实现基础代码，在scala中调用。 
@@ -142,7 +141,7 @@ Scala和Java程序运行方式一样，在左侧"project"窗口中右键单击�
 >>在IDEA中可以通过"Run"->"Editor Configurations"->"添加 or 选择 主类"-> "program arguments" 来添加程序参数，以方便测试，如果开发环境可以直接连接spark集群，可以直接传入master的地址，提交至集群中运行。
 
 ### 打包  
-程序开发完毕不管最终是以spark on yarn 还是spark standalone方式运行，都需要首先要将开发的程序以及依赖打成jar包，然后一般会通过`spark-submit`这个脚本来提交至集群中运行,在IDEA+Maven的环境下可以用maven来打包，也可以用IDEA来打包，各有各的优点，maven功能强大灵活，可以实现一些复杂的流程和功能，且可以脱离IDEA运行在命令行中，可以和其它自动化工具方便集成，但强大功能配置起来比较麻烦。IDEA自身的打包相对简单，功能也算够用。  
+程序开发完毕不管最终是以spark on yarn 还是spark standalone方式运行，都需要首先要将开发的程序以及依赖打成jar包，然后一般会通过`spark-submit`这个脚本来提交至集群中运行。在IDEA+Maven的环境下可以用maven来打包，也可以用IDEA来打包，各有各的优点，maven功能强大灵活，可以实现一些复杂的流程和功能，且可以脱离IDEA运行在命令行中，可以和其它自动化工具方便集成，但强大功能配置起来比较麻烦。IDEA自身的打包相对简单，对日常开发足够用了。  
 
 不管是用java还是scala开发的spark程序，提交到集群时，spark本身及其依赖是不需要打包到程序中的，也就是说要打入程序包中的是除spark以及其依赖之外的包是需要打入程序包中的。像本文的例子程序只依赖scala和spark本身，spark依赖scala，所以只需要打包开发的程序即可，不需要打入其它依赖包，用IDEA或Maven打包都很方便，下面分别介绍两种打包方式。
 #### maven
@@ -150,7 +149,7 @@ Scala和Java程序运行方式一样，在左侧"project"窗口中右键单击�
 ![](./_image/2017-03-28-11-03-45.jpg)
 在"maven project" 中选择 "lifecycle"->package 右单击选择"Run Maven Build" 运行结束后，工程中的scala的java都会被编码打包。工程目录下的target/下会有jar包生成,如下图。
 ![](./_image/2017-03-28-11-01-03.jpg)
->>maven更多功能可以问狗哥或度娘！  
+>>maven更多功能和或种NB的插件可以问狗哥或度娘！  
 
 #### IDEA打包
 IDEA要稍显复杂，要多点几次鼠标。"File"->"project structure"(快捷键:ALT+CTRL+SHIFT+S) ->"artifacts"->选择"+" ->"jar"->"empty"
