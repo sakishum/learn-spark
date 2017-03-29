@@ -115,7 +115,7 @@ object WordCount {
 }
 ```
 #### **java**  版代码
-功能和scala一样，用JAVA8实现代码也简洁了很多，限了需要声明类型外，几乎和scala一样。
+功能和scala一样，用JAVA8实现代码也简洁了很多，限了需要声明类型外，几乎和scala一样。   
 右键单击“main/java”新建Java类 JWordCount  
 //JWordCount.java
 ```
@@ -133,7 +133,7 @@ object WordCount {
     }
 ```
 
-Scala和Java程序运行方式一样，在左侧"project"窗口中右键单击文件(或在编辑窗口中)，选择“Run 'WordCount'”(快捷键:Ctrl+Shift+F10)，可以分别运行一下，以下是scala版运行的结果:
+Scala和Java程序运行方式一样，在左侧"project"窗口(或在编辑窗口)中右键单击文件，选择“Run 'WordCount'”(快捷键:Ctrl+Shift+F10)，可以分别运行一下，以下是scala版运行的结果:
 ![](./_image/2017-03-28-15-54-50.jpg)
 
 *src/main/java*和*src/main/scala*下分别放java和scala代码。可以用java实现基础代码，在scala中调用。 
@@ -149,16 +149,19 @@ Scala和Java程序运行方式一样，在左侧"project"窗口中右键单击�
 ![](./_image/2017-03-28-11-03-45.jpg)
 在"maven project" 中选择 "lifecycle"->package 右单击选择"Run Maven Build" 运行结束后，工程中的scala的java都会被编码打包。工程目录下的target/下会有jar包生成,如下图。
 ![](./_image/2017-03-28-11-01-03.jpg)
->>maven更多功能和或种NB的插件可以问狗哥或度娘！  
+>>上面其实是在执行maven的命令`mvn package`，如果你本地安装好了maven,可以直接在命令行下到pom.xml所在的目录中执行各种maven命令，而不用每次都要在IDEA中执行。maven更多内容和各种NB的插件可以问狗哥或度娘！  
 
 #### IDEA打包
-IDEA要稍显复杂，要多点几次鼠标。"File"->"project structure"(快捷键:ALT+CTRL+SHIFT+S) ->"artifacts"->选择"+" ->"jar"->"empty"
+IDEA要稍显复杂，要多点几次鼠标，需要先创建一个*artifacts*然后在每次需要打包时在*build artifacts*中选择这个*artifacts*执行即可。
+1. 创建一个*artifacts*
+"File"->"project structure"(快捷键:ALT+CTRL+SHIFT+S) ->"artifacts"->选择"+" ->"jar"->"empty"
 在"Name"中填入jar名称 ，"Output directory"为输入jar包的路径，然后在"available elements"中右单击'helloss compile output'选择'pack into Output Root'，点'OK'保存，如下图
 >>'helloss compile output'只是你当前工程中源码编译出来的class。如果要打入其它依赖包，也在此选择加入即可
 
 ![](./_image/2017-03-28-11-43-19.jpg)
 
-打包： “build”->"helloss"(你起的名字)->"build"即可
+2. 打包： 
+“build”->"build artifacts"->"helloss"(你起的名字)->"build"即可
 ![](./_image/2017-03-28-11-25-07.jpg)
 
 完整代码可以见：<https://github.com/longforfreedom/hellospark>    
@@ -262,7 +265,7 @@ object SSWordCount {
 ![](./_image/2017-03-28-17-56-03.jpg)
 
 
-打包、部署运行和spark程序没有区别，但需要注意的是spark程序处理结束后会自动退出，释放资源。而spark streaming处理的是连续不断的数据，程序不会退出，即使kafka中没有数据也不会释放资源，更不会退出(出错了当然就结束了:( )
+打包、部署运行和spark程序没有区别，但需要注意的是spark程序处理结束后会自动退出，释放资源。而spark streaming处理的是连续不断的数据，程序不会退出，即使kafka中没有数据也不会释放资源，更不会退出，真到人为结束(出错了当然就结束了:( )
 
 ## 结束
-本文只是简单的介绍了开发工具安装、配置，并通过两个简单的例子介绍了IDEA+Maven环境下使用Java8和Scala的开发spark和spark streaming程序的过程。Spark、Spark Streaming以及Kafka涉及很多知识点，详细的部署方式以及参数设置，运行监控后续会慢慢整理介绍。
+本文只是简单的介绍了开发工具安装、配置，并通过两个简单的例子介绍了IDEA+Maven环境下使用Java8和Scala的开发spark和spark streaming程序的过程。Spark、Spark Streaming以及Kafka涉及很多知识点，详细的部署方式以及参数设置，运行监控等后续会慢慢整理介绍。
