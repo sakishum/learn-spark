@@ -37,7 +37,8 @@ IDEA自带maven，所以不用再单独下载安装了:)，也可以不用IDEA�
 
 2. 创建scala代码目录
 IDEA的maven工程会默认创建java代码的目录，scala代码目录需要手工创建，在"main"目录下新建“scala”目录 ，如下图
-![](./_image/2017-03-27-14-54-54.jpg)
+
+![](./_image/2017-03-29-10-47-48.jpg)
 
 3. 将*main/scala*添加至源代码目录  
 "File"->"project structure"(快捷键:ALT+CTRL+SHIFT+S) ->"Modules"->" main/scala" 右键单击，选择 "Sources" 添加至源代码目录如下图
