@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by migle on 2016/10/11.
@@ -19,10 +20,12 @@ public class Main {
 //        System.out.println(LocalTime.now().toString());
 //        System.out.println(LocalDateTime.now().toString());
 
-        String s = "aa\nbb";
-        FileWriter fw = new FileWriter("e:/x.txt");
-        fw.write(s);
-        fw.close();
+//        String s = "aa\nbb";
+//        FileWriter fw = new FileWriter("e:/x.txt");
+//        fw.write(s);
+//        fw.close();
+
+
 
     }
 }
