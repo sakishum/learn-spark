@@ -152,6 +152,19 @@ In the previous examples, the user has to know which partition to insert into an
 - [ ]   order by   
 - [ ]   sotred by   
 
+- [] RANK() \DENSE_RANK() \DENSE_RANK()
+
+值相等时ROW_NUMBER()没有并列值， RANK() 和DENSE_RANK()有并列名次，但RANK()值相等时会出现留空名次，比如有两个并列第三的时候，下一个名次会直接跳到第五，而没有第四;而DENSE_RANK()两个并列第三之后下一个名次就是第四，依次往后排名。
+
+```
+RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS rn1,
+DENSE_RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS rn2,
+ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY pv DESC) AS rn3 
+```
+- [ ] NTILE
+
+
+http://yugouai.iteye.com/blog/1908121
 ### left semi join
 
 ## 表

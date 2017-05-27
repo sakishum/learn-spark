@@ -10,8 +10,7 @@ public class AboutSemaphore {
 
     public static void main(String[] args) {
 
-        Semaphore semaphore = new Semaphore(1);
-
+        Semaphore semaphore = new Semaphore(1);  //只有一个许可
         ExecutorService exec = Executors.newCachedThreadPool();
         for (int i = 0; i < 10; i++) {
             final int ti = i;
@@ -20,11 +19,11 @@ public class AboutSemaphore {
                 public void run() {
                     Thread.currentThread().setName("T-" + ti);
                     try {
-                    semaphore.acquire();
+                    semaphore.acquire();  //获取许可，计数减1，获取不到的话阻塞
                     System.out.println(Thread.currentThread().getName() + "前:" + cnt);
                     cnt++;
                     System.out.println(Thread.currentThread().getName() + "后:" + cnt);
-                    semaphore.release();
+                    semaphore.release();  //还回许可，计数加1
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

@@ -30,7 +30,8 @@ object WordCount {
     //val rdd = sc.textFile("/opt/spark/CHANGES.txt")
     println("连接到master，worker上的CoarseGrainedExecutorBackend也已经启动，准备执行任务？====================")
     val rdd = sc.textFile("hdfs://vm-centos-01:9999/user/migle/HdfsRWTest/CHANGES.txt")
-
+    rdd.partitions
+    rdd.dependencies
     //val rdd = sc.textFile("/opt/spark/pom.xml")
     //文件不在hdfs上，要在每个worker上？还是driver???????
 
