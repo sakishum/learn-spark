@@ -3,6 +3,7 @@ package me.migle.util;
 /**
  * Created by migle on 2017/4/26.
  * 二叉查找树，二叉平衡树，红黑树
+=======
  */
 
 
@@ -25,6 +26,16 @@ public class MyBinTree<V extends Comparable> {
             }
             if(this.right != null){
                 this.right.print("R:"+level + " "+ x+ " ");
+        public Node(V value) {
+            this.value = value;
+        }
+        public void print(String x){
+            System.out.println(x+" " + this.value);
+            if(this.left != null){
+                this.left.print("L:" + x+ " ");
+            }
+            if(this.right != null){
+                this.right.print("R:"+ x+ " ");
             }
         }
 
@@ -69,7 +80,9 @@ public class MyBinTree<V extends Comparable> {
         //TODO
     }
 
-
+    public void toAVL(){
+        //转换成平衡二叉树
+    }
     public Node findNode(Node s,Node n){
         if(s.compareTo(n) == 0){
             return s;
@@ -130,6 +143,7 @@ public class MyBinTree<V extends Comparable> {
         System.out.println("Found it:"+ mbt.findNode("X").height);
         System.out.println("Found it:"+ mbt.findNode("Y").height);
         System.out.println("Found it:"+ mbt.findNode("Z"));
+        System.out.println("Found it:"+ mbt.findNode("Y"));
         //System.out.println(mbt);
     }
 }
