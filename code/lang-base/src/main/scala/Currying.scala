@@ -7,6 +7,7 @@ object Currying {
   def main(args: Array[String]): Unit = {
     val test = new Currying()
     println(":" + test.printHost())
+    "0123".startsWith("0")
   }
 }
 
