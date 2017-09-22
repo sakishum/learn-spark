@@ -48,6 +48,7 @@
         <module>mkafka</module>
         <module>lang-base</module>
         <module>mzookeeper</module>
+        <module>mnetty</module>
 
     </modules>
 <dependencies>

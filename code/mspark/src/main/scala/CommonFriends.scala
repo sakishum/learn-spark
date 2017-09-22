@@ -23,7 +23,7 @@ object CommonFriends {
       //(C-B -> A)  C和B共同好友A,"C-B"为key,
       val rr = cf.flatMap(a => cf.filter(!_.eq(a)).map(b => (s"$a-$b" -> m._1) ))
       rr
-    }).groupByKey().sortByKey(numPartitions = 1).foreach(r => {
+    }).groupByKey().sortByKey(/*numPartitions = 1*/).foreach(r => {
       println(r._1 + ":" + r._2.toArray.sorted.mkString(","))
     })
   }
