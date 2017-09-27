@@ -88,28 +88,31 @@ class AMapPoidata:
             return
         
         for item in data.json().get('pois',""):
-            line=self.__format_item(item)
-            callback(line)
-
+            callback(item)
         if(int(data.json()["count"]) > self.__page_num*self.__page_size ):
             logging.debug("total:%s,next" % data.json()["count"]) #如理>page_size还需要再请求一次
             self.__page_num+=1
             self.getdata(callback)
 
-    def __format_item(self,item):
-        """TODO:数据格式转换"""
-        return str(item)
-        #return "{name}|{address}".format(**item)
+def poi_data_format(item):
+    """数据格式转换"""
+    #return str(item)
+    return "{i[id]}|{i[tag]}|{i[name]}|{i[type]}|{i[typecode]}|{i[biz_type]}|{i[address]}|{i[location]}|{i[distance]}|{i[tel]}|{i[pcode]}|{i[pname]}|{i[citycode]}|{i[cityname]}|{i[adcode]}|{i[adname]}|{i[biz_ext][rating]}".format(i=item)
 
 if __name__ == '__main__':    
-    key="eaaf1cd5acfefbae2030f5f5cba85626"
+    #keys=["eaaf1cd5acfefbae2030f5f5cba85626"]
     keys=['207737a40231f8157771c03e5ce4ea60','910394336cdca243935ba36ffa1a2b41','3d9e8be61e1d5a84e1d081b6780bf501','e2c515b8978a231216c7a4fc95e83fff']
     keywords="清真"
     #amap = AMapPoidata(key,keywords,"510725")
     from amapdistrict import get_district_data
     from random import shuffle
-    districts = get_district_data(key)
+    districts = get_district_data(keys[0])
+
     for district in districts:
+        ##key请求数量有限制，分两天抓取数据
+        if(district[1] not in ['上海市','重庆市','北京市','河南省','湖南省','江西省','山东省','天津市','四川省','甘肃省','青海省']):
+            continue
+
         filename=u"./poidata/amap/"+district[1]+".dat"
         if(os.path.exists(filename)):
             file = open(filename,"a")
@@ -117,8 +120,9 @@ if __name__ == '__main__':
             file = open(filename,"w")
         shuffle(keys)
         amap = AMapPoidata(keys[0],keywords,district[4])
-        def savedata(line):
-            print(line)
+        def savedata(item):
+            line=poi_data_format(item)
+            #print(line)
             file.write(line+"\n")
     
         amap.getdata(savedata)
