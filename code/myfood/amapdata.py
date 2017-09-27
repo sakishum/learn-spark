@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 import sys
+import os
 import logging
 import requests
 
@@ -59,10 +60,11 @@ class AMapPoidata:
                'output'    :self.__output}
     
     def getdata(self,callback):
+        """callback 数据处理回调函数"""
         self.build_url()
         data = requests.get(AMapPoidata.baseurl,self.__payload)
         logging.info(data.url)
-        print("-"*20)
+        #print("-"*20)
         #print(data.json()["info"])
         if(data.json()["status"] != '1'):
             logging.error("error request! url:%s status:%s infocode:%s message:%s",
@@ -83,15 +85,11 @@ class AMapPoidata:
                 logger.error("单位时间内访问过于频繁,要等等")
             else:
                 pass
-            
             return
         
         for item in data.json().get('pois',""):
             line=self.__format_item(item)
-            #print(line)
             callback(line)
-            #if(file != None and not file.closed):
-            #    file.write(line+"\n")
 
         if(int(data.json()["count"]) > self.__page_num*self.__page_size ):
             logging.debug("total:%s,next" % data.json()["count"]) #如理>page_size还需要再请求一次
@@ -112,7 +110,11 @@ if __name__ == '__main__':
     from random import shuffle
     districts = get_district_data(key)
     for district in districts:
-        file = open(u"~/poidata/amap/"+district[1]+".dat","a+")
+        filename=u"./poidata/amap/"+district[1]+".dat"
+        if(os.path.exists(filename)):
+            file = open(filename,"a")
+        else:
+            file = open(filename,"w")
         shuffle(keys)
         amap = AMapPoidata(keys[0],keywords,district[4])
         def savedata(line):
