@@ -35,6 +35,6 @@ def get_district_data(key):
     #print("-----"*5)
     return districts
 if __name__ == '__main__':
-    dd=get_district_data('eaaf1cd5acfefbae2030f5f5cba85626')
-    print(len(dd))
-    print(dd[1])
+    dd=get_district_data('b6d1a9382739c4e33d33cf3a906a9117')
+    for d in dd:
+        print(dd)
