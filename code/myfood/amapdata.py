@@ -96,18 +96,24 @@ def poi_data_format(item):
 
 #抓取行政区域数据
 def get_district_data(key):
-    #中国 100000
-    param = {'keywords':'100000','key':key,'subdistrict':'3'}
-    data = requests.get('http://restapi.amap.com/v3/config/district',param)
     districts=[]
-    for country in data.json()["districts"]:
-        for province in country["districts"]:
-            for city in  province["districts"]:
-                for district in city["districts"]:
-                    districts.append((province["adcode"],province["name"],
-                                     city["adcode"],city["name"],
-                                     district["adcode"],district["name"]))
+    #中国 100000
+    param = {'keywords':'100000','key':key,'subdistrict':'1'}
+    data = requests.get('http://restapi.amap.com/v3/config/district',param)
+    #print(data.url)
+    provinces=[(province["adcode"],province["name"]) for province in data.json()["districts"][0]["districts"]]
+    #print(provinces)
+    for province in provinces:
+        param['subdistrict']='2'
+        param['keywords']=province[0]
+        citys = requests.get('http://restapi.amap.com/v3/config/district',param)
 
+        for city in  citys.json()["districts"][0]["districts"]:
+            if(city['level']=='district'):
+                districts.append((province[0],province[1],province[0],province[1],city['adcode'],city['name']))
+            else:
+                for district in city["districts"]:
+                    districts.append((province[0],province[1],city['adcode'],city['name'],district['adcode'],district['name']))
     return districts
 
 if __name__ == '__main__':
