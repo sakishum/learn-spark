@@ -65,11 +65,9 @@ class AMapPoidata:
                         data.url, data.json()["status"],
                         data.json()["infocode"],
                         data.json()["info"])
-
             # key不正确或过期
             if(data.json()["infocode"] == "10001"):
                 logger.error("key不正确或过期")
-
             # 10003 DAILY_QUERY_OVER_LIMIT 访问已超出日访问量
             elif(data.json()["infocode"] == "10003"):
                 logger.error("访问已超出日访问量。5个小时后再试")
@@ -83,7 +81,6 @@ class AMapPoidata:
             else:
                 pass
             return
-
         for item in data.json().get('pois', ""):
             callback(item)
         if(int(data.json()["count"]) > self.__page_num * self.__page_size):
@@ -114,18 +111,18 @@ def get_district_data(key):
     return districts
 
 if __name__ == '__main__':
-
     keys = ['b6d1a9382739c4e33d33cf3a906a9117','dd1c0d2257f9e69374beef3366056b6a',
     '10f22dff5a4fb84bbfc3150bbbd346ee','9a2e40e406c899efb40a339e837b1e28',
     '80da8c87335c216428643a9f9019ea75','8a82592bca77567d9643d719dea89b94',
     '470f5a03a2b10fbc682599a82383ffff','402e4839f3396ab80ab03054e2546992',
     'c2316f598d46e1c004eb5cab9e4204d8','6d8336f604a072e87e00b2a1b1d474ba']
-
     keywords = "清真"
     from random import shuffle
     districts = get_district_data(keys[0])
     #districts = [('110000', '北京市', '110100', '北京城区', '110102', '西城区')]
     for district in districts:
+        #if(district[1] in ['北京市','甘肃省','安徽省','福建省','广东省','河南省','内蒙古自治区','宁夏回族自治区','山东省','山西省','上海市','天津市']):
+        #    continue
         logger.debug("搜索区域:(%s:%s)",district[5],district[4])
         filename = u"./poidata/amap/" + district[1] + ".dat"
         if(os.path.exists(filename)):
@@ -139,8 +136,17 @@ if __name__ == '__main__':
             line = poi_data_format(item)
             # print(line)
             file.write(line + "\n")
-        amap.getdata(savedata)
-        file.close()
+        try:
+            amap.getdata(savedata)
+        except Exception as ex:
+            logger.error(ex)
+            retry = open('./retry_district.dat', "a")
+            retry.writelines('|'.join(district))
+            retry.close()
+        finally:
+            file.close()    
+        
+        
     logger.info("搜索完成")
 
 
