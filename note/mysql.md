@@ -1,4 +1,12 @@
-#表名大小写敏感问题
+##常用 
+create database md  DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
+##元数据信息
+
+`use information_schema;`
+eg:`SELECT table_name,DATA_LENGTH/1024/1024,TABLE_ROWS FROM `TABLES` where TABLE_SCHEMA='md' order by 3 desc ;`
+
+##表名大小写敏感问题
 show variables like '%lower_case_table_names%';
 
 `sudo systemctl  stop mariadb` #停服务 
@@ -12,3 +20,6 @@ lower_case_table_names=1
 >> *2*:	表名和数据库名在硬盘上使用CREATE TABLE或CREATE DATABASE语句指定的大小写字母进行保存，但MySQL将它们转换为小写在查找表上。名称比较对大小写不敏感，即按照大小写来保存，按照小写来比较。注释：只在对大小写不敏感的文件系统上适用! innodb表名用小写保存。
 
 `sudo systemctl  start mariadb`  #启服务
+
+
+ 
