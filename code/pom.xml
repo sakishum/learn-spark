@@ -49,6 +49,7 @@
         <module>lang-base</module>
         <module>mzookeeper</module>
         <module>mnetty</module>
+        <module>mrabbitmq</module>
 
     </modules>
 <dependencies>
