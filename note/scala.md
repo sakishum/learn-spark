@@ -14,7 +14,7 @@
 
 ## 基础
 
-###hello scala
+### hello scala
 
 	object StartScala {
 	  def main(arg: Array[String]) {

@@ -158,5 +158,6 @@ System.out.println(uri.toString());
 
 for i in `ls *.jar*`
 do
+echo $i
 jar -tf $i|grep HBaseContext
 done
