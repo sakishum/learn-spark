@@ -50,6 +50,7 @@
         <module>mzookeeper</module>
         <module>mnetty</module>
         <module>mrabbitmq</module>
+        <module>mrocketmq</module>
 
     </modules>
 <dependencies>
