@@ -136,7 +136,7 @@ Set：无序不重复集合类型，有可变和不可变实现；
 Map：键值对的映射，有可变和不可变实现；
 Tuple：可以包含不同类元素，不可变实现；
 List：Scala的列表是不可变实现的同类对象序列，因应函数式编程特性的需要。
-Seq:
+Seq:  适合存有序可重复数据
 
 http://docs.scala-lang.org/zh-cn/overviews/collections/overview
 
