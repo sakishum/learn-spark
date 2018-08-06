@@ -11,7 +11,7 @@ import java.util.Properties;
 public class MConsumer {
     public static void main(String[] args) {
         Properties props = new Properties();
-
+        //props.put("auto.offset.reset", "smallest");
         props.put("bootstrap.servers", "vm-centos-00:9092");
         props.put("group.id", "xyz");
         props.put("enable.auto.commit", "true");

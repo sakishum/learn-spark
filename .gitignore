@@ -10,6 +10,7 @@ sync_hook.script
 .vscode
 target/
 *.pyc
+
 code/lang-base/src/main/java/com/asisinfo/ds/*
 code/o.dat
 code/test.txt
@@ -17,4 +18,17 @@ code/classes/*
 distributeor/src/main/resources/ai-event.properties
 amappoidata.log
 code/myfood/poidata/
-code/data/social_circle_sample.data
+# IntelliJ project files
+.idea
+*.iml
+out
+gen### Maven template
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties

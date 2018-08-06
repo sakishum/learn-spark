@@ -10,7 +10,7 @@ object WordCount {
   //  }
 
   def main(args: Array[String]) {
-    System.setProperty("hadoop.home.dir", "E:\\spark\\hadoop-2.6.4\\hadoop-2.6")
+    System.setProperty("hadoop.home.dir", "E:\\spark\\hadoop-2.7.3\")
     val conf = new SparkConf()
       .setAppName("Spark Wordcount")
       .set("hadoop.home.dir", "E:\\spark\\hadoop-2.6.4\\hadoop-2.6")
