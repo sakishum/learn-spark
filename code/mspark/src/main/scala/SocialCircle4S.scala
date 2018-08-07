@@ -15,7 +15,7 @@ object SocialCircle4S {
     //val data = sc.textFile("data/social_circle_uniq_sample.txt").filter(!_.isEmpty).filter(!_.startsWith("#")).map(line => {
     val data = sc.textFile("data/social_circle_uniq.data.gz").filter(!_.isEmpty).map(line => {
       val tmp = line.split(" ")
-      (tmp(0).trim, tmp(1).trim)
+      (tmp(0).trim.toLong, tmp(1).trim.toLong)
     }).filter(kv => {
       kv._1 != kv._2
     }).flatMap(kv => Array((kv._1, kv._2), (kv._2, kv._1))) //A<->B双向关系
@@ -23,18 +23,18 @@ object SocialCircle4S {
 
     //TODO：按手机号分区？
     val kvRdd = data
-      .groupByKey(50)
+      .groupByKey(10)
       .map(kv => {
         (kv._1, (kv._2.toSet + kv._1))
       })
       //过滤只有一个直接连接节点的节点(关系是又向的，只删除一个)
       .filter(_._2.size > 2)
-      .sample(false, 0.001)
+      .sample(false, 0.1)
       .persist(StorageLevel.MEMORY_AND_DISK)
-
+    println("数据量："+data.count())
     val r = kvRdd.cartesian(kvRdd).persist(StorageLevel.MEMORY_AND_DISK)
-
-    //NOTE:笛卡尔集,所以判断的时候只判断一个方向
+kvRdd.join()
+    //NOTE:笛卡尔集,判断的时候只判断一个方向
     val circle = r.map({ case (a, b) => {
       if (a._2.contains(b._1)) { //A,B直接相连
         if (a._2.subsetOf(b._2)) { //A,B直接相连 且 B和A的所有直连节点都直连
@@ -71,7 +71,7 @@ object SocialCircle4S {
 
     val ff = fr.reduceByKey(_ + _).filter(_._2 == 0)
     val fw = new FileWriter("data/rr.txt")
-    ff.map(_._1.toSeq.sortWith(_ < _)).repartition(1).collect().foreach(line => fw.write(line.mkString("|") + "\n"))
+    ff.map(_._1.toSeq.sortWith(_ < _)).collect().foreach(line => fw.write(line.mkString("|") + "\n"))
     fw.close()
 
     sc.stop()
