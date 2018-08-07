@@ -15,12 +15,13 @@ code/lang-base/src/main/java/com/asisinfo/ds/*
 code/o.dat
 code/test.txt
 code/classes/*
-distributeor/src/main/resources/ai-event.properties
 amappoidata.log
 code/myfood/poidata/
 # IntelliJ project files
 .idea
 *.iml
+.project
+.settings/
 out
 gen### Maven template
 target/
